@@ -9,12 +9,17 @@
         <entry key="app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_outline_home_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/wishlist_selector.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_category.xml" value="0.12968591691995948" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.22056159420289856" />
         <entry key="app/src/main/res/layout/auto_scrollable_carousel_item.xml" value="0.15476190476190477" />
         <entry key="app/src/main/res/layout/fragment_account.xml" value="0.15476190476190477" />
         <entry key="app/src/main/res/layout/fragment_cart.xml" value="0.15476190476190477" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.37273406982421875" />
+        <entry key="app/src/main/res/layout/fragment_product.xml" value="0.25041803361917825" />
+        <entry key="app/src/main/res/layout/fragment_product_list.xml" value="0.12968591691995948" />
         <entry key="app/src/main/res/layout/fragment_wishlist.xml" value="0.15476190476190477" />
+        <entry key="app/src/main/res/layout/item_category.xml" value="0.25383148193359384" />
+        <entry key="app/src/main/res/layout/product_list_item.xml" value="0.12917933130699089" />
         <entry key="app/src/main/res/menu/bottom_navigation_menu.xml" value="0.1" />
       </map>
     </option>
