@@ -7,14 +7,14 @@ import androidx.room.PrimaryKey
 data class Product(@PrimaryKey val productId:Int,
                    val title:String,
                    val description:String,
-                   val price:String,
-                   val discountPercentage:String,
-                   val rating:String,
-                   val stock:String,
+                   val originalPrice:Double,
+                   val discountPercentage:Double,
+                   val priceAfterDiscount:Double,
+                   val rating:Float,
+                   val stock:Int,
                    val brand:String,
-                   val category: String,
-                   val thumbnail:String,
-                   val images:List<String>)
+                   val category:String,
+                   val thumbnail:String)
 
 /*id
 * title

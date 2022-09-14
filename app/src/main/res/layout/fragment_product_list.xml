@@ -9,4 +9,9 @@
         android:id="@+id/product_list_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <!--<TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="product list frag inside the category activity"/>-->
 </FrameLayout>

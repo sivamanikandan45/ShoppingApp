@@ -1,15 +1,18 @@
 package com.example.shopping
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.shopping.model.Category
+import com.example.shopping.viewmodel.ProductViewModel
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -25,6 +28,10 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Shopping"
+
+        val productViewModel:ProductViewModel by activityViewModels()
+
+        println(productViewModel.productList)
 
         val autoScrollableCarousel=view.findViewById<ViewPager2>(R.id.autoScrollingViewPager)
         val images= listOf(R.drawable.image1,R.drawable.image2,R.drawable.image3)
@@ -52,11 +59,23 @@ class HomeFragment : Fragment() {
         )
 
         val categoryListAdapter=CategoryListAdapter(categoryList)
+        categoryListAdapter.setOnItemClickListener(object :ItemClickListener{
+            override fun onItemClick(position: Int) {
+                val intent=Intent(context,CategoryActivity::class.java)
+                intent.putExtra("category", categoryList[position].categoryName)
+                startActivity(intent)
+            }
+        })
+
         val manager=GridLayoutManager(context,4)
         val categoryRecyclerView=view.findViewById<RecyclerView>(R.id.category_recycler_view)
         categoryRecyclerView.setHasFixedSize(true)
         categoryRecyclerView.adapter=categoryListAdapter
         categoryRecyclerView.layoutManager=manager
+
+        productViewModel.productList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            println(productViewModel.productList.value)
+        })
 
 
     }

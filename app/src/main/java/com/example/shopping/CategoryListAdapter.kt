@@ -9,12 +9,21 @@ import com.example.shopping.model.Category
 import com.google.android.material.imageview.ShapeableImageView
 
 class CategoryListAdapter(val list:List<Category>):RecyclerView.Adapter<CategoryListAdapter.ViewHolder>() {
-    class ViewHolder(view: View):RecyclerView.ViewHolder(view){
+    private lateinit var listener:ItemClickListener
+
+    fun setOnItemClickListener(listener: ItemClickListener){
+        this.listener=listener
+    }
+
+    class ViewHolder(view: View,listener: ItemClickListener):RecyclerView.ViewHolder(view){
         val categoryImageView:ShapeableImageView
         val categoryName: TextView
         init {
             categoryImageView=view.findViewById(R.id.category_image)
             categoryName=view.findViewById(R.id.category_name)
+            view.setOnClickListener {
+                listener.onItemClick(adapterPosition)
+            }
         }
     }
     override fun onCreateViewHolder(
@@ -22,7 +31,7 @@ class CategoryListAdapter(val list:List<Category>):RecyclerView.Adapter<Category
         viewType: Int
     ): ViewHolder {
         val view=LayoutInflater.from(parent.context).inflate(R.layout.item_category,parent,false)
-        return ViewHolder(view)
+        return ViewHolder(view,listener)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
