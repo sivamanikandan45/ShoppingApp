@@ -18,7 +18,7 @@ interface ProductDao{
     //select email from mytable group by email having count(*) >1
     //select email from mytable group by email having count(*) >1
 
-    @Query("SELECT * FROM Product WHERE category='mens-shirts'")
-    fun getCategoryList():List<Product>
+    @Query("SELECT * FROM Product WHERE category=:category")
+    fun getCategoryList(category:String):MutableList<Product>
 
 }
