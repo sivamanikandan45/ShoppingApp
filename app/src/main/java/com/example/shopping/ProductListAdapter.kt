@@ -3,6 +3,7 @@ package com.example.shopping
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Paint
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,7 +42,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
 
         val imageView:ImageView
         val productNameTextView:TextView
-        //val productBrandTextView:TextView
+//        val productBrandTextView:TextView
         val productOldPriceTextView:TextView
         val productRatingBar:RatingBar
         val ratedValue:TextView
@@ -50,13 +51,13 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
         init {
             imageView=view.findViewById(R.id.product_card_imageview)
             productNameTextView=view.findViewById(R.id.productCard_ProductName)
-            productOldPriceTextView=view.findViewById(R.id.product_card_price)
+            productOldPriceTextView=view.findViewById(R.id.product_price)
             productOldPriceTextView.showStrikeThrough(true)
             //productBrandTextView=view.findViewById(R.id.productCard_brand)
             productRatingBar=view.findViewById(R.id.product_card_rating_bar)
             ratedValue=view.findViewById(R.id.rated_value)
             productNewPriceTextView=view.findViewById(R.id.product_card_offer_price)
-            offer=view.findViewById(R.id.product_card_discount)
+            offer=view.findViewById(R.id.product_discount)
 
             view.setOnClickListener{
                 listener.onItemClick(adapterPosition)
@@ -65,16 +66,19 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
 
         fun bind(product: Product) {
             var bitmapValue:Bitmap?=null
-            productNameTextView.text=product.title.capitalize()//product.brand+" "+
+            //var imageUrl:Uri?=null
+            productNameTextView.text=product.title//.capitalize()//product.brand+" "+
             //Picasso.get().load(product.thumbnail).into(imageView);
             GlobalScope.launch {
                 val job=launch(Dispatchers.IO) {
                     val imageUrl = URL(product.thumbnail)
+                    //imageUrl = Uri.parse("Data you got from db");
                      bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                 }
                 job.join()
                 val imageSettingCoroutine=launch(Dispatchers.Main){
                     imageView.setImageBitmap(bitmapValue)
+                    //imageView.setImageURI(imageUrl)
                 }
                 imageSettingCoroutine.join()
             }
@@ -104,4 +108,10 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
     override fun getItemCount(): Int {
         return list.size
     }
+
+    override fun onViewRecycled(holder: ViewHolder) {
+        super.onViewRecycled(holder)
+        holder.imageView.setImageBitmap(null)
+    }
+
 }

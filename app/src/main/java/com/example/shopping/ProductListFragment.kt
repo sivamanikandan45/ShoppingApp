@@ -42,10 +42,13 @@ class ProductListFragment : Fragment() {
             override fun onItemClick(position: Int) {
                 parentFragmentManager.commit {
                     addToBackStack(null)
-                    replace(R.id.category_fragment_container,ProductFragment())
+                    val viewModel:ProductViewModel by activityViewModels()
+                    viewModel.selectedProduct.value= viewModel.categoryList.value?.get(position)
+                    replace(R.id.category_fragment_container,ProductFragment() )
                 }
             }
         })
+
         adapter.setData(ArrayList(productViewModel.getCategoryWiseProductList()))
         manager=GridLayoutManager(context,2)
         productRecyclerView.setHasFixedSize(true)
@@ -92,6 +95,8 @@ class ProductListFragment : Fragment() {
             }
             R.id.sort->{
                 println("Sort is selected")
+                val bottomSheetFragment=SortBottomSheetFragment()
+                bottomSheetFragment.show(parentFragmentManager,"")
             }
         }
         return super.onOptionsItemSelected(item)

@@ -18,11 +18,14 @@ import java.math.RoundingMode
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.DecimalFormat
+import java.util.*
 
 class ProductViewModel(application: Application):AndroidViewModel(application) {
     var productList = MutableLiveData<List<Product>>()
     var categoryType: CategoryType = CategoryType.MEN
     var categoryList = MutableLiveData<List<Product>>()
+
+    var selectedProduct=MutableLiveData<Product>()
 
 
     init {
@@ -65,8 +68,8 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                 for (i in 0 until jsonArray.length()) {
 
                     val productId:Int=jsonArray.getJSONObject(i).getString("id").toInt()
-                    val title:String=jsonArray.getJSONObject(i).getString("title")
-                    val description:String=jsonArray.getJSONObject(i).getString("description")
+                    val title:String=jsonArray.getJSONObject(i).getString("title").capitalize()
+                    val description:String=jsonArray.getJSONObject(i).getString("description").capitalize()
                     val originalPrice:Double=jsonArray.getJSONObject(i).getString("price").toDouble()
                     val discountPercentage:Double=jsonArray.getJSONObject(i).getString("discountPercentage").toDouble()
                     var priceAfterDiscount:Double=jsonArray.getJSONObject(i).getString("price").toDouble()
