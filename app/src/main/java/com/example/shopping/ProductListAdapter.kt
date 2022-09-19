@@ -3,7 +3,6 @@ package com.example.shopping
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Paint
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -97,7 +96,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder {
-        val view=LayoutInflater.from(parent.context).inflate(R.layout.product_list_item,parent,false)
+        val view=LayoutInflater.from(parent.context).inflate(R.layout.item_product_list,parent,false)
         return ViewHolder(view,listener)
     }
 

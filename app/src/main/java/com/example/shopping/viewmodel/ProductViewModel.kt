@@ -5,7 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.shopping.Enum.CategoryType
-import com.example.shopping.database.ProductDB
+import com.example.shopping.database.AppDB
+import com.example.shopping.model.CarouselImage
 import com.example.shopping.model.Product
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +20,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.text.DecimalFormat
 import java.util.*
+import kotlin.Comparator
 
 class ProductViewModel(application: Application):AndroidViewModel(application) {
     var productList = MutableLiveData<List<Product>>()
@@ -44,7 +46,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
     }
 
     private fun getALlProducts() {
-        val dao=ProductDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
+        val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
         val list=dao.getProductList()
         productList.postValue(list)
     }
@@ -78,7 +80,33 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                     val brand:String=jsonArray.getJSONObject(i).getString("brand")
                     val category:String=jsonArray.getJSONObject(i).getString("category")
                     val thumbnail:String=jsonArray.getJSONObject(i).getString("thumbnail")
-                    //val images:List<String> = listOf(jsonArray.getJSONObject(i).getString("images"))
+                    var images = jsonArray.getJSONObject(i).getString("images")
+
+                    val images1=images.replace("[","")
+                    val images2 =images1.replace("]","")
+                    val images3=images2.replace("\"","")
+                    val images4=images3.replace("\\/","/")
+
+                    val imagesArray=images4.split(",")
+                    for(link in imagesArray){
+                        val carouselImage=CarouselImage(0,productId,link)
+                        addImageToDB(carouselImage)
+                    }
+
+
+                    //println(images)
+
+                    //val array=images.split("https:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)")
+                    //println(array)
+
+                    //println("images is $images")
+                    /*images.replace("https:\\/","https://")
+                    println("images is $images")*/
+
+                    /*for(i in 0 until images.length()){
+                        //val carouselImage=CarouselImage(0,productId,i.toString())
+                        println(i.toString())
+                    }*/
 
                     priceAfterDiscount=originalPrice-originalPrice*(discountPercentage/100)
                     val df = DecimalFormat("#.##")
@@ -95,8 +123,19 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
         }
     }
 
+    private fun addImageToDB(carouselImage: CarouselImage) {
+        val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getImageDao()
+        dao.insertImage(carouselImage)
+    }
+
+    fun getImageUrlList(productId:Int):MutableList<String>{
+        val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getImageDao()
+        val list=dao.getImageURL(productId)
+        return list
+    }
+
     private fun insertProductListToDB(list: MutableList<Product>) {
-        val dao=ProductDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
+        val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
         dao.insertProductList(list)
         getALlProducts()
     }
@@ -106,7 +145,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
         viewModelScope.launch {
             val job = launch {
                 withContext(Dispatchers.IO) {
-                    val dao = ProductDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
+                    val dao = AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
                     list = dao.getProductList()
                     productList.postValue(list)
                 }
@@ -196,10 +235,61 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
     suspend fun getCategoryFromDB(category:String):List<Product>{
         var list = listOf<Product>()
         withContext(Dispatchers.IO){
-            val dao=ProductDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
+            val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
             list=dao.getCategoryList(category)
         }
         return list
     }
+
+    fun sortByAlphabet() {
+        Collections.sort(categoryList.value!!,object :Comparator<Product>{
+            override fun compare(p0: Product?, p1: Product?): Int {
+                if (p1 != null) {
+                    return p0?.title?.compareTo(p1.title) ?: 0
+                }
+                return 0
+            }
+        })
+        /*for(item in categoryList.value!!){
+            println(item.title)
+        }*/
+    }
+
+    fun sortByARating() {
+        Collections.sort(categoryList.value!!,object :Comparator<Product>{
+            override fun compare(p0: Product?, p1: Product?): Int {
+                if (p1 != null) {
+                    return p0?.rating?.compareTo(p1.rating) ?: 0
+                }
+                return 0
+            }
+        })
+        categoryList.postValue(categoryList.value!!.reversed())
+    }
+
+    fun sortByPriceHghToLow() {
+        Collections.sort(categoryList.value!!,object :Comparator<Product>{
+            override fun compare(p0: Product?, p1: Product?): Int {
+                if (p1 != null) {
+                    return p0?.priceAfterDiscount?.compareTo(p1.priceAfterDiscount) ?: 0
+                }
+                return 0
+            }
+        })
+        categoryList.postValue(categoryList.value!!.reversed())
+    }
+
+    fun sortByPriceLowToHigh() {
+        Collections.sort(categoryList.value!!,object :Comparator<Product>{
+            override fun compare(p0: Product?, p1: Product?): Int {
+                if (p1 != null) {
+                    return p0?.priceAfterDiscount?.compareTo(p1.priceAfterDiscount) ?: 0
+                }
+                return 0
+            }
+        })
+    }
+
+
 
 }

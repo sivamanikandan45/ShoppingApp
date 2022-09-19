@@ -15,7 +15,7 @@ class AutoScrollableCarouselAdapter(private val list:List<Int>):RecyclerView.Ada
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder {
-        val view=LayoutInflater.from(parent.context).inflate(R.layout.auto_scrollable_carousel_item,parent,false)
+        val view=LayoutInflater.from(parent.context).inflate(R.layout.item_auto_scrollable_carousel,parent,false)
         return ViewHolder(view)
     }
 

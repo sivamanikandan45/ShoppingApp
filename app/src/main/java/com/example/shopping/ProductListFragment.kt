@@ -45,6 +45,13 @@ class ProductListFragment : Fragment() {
                     val viewModel:ProductViewModel by activityViewModels()
                     viewModel.selectedProduct.value= viewModel.categoryList.value?.get(position)
                     replace(R.id.category_fragment_container,ProductFragment() )
+
+                    /*parentFragmentManager.commit {
+
+                        replace(R.id.category_fragment_container,ProductFragment() )
+                        //addToBackStack(null)
+                    }*/
+
                 }
             }
         })
@@ -88,13 +95,12 @@ class ProductListFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.category_search->{
-                println("Search selected")
+                //println("Search selected")
             }
-            R.id.filter->{
-                println("filter is selected")
-            }
+//            R.id.filter->{
+//                println("filter is selected")
+//            }
             R.id.sort->{
-                println("Sort is selected")
                 val bottomSheetFragment=SortBottomSheetFragment()
                 bottomSheetFragment.show(parentFragmentManager,"")
             }
