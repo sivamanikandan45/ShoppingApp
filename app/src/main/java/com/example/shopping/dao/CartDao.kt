@@ -14,5 +14,4 @@ interface CartDao {
     @Query("SELECT * FROM SelectedProduct")
     fun getCartItems():MutableList<SelectedProduct>
 
-
 }
