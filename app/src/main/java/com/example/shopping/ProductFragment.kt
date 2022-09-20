@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.example.shopping.model.CarouselImage
+import com.example.shopping.model.SelectedProduct
+import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +39,9 @@ class ProductFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val productViewModel:ProductViewModel by activityViewModels()
+        val cartViewModel:CartViewModel by activityViewModels()
+
+        println("cart is ${cartViewModel.cartItems.value}")
         val product=productViewModel.selectedProduct.value
         println("Selected product is $product")
 
@@ -49,7 +54,7 @@ class ProductFragment : Fragment() {
             job.join()
             withContext(Dispatchers.Main){
                 val autoScrollableCarousel=view.findViewById<ViewPager2>(R.id.product_image_carousel)
-                val images= listOf(R.drawable.image1,R.drawable.image2,R.drawable.image3)
+                //val images= listOf(R.drawable.image1,R.drawable.image2,R.drawable.image3)
                 val autoScrollableCarouselAdapter=ProductImageCarouselAdapter(list)
                 println("value set")
                 autoScrollableCarousel.adapter = autoScrollableCarouselAdapter
@@ -87,6 +92,13 @@ class ProductFragment : Fragment() {
 
         val addToCartBtn=view.findViewById<Button>(R.id.add_to_cart_button)
         addToCartBtn.setOnClickListener {
+            GlobalScope.launch {
+                val job=launch (Dispatchers.IO){
+                    val selectedProduct=SelectedProduct(product.productId,product.title,product.thumbnail,product.priceAfterDiscount,1,product.priceAfterDiscount)
+                    cartViewModel.addToCart(selectedProduct)
+                }
+                job.join()
+            }
             Snackbar.make(it,"Added to the Cart",Snackbar.LENGTH_LONG)
                 .show()
         }

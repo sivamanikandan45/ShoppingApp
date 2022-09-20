@@ -2,13 +2,14 @@ package com.example.shopping.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.shopping.model.SelectedProduct
 
 @Dao
 interface CartDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addItemToCart(item:SelectedProduct)
 
     @Query("SELECT * FROM SelectedProduct")
