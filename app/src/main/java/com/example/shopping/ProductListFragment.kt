@@ -45,13 +45,6 @@ class ProductListFragment : Fragment() {
                     val viewModel:ProductViewModel by activityViewModels()
                     viewModel.selectedProduct.value= viewModel.categoryList.value?.get(position)
                     replace(R.id.category_fragment_container,ProductFragment() )
-
-                    /*parentFragmentManager.commit {
-
-                        replace(R.id.category_fragment_container,ProductFragment() )
-                        //addToBackStack(null)
-                    }*/
-
                 }
             }
         })

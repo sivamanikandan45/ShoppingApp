@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.*
@@ -40,6 +41,24 @@ class ProductFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val productViewModel:ProductViewModel by activityViewModels()
         val cartViewModel:CartViewModel by activityViewModels()
+
+        /*cartViewModel.noOfItem.observe(viewLifecycleOwner,Observer {
+            if(it!=0){
+                val badgeDrawable=menu.getOrCreateBadge(R.id.cart)
+                badgeDrawable.isVisible=true
+                badgeDrawable.number=it
+                badgeDrawable.backgroundColor= Color.RED
+                badgeDrawable.badgeTextColor= Color.WHITE
+            }
+        })
+
+        if(cartViewModel.noOfItem.value!=0){
+            val badgeDrawable=bottomNavigationView.getOrCreateBadge(R.id.cart)
+            badgeDrawable.isVisible=true
+            //badgeDrawable.number= cartViewModel.noOfItem.value!!
+            badgeDrawable.backgroundColor= Color.RED
+            badgeDrawable.badgeTextColor= Color.WHITE
+        }*/
 
         println("cart is ${cartViewModel.cartItems.value}")
         val product=productViewModel.selectedProduct.value
@@ -94,7 +113,7 @@ class ProductFragment : Fragment() {
         addToCartBtn.setOnClickListener {
             GlobalScope.launch {
                 val job=launch (Dispatchers.IO){
-                    val selectedProduct=SelectedProduct(product.productId,product.title,product.thumbnail,product.priceAfterDiscount,1,product.priceAfterDiscount)
+                    val selectedProduct=SelectedProduct(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,1,product.originalPrice,product.priceAfterDiscount)
                     cartViewModel.addToCart(selectedProduct)
                 }
                 job.join()

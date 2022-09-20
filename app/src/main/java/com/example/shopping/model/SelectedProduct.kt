@@ -4,4 +4,13 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class SelectedProduct (@PrimaryKey val productId:Int, val productName:String,val imageUrl:String, val pricePerProduct:Double, val quantity:Int, val priceForSelectedQuantity:Double)
+data class SelectedProduct (@PrimaryKey val productId:Int,
+                            val productName:String,
+                            val productBrand:String,
+                            val imageUrl:String,
+                            val oldPricePerProduct: Double,
+                            val discount:Double,
+                            val pricePerProduct:Double,
+                            val quantity:Int,
+                            val olcPriceForSelectedQuantity:Double,
+                            val priceForSelectedQuantity:Double)

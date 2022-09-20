@@ -1,10 +1,13 @@
 package com.example.shopping
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.CustomViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -16,6 +19,8 @@ class MainActivity : AppCompatActivity() {
         //replaceFragment(HomeFragment())
 
         val viewModel= ViewModelProvider(this)[CustomViewModel::class.java]
+        val cartViewModel= ViewModelProvider(this)[CartViewModel::class.java]
+
 
         val bottomNavigationView=findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
         bottomNavigationView.setOnItemSelectedListener {
@@ -39,6 +44,30 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+
+        println("cart items is ${cartViewModel.noOfItem}")
+
+        cartViewModel.noOfItem.observe(this, Observer {
+            if(it!=0){
+                val badgeDrawable=bottomNavigationView.getOrCreateBadge(R.id.cart)
+                badgeDrawable.isVisible=true
+                badgeDrawable.number=it
+                badgeDrawable.backgroundColor=Color.RED
+                badgeDrawable.badgeTextColor=Color.WHITE
+            }
+        })
+
+        if(cartViewModel.noOfItem.value!=0){
+            val badgeDrawable=bottomNavigationView.getOrCreateBadge(R.id.cart)
+            badgeDrawable.isVisible=true
+            //badgeDrawable.number= cartViewModel.noOfItem.value!!
+            badgeDrawable.backgroundColor=Color.RED
+            badgeDrawable.badgeTextColor=Color.WHITE
+        }
+
+
+
+
 
         if(savedInstanceState!=null){
             when(viewModel.fragmentId){

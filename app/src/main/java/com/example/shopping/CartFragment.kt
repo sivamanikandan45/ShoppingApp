@@ -35,7 +35,8 @@ private val cartViewModel:CartViewModel by activityViewModels()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Cart"
-        println("got cart as ${cartViewModel.cartItems.value}")
+        /*println("got cart as ${cartViewModel.cartItems.value}")
+        println("got cart size as ${cartViewModel.cartItems.value?.size}")*/
 
         /*if(cartViewModel.cartItems.value==null || cartViewModel?.cartItems.value!!.isEmpty()){
             val tv1=view.findViewById<TextView>(R.id.empty_label)
@@ -45,6 +46,8 @@ private val cartViewModel:CartViewModel by activityViewModels()
         }else{*/
             val tv1=view.findViewById<TextView>(R.id.empty_label)
             tv1.visibility=View.GONE
+            val totalAmountTextView=view.findViewById<TextView>(R.id.total_amount_value)
+            //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
             /*val tv2=view.findViewById<TextView>(R.id.empty_label_11)
             tv2.visibility=View.VISIBLE*/
 
@@ -58,9 +61,10 @@ private val cartViewModel:CartViewModel by activityViewModels()
                 }
                 job.join()
                 withContext(Dispatchers.Main){
-                    val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL /*or LinearLayoutManager.HORIZONTAL*/) }
+                    /*val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL *//*or LinearLayoutManager.HORIZONTAL*//*) }
                     divider?.dividerInsetStart=375
-                    recyclerView.addItemDecoration(divider!!)
+                    recyclerView.addItemDecoration(divider!!)*/
+                    //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
                     recyclerView.adapter=adapter
                     recyclerView.layoutManager=manager
                 }
@@ -73,9 +77,16 @@ private val cartViewModel:CartViewModel by activityViewModels()
         }
 
         cartViewModel.cartItems.observe(viewLifecycleOwner, Observer {
+           /* println("got cart as ${cartViewModel.cartItems.value}")
+            println("got cart size as ${cartViewModel.cartItems.value?.size}")
+            println("got cart size as ${cartViewModel.cartItems.value?.isEmpty()}")*/
             adapter.setData(cartViewModel.cartItems.value!!)
             adapter.notifyDataSetChanged()
         })
+
+        /*cartViewModel.cartAmount.observe(viewLifecycleOwner, Observer {
+            totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
+        })*/
     }
 
 }

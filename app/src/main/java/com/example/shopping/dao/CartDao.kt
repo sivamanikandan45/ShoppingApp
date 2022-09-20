@@ -15,4 +15,7 @@ interface CartDao {
     @Query("SELECT * FROM SelectedProduct")
     fun getCartItems():MutableList<SelectedProduct>
 
+    @Query("SELECT SUM(priceForSelectedQuantity) FROM SelectedProduct")
+    fun getCartAmount():Double
+
 }
