@@ -124,6 +124,26 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/delivery_charges" />
 
+        <TextView
+            android:id="@+id/discount_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_price"
+            android:textColor="#118c4f"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textView3" />
+
+        <TextView
+            android:id="@+id/original_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="@string/title_price"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textView2"
+            android:textColor="@color/black"/>
+
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/materialDivider2"
             android:layout_width="match_parent"
@@ -137,7 +157,7 @@
             android:id="@+id/total_amount_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Total Amount"
+            android:text="@string/title_price"
             android:textColor="@color/black"
             android:textSize="14sp"
             android:textStyle="bold"

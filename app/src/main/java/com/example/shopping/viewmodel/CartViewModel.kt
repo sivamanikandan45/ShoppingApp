@@ -7,15 +7,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.shopping.database.AppDB
 import com.example.shopping.model.SelectedProduct
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class CartViewModel(application: Application):AndroidViewModel(application) {
 
     var cartItems=MutableLiveData<List<SelectedProduct>>()
     var noOfItem=MutableLiveData<Int>()
-    //var cartAmount:MutableLiveData<Double> = MutableLiveData()
+    var cartAmountAfterDiscount=MutableLiveData<Double>()
+    var cartAmountBeforeDiscount=MutableLiveData<Double>()
+    //var discountAmount=MutableLiveData<Double>()
+
 
     init {
         //cartAmount.value=0.0
@@ -32,17 +33,12 @@ class CartViewModel(application: Application):AndroidViewModel(application) {
     fun getCartFromDB(){
         val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getCartDao()
         val list=dao.getCartItems()
-        println("price after updating ${dao.getCartAmount()}")
+        println("price after updating ${dao.getCartAmountAfterDiscount()}")
         cartItems.postValue(list)
-        GlobalScope.launch {
-            withContext(Dispatchers.Main){
-                //noOfItem.value=cartItems.value?.size?:0
-                noOfItem.value=cartItems.value?.size?:0
-            }
-        }
-
-        //updateCartAmount(dao.getCartAmount())
-        //cartAmount.postValue(dao.getCartAmount())
+        getCartItemCount()
+        val after=getCartAmountAfterDiscount()
+        val before=getCartAmountBeforeDiscount()
+        //discountAmount.postValue(before-after)
     }
 
     /*private fun updateCartAmount(amount: Double) {
@@ -58,6 +54,7 @@ class CartViewModel(application: Application):AndroidViewModel(application) {
         val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getCartDao()
         dao.addItemToCart(product)
         getCartFromDB()
+        /*getCartAmount()*/
     }
 
     fun getCartItems():MutableList<SelectedProduct>{
@@ -66,5 +63,35 @@ class CartViewModel(application: Application):AndroidViewModel(application) {
         cartItems.postValue(list)
         return list
     }
+
+    fun getCartAmountAfterDiscount():Double{
+        val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getCartDao()
+        val price=dao.getCartAmountAfterDiscount()
+        cartAmountAfterDiscount.postValue(price)
+        return price
+    }
+
+    fun getCartAmountBeforeDiscount():Double{
+        val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getCartDao()
+        val price=dao.getCartAmountBeforeDiscount()
+        cartAmountBeforeDiscount.postValue(price)
+        return price
+    }
+
+    fun deleteProduct(productId: Int?) {
+        val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getCartDao()
+        if(productId!=null){
+            dao.removeItemFromCart(productId)
+            getCartFromDB()
+        }
+    }
+
+    fun getCartItemCount():Int{
+        val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getCartDao()
+        val count=dao.getCartItemCount()
+        noOfItem.postValue(count)
+        return count
+    }
+
 
 }

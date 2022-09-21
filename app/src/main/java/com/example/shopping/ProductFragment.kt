@@ -42,17 +42,15 @@ class ProductFragment : Fragment() {
         val productViewModel:ProductViewModel by activityViewModels()
         val cartViewModel:CartViewModel by activityViewModels()
 
-        /*cartViewModel.noOfItem.observe(viewLifecycleOwner,Observer {
-            if(it!=0){
-                val badgeDrawable=menu.getOrCreateBadge(R.id.cart)
-                badgeDrawable.isVisible=true
-                badgeDrawable.number=it
-                badgeDrawable.backgroundColor= Color.RED
-                badgeDrawable.badgeTextColor= Color.WHITE
-            }
-        })
+        /*cartViewModel.noOfItem.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            val badgeDrawable=(activity as AppCompatActivity).supportActionBar.men
+            badgeDrawable.isVisible=true
+            //badgeDrawable.number= cartViewModel.noOfItem.value!!
+            badgeDrawable.backgroundColor= Color.RED
+            badgeDrawable.badgeTextColor= Color.WHITE
+        })*/
 
-        if(cartViewModel.noOfItem.value!=0){
+        /*if(cartViewModel.noOfItem.value!=0){
             val badgeDrawable=bottomNavigationView.getOrCreateBadge(R.id.cart)
             badgeDrawable.isVisible=true
             //badgeDrawable.number= cartViewModel.noOfItem.value!!

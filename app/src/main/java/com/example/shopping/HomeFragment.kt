@@ -1,6 +1,7 @@
 package com.example.shopping
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,7 +13,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.shopping.model.Category
+import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.ProductViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -30,8 +36,7 @@ class HomeFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.title="Shopping"
 
         val productViewModel:ProductViewModel by activityViewModels()
-
-        println(productViewModel.productList)
+        val cartViewModel:CartViewModel by activityViewModels()
 
         val autoScrollableCarousel=view.findViewById<ViewPager2>(R.id.autoScrollingViewPager)
         val images= listOf(R.drawable.image1,R.drawable.image2,R.drawable.image3)
@@ -76,6 +81,16 @@ class HomeFragment : Fragment() {
         productViewModel.productList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             println(productViewModel.productList.value)
         })
+
+        var amount=0
+        GlobalScope.launch {
+            val job=launch{
+                amount=cartViewModel.getCartItemCount()
+            }
+            job.join()
+            println("Cart count  from home is $amount")
+        }
+
 
 
     }

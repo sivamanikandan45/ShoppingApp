@@ -16,6 +16,15 @@ interface CartDao {
     fun getCartItems():MutableList<SelectedProduct>
 
     @Query("SELECT SUM(priceForSelectedQuantity) FROM SelectedProduct")
-    fun getCartAmount():Double
+    fun getCartAmountAfterDiscount():Double
+
+    @Query("DELETE FROM SelectedProduct where productId=:productId")
+    fun removeItemFromCart(productId:Int)
+
+    @Query("SELECT COUNT(*) FROM SelectedProduct")
+    fun getCartItemCount():Int
+
+    @Query("SELECT SUM(oldPricePerProduct) FROM SelectedProduct")
+    fun getCartAmountBeforeDiscount():Double
 
 }

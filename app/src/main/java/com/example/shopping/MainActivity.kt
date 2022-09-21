@@ -10,6 +10,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.CustomViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,6 +23,15 @@ class MainActivity : AppCompatActivity() {
 
         val viewModel= ViewModelProvider(this)[CustomViewModel::class.java]
         val cartViewModel= ViewModelProvider(this)[CartViewModel::class.java]
+        var amount=0
+
+        GlobalScope.launch {
+            val job=launch{
+               amount=cartViewModel.getCartItemCount()
+            }
+            job.join()
+            println("Cart count is $amount")
+        }
 
 
         val bottomNavigationView=findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
@@ -47,23 +59,46 @@ class MainActivity : AppCompatActivity() {
 
         println("cart items is ${cartViewModel.noOfItem}")
 
+        /*cartViewModel.cartItems.observe(this, Observer {
+            println("Value changed")
+            if(cartViewModel.noOfItem.value!=0){
+                val badgeDrawable=bottomNavigationView.getOrCreateBadge(R.id.cart)
+                badgeDrawable.isVisible=true
+                badgeDrawable.number=cartViewModel.noOfItem.value!!
+                badgeDrawable.backgroundColor=Color.parseColor("#b00020")
+                badgeDrawable.badgeTextColor=Color.WHITE
+            }
+        })*/
+
         cartViewModel.noOfItem.observe(this, Observer {
             if(it!=0){
                 val badgeDrawable=bottomNavigationView.getOrCreateBadge(R.id.cart)
                 badgeDrawable.isVisible=true
                 badgeDrawable.number=it
-                badgeDrawable.backgroundColor=Color.RED
+                badgeDrawable.backgroundColor=Color.parseColor("#b00020")
                 badgeDrawable.badgeTextColor=Color.WHITE
             }
         })
 
-        if(cartViewModel.noOfItem.value!=0){
-            val badgeDrawable=bottomNavigationView.getOrCreateBadge(R.id.cart)
-            badgeDrawable.isVisible=true
-            //badgeDrawable.number= cartViewModel.noOfItem.value!!
-            badgeDrawable.backgroundColor=Color.RED
-            badgeDrawable.badgeTextColor=Color.WHITE
-        }
+        /*GlobalScope.launch {
+            var amount=0
+            val job=launch(Dispatchers.IO) {
+                amount=cartViewModel.getCartItemCount()
+            }
+            job.join()
+            val job1=launch(Dispatchers.Main) {
+                if(amount!=0){
+                    val badgeDrawable=bottomNavigationView.getOrCreateBadge(R.id.cart)
+                    badgeDrawable.isVisible=true
+                    badgeDrawable.number= amount
+                    badgeDrawable.backgroundColor=Color.parseColor("#b00020")
+                    badgeDrawable.badgeTextColor=Color.WHITE
+                }
+            }
+            job1.join()
+        }*/
+
+
 
 
 
@@ -95,5 +130,10 @@ class MainActivity : AppCompatActivity() {
             setReorderingAllowed(true)
             replace(R.id.fragment_container,fragment)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        println("Main activity is destotying.....!!!1")
     }
 }
