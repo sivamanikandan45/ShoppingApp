@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class HomeFragment : Fragment() {
+    val cartViewModel:CartViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,12 +32,26 @@ class HomeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
+
+    override fun onStart() {
+        super.onStart()
+        var amount=0
+        GlobalScope.launch {
+            val job=launch{
+                amount=cartViewModel.getCartItemCount()
+            }
+            job.join()
+            println("Cart count  from home is $amount")
+        }
+
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Shopping"
 
         val productViewModel:ProductViewModel by activityViewModels()
-        val cartViewModel:CartViewModel by activityViewModels()
+
 
         val autoScrollableCarousel=view.findViewById<ViewPager2>(R.id.autoScrollingViewPager)
         val images= listOf(R.drawable.image1,R.drawable.image2,R.drawable.image3)

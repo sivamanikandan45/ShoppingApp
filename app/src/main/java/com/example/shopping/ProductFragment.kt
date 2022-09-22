@@ -8,8 +8,13 @@ import android.widget.Button
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.shopping.model.CarouselImage
 import com.example.shopping.model.SelectedProduct
@@ -96,6 +101,33 @@ class ProductFragment : Fragment() {
         val ratedValueTextView:TextView=view.findViewById(R.id.rating_value)
         val oldPrice:TextView=view.findViewById(R.id.product_price)
         val discount:TextView=view.findViewById(R.id.product_discount)
+        val similarProductRecyclerView=view.findViewById<RecyclerView>(R.id.similar_product_recyler)
+
+        lifecycleScope.launch {
+            val job=launch(Dispatchers.IO){
+                val list= product?.category?.let { productViewModel.getCategoryFromDB(it) }
+                withContext(Dispatchers.Main){
+                    val adapter=SimilarProductListAdapter()
+                    list?.remove(product)
+                    adapter.setData(list!!)
+                    /*adapter.setOnItemClickListener(object : ItemClickListener{
+                        override fun onItemClick(position: Int) {
+                            parentFragmentManager.commit {
+                                addToBackStack(null)
+                                val viewModel:ProductViewModel by activityViewModels()
+                                viewModel.selectedProduct.value= list[position]
+                                replace(R.id.category_fragment_container,ProductFragment() )
+                            }
+                        }
+                    })*/
+                    similarProductRecyclerView.adapter=adapter
+                    val layoutManager=LinearLayoutManager(requireContext())
+                    layoutManager.orientation=LinearLayoutManager.HORIZONTAL
+                    similarProductRecyclerView.layoutManager=layoutManager
+                }
+            }
+            job.join()
+        }
 
         productNameTextView.text=product?.title
         productPriceTextView.text="$"+product?.priceAfterDiscount.toString()

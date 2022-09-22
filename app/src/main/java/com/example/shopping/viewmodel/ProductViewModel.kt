@@ -232,8 +232,8 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
         return list
     }
 
-    suspend fun getCategoryFromDB(category:String):List<Product>{
-        var list = listOf<Product>()
+    suspend fun getCategoryFromDB(category:String):MutableList<Product>{
+        var list = mutableListOf<Product>()
         withContext(Dispatchers.IO){
             val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
             list=dao.getCategoryList(category)

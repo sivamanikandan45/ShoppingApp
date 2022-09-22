@@ -6,8 +6,8 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.SelectedProduct
 import kotlinx.coroutines.Dispatchers
@@ -59,6 +59,7 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
         val productBrandTextView:TextView
         val productOldPriceTextView:TextView
         val discountTextView:TextView
+
         init {
             productImageView=view.findViewById(R.id.cart_item_product_image)
             productNameTextView=view.findViewById(R.id.cart_item_product_name)

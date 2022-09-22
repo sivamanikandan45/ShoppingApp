@@ -30,7 +30,6 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
     }
 
 
-
     class ViewHolder(view: View,listener: ItemClickListener):RecyclerView.ViewHolder(view){
 
         fun TextView.showStrikeThrough(show: Boolean) {
@@ -54,7 +53,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
             productOldPriceTextView.showStrikeThrough(true)
             //productBrandTextView=view.findViewById(R.id.productCard_brand)
             productRatingBar=view.findViewById(R.id.product_card_rating_bar)
-            ratedValue=view.findViewById(R.id.rated_value)
+            ratedValue=view.findViewById(R.id.product_card_rated_value)
             productNewPriceTextView=view.findViewById(R.id.product_card_offer_price)
             offer=view.findViewById(R.id.product_discount)
 

@@ -19,6 +19,8 @@ import com.example.shopping.viewmodel.CartViewModel
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -108,6 +110,7 @@ private val cartViewModel:CartViewModel by activityViewModels()
                         adapter.notifyDataSetChanged()
                     }
                     .show()
+                adapter.notifyDataSetChanged()
             }
 
         }
@@ -120,17 +123,19 @@ private val cartViewModel:CartViewModel by activityViewModels()
                     adapter.setData(cartViewModel.getCartItems())
                     val priceAfterDiscount=cartViewModel.getCartAmountAfterDiscount()
                     val priceBeforeDiscount=cartViewModel.getCartAmountBeforeDiscount()
-                    totalAmountTextView.text=priceAfterDiscount.toString()
-                    totalAmountBeforeDiscount.text=priceBeforeDiscount.toString()
-                    var discountAmount=priceBeforeDiscount-priceAfterDiscount
-                    val df = DecimalFormat("#.##")
-                    df.roundingMode = RoundingMode.UP
-                    discountAmount = df.format(discountAmount).toDouble()
-                    offerTextView.text="-$"+discountAmount.toString()
+                    withContext(Dispatchers.Main){
+                        totalAmountTextView.text=priceAfterDiscount.toString()
+                        totalAmountBeforeDiscount.text=priceBeforeDiscount.toString()
+                        var discountAmount=priceBeforeDiscount-priceAfterDiscount
+                        val df = DecimalFormat("#.##")
+                        df.roundingMode = RoundingMode.UP
+                        discountAmount = df.format(discountAmount).toDouble()
+                        offerTextView.text="-$"+discountAmount.toString()
+                    }
                 }
                 job.join()
                 withContext(Dispatchers.Main){
-                    /*val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL *//*or LinearLayoutManager.HORIZONTAL*//*) }
+                    /*val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
                     divider?.dividerInsetStart=375
                     recyclerView.addItemDecoration(divider!!)*/
                     //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
