@@ -1,9 +1,6 @@
 package com.example.shopping.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.shopping.model.SelectedProduct
 
 @Dao
@@ -24,7 +21,18 @@ interface CartDao {
     @Query("SELECT COUNT(*) FROM SelectedProduct")
     fun getCartItemCount():Int
 
-    @Query("SELECT SUM(oldPricePerProduct) FROM SelectedProduct")
+    @Query("SELECT SUM(olcPriceForSelectedQuantity) FROM SelectedProduct")
     fun getCartAmountBeforeDiscount():Double
 
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun updateCartItem(item:SelectedProduct)
+
+    @Query("UPDATE SELECTEDPRODUCT SET quantity=:quantity where productId=:id")
+    fun updateProductQuantity(id:Int,quantity:Int)
+
+    @Query("UPDATE SELECTEDPRODUCT SET priceForSelectedQuantity=:priceForSelectedQuantity where productId=:id")
+    fun updatePriceForSelectedQuantity(id:Int,priceForSelectedQuantity:Double)
+
+    @Query("UPDATE SELECTEDPRODUCT SET olcPriceForSelectedQuantity=:oldPriceForSelectedQuantity where productId=:id")
+    fun updateOldPriceForSelectedQuantity(id:Int, oldPriceForSelectedQuantity:Double)
 }

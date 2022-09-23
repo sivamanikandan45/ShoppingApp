@@ -15,7 +15,7 @@ import com.example.shopping.viewmodel.ProductViewModel
 
 
 class ProductListFragment : Fragment() {
-    val productViewModel:ProductViewModel by activityViewModels()
+    private val productViewModel:ProductViewModel by activityViewModels()
     private lateinit var adapter:ProductListAdapter
     private lateinit var productRecyclerView: RecyclerView
     private lateinit var manager: GridLayoutManager
@@ -73,6 +73,7 @@ class ProductListFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.category_activity_menu,menu)
         val searchView=menu.findItem(R.id.category_search)?.actionView as SearchView
+
         searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -88,7 +89,13 @@ class ProductListFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.category_search->{
+                /*if(!searchView.isIconified){
+                    val view=menu.findItem(R.id.sort)
+                    view.isVisible=false
+                }*/
                 //println("Search selected")
+                //val searchView=m.findItem(R.id.category_search)?.actionView as SearchView
+               // val sortIcon=
             }
 //            R.id.filter->{
 //                println("filter is selected")
@@ -100,6 +107,7 @@ class ProductListFragment : Fragment() {
         }
         return super.onOptionsItemSelected(item)
     }
+
     private fun searchData(newText: String?) {
         var list= mutableListOf<Product>()
         for(product in productViewModel.categoryList.value!!){

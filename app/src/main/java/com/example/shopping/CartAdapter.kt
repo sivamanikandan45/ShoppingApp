@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Paint
@@ -8,21 +9,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.example.shopping.database.AppDB
 import com.example.shopping.model.SelectedProduct
+import com.example.shopping.viewmodel.CartViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.net.URL
 
-class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
+class CartAdapter(val context: Context):RecyclerView.Adapter<CartAdapter.ViewHolder>() {
     private lateinit var list: List<SelectedProduct>
+    //private val cartViewModel= ViewModelProvider(requireContext()).get(CartViewModel::class.java)
 
     fun setData(list: List<SelectedProduct>){
         this.list=list
     }
 
-    class ViewHolder(view:View):RecyclerView.ViewHolder(view){
+    inner class ViewHolder(view:View):RecyclerView.ViewHolder(view){
 
         fun TextView.showStrikeThrough(show: Boolean) {
             paintFlags =
@@ -32,11 +39,40 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
 
         fun bind(selectedProduct: SelectedProduct) {
             productNameTextView.text=selectedProduct.productName
-            productPriceTextView.text="$"+selectedProduct.pricePerProduct.toString()
+            productPriceTextView.text="$"+selectedProduct.priceForSelectedQuantity.toString()
             productBrandTextView.text=selectedProduct.productBrand
-            productOldPriceTextView.text="$"+selectedProduct.oldPricePerProduct.toString()
+            productOldPriceTextView.text="$"+selectedProduct.olcPriceForSelectedQuantity.toString()
             productOldPriceTextView.showStrikeThrough(true)
             discountTextView.text=selectedProduct.discount.toString()+"% OFF"
+            quantityTextView.text=selectedProduct.quantity.toString()
+
+            increaseButton.setOnClickListener {
+                var quantity=quantityTextView.text.toString().toInt()
+                if(quantity<10){
+                    quantity++
+                    quantityTextView.text=quantity.toString()
+                    GlobalScope.launch {
+                        val job=launch(Dispatchers.IO) {
+                            val db= AppDB.getDB(context).getCartDao()
+                            db.updateProductQuantity(selectedProduct.productId,quantity)
+                            db.updatePriceForSelectedQuantity(selectedProduct.productId,quantity*selectedProduct.pricePerProduct)
+                            db.updateOldPriceForSelectedQuantity(selectedProduct.productId,quantity*selectedProduct.oldPricePerProduct)
+                        }
+                        job.join()
+                    }
+                }
+                //Toast.makeText(it.context,"Increse clicked", Toast.LENGTH_SHORT).show()
+            }
+
+            decreaseButton.setOnClickListener{
+                var quantity=quantityTextView.text.toString().toInt()
+                if(quantity>1){
+                    quantity--
+                    quantityTextView.text=quantity.toString()
+                }else if(quantity==1){
+                    Toast.makeText(it.context,"Swipe Item to remove from the Cart", Toast.LENGTH_SHORT).show()
+                }
+            }
 
             var bitmapValue: Bitmap?=null
             GlobalScope.launch {
@@ -59,6 +95,9 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
         val productBrandTextView:TextView
         val productOldPriceTextView:TextView
         val discountTextView:TextView
+        val increaseButton:ImageButton
+        val decreaseButton:ImageButton
+        val quantityTextView:TextView
 
         init {
             productImageView=view.findViewById(R.id.cart_item_product_image)
@@ -67,6 +106,11 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
             productBrandTextView=view.findViewById(R.id.cart_item_product_brand)
             productOldPriceTextView=view.findViewById(R.id.cart_item_product_old_price)
             discountTextView=view.findViewById(R.id.cart_item_offer)
+            increaseButton=view.findViewById(R.id.increase_qty_btn)
+            decreaseButton=view.findViewById(R.id.decrease_qty_btn)
+            quantityTextView=view.findViewById(R.id.cart_qty)
+
+
 
         }
     }

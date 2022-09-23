@@ -1,6 +1,5 @@
 package com.example.shopping
 
-import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,10 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.SelectedProduct
 import com.example.shopping.viewmodel.CartViewModel
-import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +41,12 @@ private val cartViewModel:CartViewModel by activityViewModels()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Cart"
+
+        /*val bottomsheet=view.findViewById<FrameLayout>(R.id.bottom_sheet)
+        val behavior=BottomSheetBehavior.from(bottomsheet).apply {
+            peekHeight=200
+            state=BottomSheetBehavior.STATE_COLLAPSED
+        }*/
 
         /*val toolbar= (activity as AppCompatActivity).supportActionBar
         val badgeDrawable = BadgeDrawable.create(requireContext()).apply {
@@ -85,7 +86,7 @@ private val cartViewModel:CartViewModel by activityViewModels()
             tv2.visibility=View.VISIBLE*/
 
             recyclerView=view.findViewById(R.id.cart_recycler_view)
-            adapter= CartAdapter()
+            adapter= CartAdapter(requireContext())
             manager= LinearLayoutManager(context)
 
         val itemTOuchHelperCallBack = object :ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT){
@@ -135,9 +136,9 @@ private val cartViewModel:CartViewModel by activityViewModels()
                 }
                 job.join()
                 withContext(Dispatchers.Main){
-                    /*val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
-                    divider?.dividerInsetStart=375
-                    recyclerView.addItemDecoration(divider!!)*/
+                    val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
+                    //divider?.dividerInsetStart=375
+                    //recyclerView.addItemDecoration(divider!!)
                     //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
                     recyclerView.adapter=adapter
                     recyclerView.layoutManager=manager

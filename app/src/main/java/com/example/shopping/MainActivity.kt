@@ -71,7 +71,10 @@ class MainActivity : AppCompatActivity() {
         })*/
 
         cartViewModel.noOfItem.observe(this, Observer {
-            if(it!=0){
+            if(it==0){
+                val badgeDrawable=bottomNavigationView.getOrCreateBadge(R.id.cart)
+                badgeDrawable.isVisible=false
+            }else{
                 val badgeDrawable=bottomNavigationView.getOrCreateBadge(R.id.cart)
                 badgeDrawable.isVisible=true
                 badgeDrawable.number=it
