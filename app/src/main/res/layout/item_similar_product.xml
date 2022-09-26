@@ -19,11 +19,12 @@
         android:id="@+id/similar_product_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/open_sans"
         android:text="@string/title_price"
         android:textColor="@color/black"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/similar_product_imageView" />
 
@@ -33,8 +34,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:ellipsize="end"
-        android:maxLines="2"
         android:lines="2"
+        android:maxLines="2"
         android:text="@string/title_product_name"
         android:textSize="14sp"
         android:textStyle="bold"

@@ -19,6 +19,14 @@ class ProductListFragment : Fragment() {
     private lateinit var adapter:ProductListAdapter
     private lateinit var productRecyclerView: RecyclerView
     private lateinit var manager: GridLayoutManager
+    private lateinit var sortItem:MenuItem
+    private lateinit var searchItem: MenuItem
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        searchItem=menu.findItem(R.id.category_search)
+        sortItem=menu.findItem(R.id.sort)
+        super.onPrepareOptionsMenu(menu)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +81,20 @@ class ProductListFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.category_activity_menu,menu)
         val searchView=menu.findItem(R.id.category_search)?.actionView as SearchView
+
+        searchView.setOnSearchClickListener {
+            sortItem.isVisible=false
+            //activity?.invalidateOptionsMenu()
+        }
+        searchView.setOnCloseListener{
+            /*sortItem.isVisible=true
+            searchItem.isVisible=true
+            //searchView.isIconified=true
+            activity?.invalidateOptionsMenu()*/
+            //onCreateOptionsMenu(menu,inflater)
+            true
+        }
+
 
         searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {

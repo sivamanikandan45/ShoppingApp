@@ -54,7 +54,7 @@ class HomeFragment : Fragment() {
 
 
         val autoScrollableCarousel=view.findViewById<ViewPager2>(R.id.autoScrollingViewPager)
-        val images= listOf(R.drawable.image1,R.drawable.image2,R.drawable.image3)
+        val images= listOf(R.drawable.poster1,R.drawable.poster2,R.drawable.poster3)
         val autoScrollableCarouselAdapter=AutoScrollableCarouselAdapter(images)
         autoScrollableCarousel.adapter = autoScrollableCarouselAdapter
         val timerTask: TimerTask = object : TimerTask() {

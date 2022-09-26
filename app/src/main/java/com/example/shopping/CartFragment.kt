@@ -5,9 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -76,6 +78,16 @@ private val cartViewModel:CartViewModel by activityViewModels()
             *//*recyclerView=view.findViewById(R.id.cart_recycler_view)
             recyclerView.visibility=View.GONE*//*
         }else{*/
+        val empty=view.findViewById<ConstraintLayout>(R.id.empty_page)
+        val scroll=view.findViewById<ScrollView>(R.id.scroll)
+        println("Crat items while loading ${cartViewModel.cartItems.value}")
+        /*if(cartViewModel.cartItems.value?.isEmpty()==true){
+            empty.visibility=View.VISIBLE
+            scroll.visibility=View.GONE
+        }else{
+            scroll.visibility=View.VISIBLE
+            empty.visibility=View.GONE
+        }*/
             val tv1=view.findViewById<TextView>(R.id.empty_label)
             tv1.visibility=View.GONE
             val totalAmountTextView=view.findViewById<TextView>(R.id.total_amount_value)
@@ -87,6 +99,30 @@ private val cartViewModel:CartViewModel by activityViewModels()
 
             recyclerView=view.findViewById(R.id.cart_recycler_view)
             adapter= CartAdapter(requireContext())
+            adapter.setOnQuantityClickListener(object :QuantityButtonListener{
+            override fun onIncreaseClicked(adapterPosition: Int) {
+                println("Increse clicked at $adapterPosition")
+                println("incresed item is ${cartViewModel.cartItems.value?.get(adapterPosition)?.productName}")
+                val product=cartViewModel.cartItems.value?.get(adapterPosition)
+                GlobalScope.launch {
+                    val job=launch(Dispatchers.IO) {
+                    cartViewModel.updateQuantity(product!!,product.quantity+1)
+                    }
+                    job.join()
+                }
+            }
+
+            override fun onDecreaseClicked(adapterPosition:Int) {
+                println("Decresae clicked")
+                val product=cartViewModel.cartItems.value?.get(adapterPosition)
+                GlobalScope.launch {
+                    val job=launch(Dispatchers.IO) {
+                        cartViewModel.updateQuantity(product!!,product.quantity-1)
+                    }
+                    job.join()
+                }
+            }
+        })
             manager= LinearLayoutManager(context)
 
         val itemTOuchHelperCallBack = object :ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT){
@@ -137,8 +173,8 @@ private val cartViewModel:CartViewModel by activityViewModels()
                 job.join()
                 withContext(Dispatchers.Main){
                     val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
-                    //divider?.dividerInsetStart=375
-                    //recyclerView.addItemDecoration(divider!!)
+                    divider?.dividerInsetStart=375
+                    recyclerView.addItemDecoration(divider!!)
                     //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
                     recyclerView.adapter=adapter
                     recyclerView.layoutManager=manager
@@ -152,8 +188,15 @@ private val cartViewModel:CartViewModel by activityViewModels()
         }
 
         cartViewModel.cartItems.observe(viewLifecycleOwner, Observer {
-            adapter.setData(cartViewModel.cartItems.value!!)
-            adapter.notifyDataSetChanged()
+            if(cartViewModel.cartItems.value?.isEmpty()==true){
+                empty.visibility=View.VISIBLE
+                scroll.visibility=View.GONE
+            }else{
+                scroll.visibility=View.VISIBLE
+                empty.visibility=View.GONE
+                adapter.setData(cartViewModel.cartItems.value!!)
+                adapter.notifyDataSetChanged()
+            }
         })
 
         cartViewModel.cartAmountAfterDiscount.observe(viewLifecycleOwner, Observer {

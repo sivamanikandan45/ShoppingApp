@@ -8,14 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.example.shopping.database.AppDB
 import com.example.shopping.model.SelectedProduct
-import com.example.shopping.viewmodel.CartViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -23,13 +17,19 @@ import java.net.URL
 
 class CartAdapter(val context: Context):RecyclerView.Adapter<CartAdapter.ViewHolder>() {
     private lateinit var list: List<SelectedProduct>
+    private lateinit var listener: QuantityButtonListener
     //private val cartViewModel= ViewModelProvider(requireContext()).get(CartViewModel::class.java)
 
     fun setData(list: List<SelectedProduct>){
         this.list=list
     }
 
-    inner class ViewHolder(view:View):RecyclerView.ViewHolder(view){
+    fun setOnQuantityClickListener(listener: QuantityButtonListener){
+        this.listener=listener
+    }
+
+    inner class ViewHolder(view:View,listener: QuantityButtonListener):RecyclerView.ViewHolder(view){
+
 
         fun TextView.showStrikeThrough(show: Boolean) {
             paintFlags =
@@ -51,17 +51,10 @@ class CartAdapter(val context: Context):RecyclerView.Adapter<CartAdapter.ViewHol
                 if(quantity<10){
                     quantity++
                     quantityTextView.text=quantity.toString()
-                    GlobalScope.launch {
-                        val job=launch(Dispatchers.IO) {
-                            val db= AppDB.getDB(context).getCartDao()
-                            db.updateProductQuantity(selectedProduct.productId,quantity)
-                            db.updatePriceForSelectedQuantity(selectedProduct.productId,quantity*selectedProduct.pricePerProduct)
-                            db.updateOldPriceForSelectedQuantity(selectedProduct.productId,quantity*selectedProduct.oldPricePerProduct)
-                        }
-                        job.join()
-                    }
+                    listener.onIncreaseClicked(adapterPosition)
+                }else{
+                    Toast.makeText(it.context,"You can add only 10 items from a particular Product", Toast.LENGTH_SHORT).show()
                 }
-                //Toast.makeText(it.context,"Increse clicked", Toast.LENGTH_SHORT).show()
             }
 
             decreaseButton.setOnClickListener{
@@ -69,6 +62,7 @@ class CartAdapter(val context: Context):RecyclerView.Adapter<CartAdapter.ViewHol
                 if(quantity>1){
                     quantity--
                     quantityTextView.text=quantity.toString()
+                    listener.onDecreaseClicked(adapterPosition)
                 }else if(quantity==1){
                     Toast.makeText(it.context,"Swipe Item to remove from the Cart", Toast.LENGTH_SHORT).show()
                 }
@@ -116,7 +110,7 @@ class CartAdapter(val context: Context):RecyclerView.Adapter<CartAdapter.ViewHol
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view=LayoutInflater.from(parent.context).inflate(R.layout.item_cart,parent,false)
-        return ViewHolder(view)
+        return ViewHolder(view,listener)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

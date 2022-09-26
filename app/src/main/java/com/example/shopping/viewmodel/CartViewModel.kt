@@ -94,4 +94,18 @@ class CartViewModel(application: Application):AndroidViewModel(application) {
     }
 
 
+    fun updateQuantity(product: SelectedProduct,quantity:Int){
+        val productId=product.productId
+        val pricePerProduct=product.pricePerProduct
+        val oldPricePerProduct=product.oldPricePerProduct
+        val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getCartDao()
+        dao.updateProductQuantity(productId,quantity)
+        dao.updatePriceForSelectedQuantity(productId,quantity*pricePerProduct)
+        dao.updateOldPriceForSelectedQuantity(productId,quantity*oldPricePerProduct)
+        getCartFromDB()
+    }
+
+
+
+
 }
