@@ -14,7 +14,8 @@ data class Product(@PrimaryKey val productId:Int,
                    val stock:Int,
                    val brand:String,
                    val category:String,
-                   val thumbnail:String)
+                   val thumbnail:String,
+                   val favorite: Boolean =false)
 
 /*id
 * title

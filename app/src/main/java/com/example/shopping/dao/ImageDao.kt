@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.shopping.model.CarouselImage
-import com.example.shopping.model.Product
 
 @Dao
 interface ImageDao {
@@ -19,8 +18,4 @@ interface ImageDao {
    @Query("SELECT imageUrl FROM CarouselImage WHERE productId=:productId")
    fun getImageURL(productId:Int):MutableList<String>
 
-
-
-   //@Query("SELECT * FROM CarouselImage WHERE productId=:productId")
-   //fun getmages(productId:Int):List<CarouselImage>
 }

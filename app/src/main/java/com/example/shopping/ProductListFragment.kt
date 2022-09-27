@@ -9,13 +9,20 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.shopping.model.FavoriteProduct
 import com.example.shopping.model.Product
+import com.example.shopping.viewmodel.FavoriteViewModel
 
 import com.example.shopping.viewmodel.ProductViewModel
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 class ProductListFragment : Fragment() {
     private val productViewModel:ProductViewModel by activityViewModels()
+    private val favoriteViewModel:FavoriteViewModel by activityViewModels()
     private lateinit var adapter:ProductListAdapter
     private lateinit var productRecyclerView: RecyclerView
     private lateinit var manager: GridLayoutManager
@@ -46,6 +53,38 @@ class ProductListFragment : Fragment() {
         //(activity as AppCompatActivity).supportActionBar?.title="Hello"
         productRecyclerView=view.findViewById<RecyclerView>(R.id.product_list_recyclerView)
         adapter=ProductListAdapter()
+
+        adapter.setFavoriteButtonListener(object :FavoriteButtonListener{
+            override fun handle(position: Int) {
+                val viewModel:ProductViewModel by activityViewModels()
+                val product=viewModel.categoryList.value?.get(position)
+                if(product?.favorite == true){
+                    GlobalScope.launch {
+                        val job=launch(Dispatchers.IO) {
+                            favoriteViewModel.deleteFromFavorites(product.productId)
+                            viewModel.removeFavorite(product.productId)
+                        }
+                        job.join()
+                        Snackbar.make(productRecyclerView,"Removed from WishList",Snackbar.LENGTH_LONG)
+                            .show()
+                    }
+                }else{
+                    GlobalScope.launch {
+                        val job=launch(Dispatchers.IO) {
+                            if(product!=null){
+                                val favoriteProduct=FavoriteProduct(product.productId,product.title,product.description,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,product.rating,product.stock,product.brand,product.category,product.thumbnail)
+                                favoriteViewModel.addToFavorites(favoriteProduct)
+                                viewModel.markAsFavorite(product.productId)
+                            }
+                        }
+                        job.join()
+                        Snackbar.make(productRecyclerView,"Added to WishList",Snackbar.LENGTH_LONG)
+                            .show()
+                    }
+                }
+            }
+        })
+
         adapter.setOnItemClickListener(object : ItemClickListener{
             override fun onItemClick(position: Int) {
                 parentFragmentManager.commit {

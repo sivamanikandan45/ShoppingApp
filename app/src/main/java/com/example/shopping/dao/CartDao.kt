@@ -27,12 +27,12 @@ interface CartDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateCartItem(item:SelectedProduct)
 
-    @Query("UPDATE SELECTEDPRODUCT SET quantity=:quantity where productId=:id")
+    @Query("UPDATE SelectedProduct SET quantity=:quantity where productId=:id")
     fun updateProductQuantity(id:Int,quantity:Int)
 
-    @Query("UPDATE SELECTEDPRODUCT SET priceForSelectedQuantity=:priceForSelectedQuantity where productId=:id")
+    @Query("UPDATE SelectedProduct SET priceForSelectedQuantity=:priceForSelectedQuantity where productId=:id")
     fun updatePriceForSelectedQuantity(id:Int,priceForSelectedQuantity:Double)
 
-    @Query("UPDATE SELECTEDPRODUCT SET olcPriceForSelectedQuantity=:oldPriceForSelectedQuantity where productId=:id")
+    @Query("UPDATE SelectedProduct SET olcPriceForSelectedQuantity=:oldPriceForSelectedQuantity where productId=:id")
     fun updateOldPriceForSelectedQuantity(id:Int, oldPriceForSelectedQuantity:Double)
 }

@@ -13,7 +13,9 @@ import com.example.shopping.model.SelectedProduct
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.math.RoundingMode
 import java.net.URL
+import java.text.DecimalFormat
 
 class CartAdapter(val context: Context):RecyclerView.Adapter<CartAdapter.ViewHolder>() {
     private lateinit var list: List<SelectedProduct>
@@ -39,7 +41,12 @@ class CartAdapter(val context: Context):RecyclerView.Adapter<CartAdapter.ViewHol
 
         fun bind(selectedProduct: SelectedProduct) {
             productNameTextView.text=selectedProduct.productName
-            productPriceTextView.text="$"+selectedProduct.priceForSelectedQuantity.toString()
+
+            val df = DecimalFormat("#.##")
+            df.roundingMode = RoundingMode.UP
+            val caad= df.format(selectedProduct.priceForSelectedQuantity).toDouble()
+
+            productPriceTextView.text="$"+caad.toString()
             productBrandTextView.text=selectedProduct.productBrand
             productOldPriceTextView.text="$"+selectedProduct.olcPriceForSelectedQuantity.toString()
             productOldPriceTextView.showStrikeThrough(true)
@@ -103,8 +110,6 @@ class CartAdapter(val context: Context):RecyclerView.Adapter<CartAdapter.ViewHol
             increaseButton=view.findViewById(R.id.increase_qty_btn)
             decreaseButton=view.findViewById(R.id.decrease_qty_btn)
             quantityTextView=view.findViewById(R.id.cart_qty)
-
-
 
         }
     }

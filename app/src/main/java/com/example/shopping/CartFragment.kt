@@ -27,10 +27,10 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 
 class CartFragment : Fragment() {
-private lateinit var recyclerView: RecyclerView
-private lateinit var manager:LinearLayoutManager
-private lateinit var adapter: CartAdapter
-private val cartViewModel:CartViewModel by activityViewModels()
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var manager:LinearLayoutManager
+    private lateinit var adapter: CartAdapter
+    private val cartViewModel:CartViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,8 +44,8 @@ private val cartViewModel:CartViewModel by activityViewModels()
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Cart"
 
-        /*val bottomsheet=view.findViewById<FrameLayout>(R.id.bottom_sheet)
-        val behavior=BottomSheetBehavior.from(bottomsheet).apply {
+        /*val bottomSheet=view.findViewById<FrameLayout>(R.id.bottom_sheet)
+        val behavior=BottomSheetBehavior.from(bottomSheet).apply {
             peekHeight=200
             state=BottomSheetBehavior.STATE_COLLAPSED
         }*/
@@ -80,7 +80,7 @@ private val cartViewModel:CartViewModel by activityViewModels()
         }else{*/
         val empty=view.findViewById<ConstraintLayout>(R.id.empty_page)
         val scroll=view.findViewById<ScrollView>(R.id.scroll)
-        println("Crat items while loading ${cartViewModel.cartItems.value}")
+        println("Cart items while loading ${cartViewModel.cartItems.value}")
         /*if(cartViewModel.cartItems.value?.isEmpty()==true){
             empty.visibility=View.VISIBLE
             scroll.visibility=View.GONE
@@ -88,32 +88,32 @@ private val cartViewModel:CartViewModel by activityViewModels()
             scroll.visibility=View.VISIBLE
             empty.visibility=View.GONE
         }*/
-            val tv1=view.findViewById<TextView>(R.id.empty_label)
-            tv1.visibility=View.GONE
-            val totalAmountTextView=view.findViewById<TextView>(R.id.total_amount_value)
-            val totalAmountBeforeDiscount=view.findViewById<TextView>(R.id.original_price)
-            val offerTextView=view.findViewById<TextView>(R.id.discount_amount)
-            //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
-            /*val tv2=view.findViewById<TextView>(R.id.empty_label_11)
-            tv2.visibility=View.VISIBLE*/
+        val tv1=view.findViewById<TextView>(R.id.empty_label)
+        tv1.visibility=View.GONE
+        val totalAmountTextView=view.findViewById<TextView>(R.id.total_amount_value)
+        val totalAmountBeforeDiscount=view.findViewById<TextView>(R.id.original_price)
+        val offerTextView=view.findViewById<TextView>(R.id.discount_amount)
+        //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
+        /*val tv2=view.findViewById<TextView>(R.id.empty_label_11)
+        tv2.visibility=View.VISIBLE*/
 
-            recyclerView=view.findViewById(R.id.cart_recycler_view)
-            adapter= CartAdapter(requireContext())
-            adapter.setOnQuantityClickListener(object :QuantityButtonListener{
+        recyclerView=view.findViewById(R.id.cart_recycler_view)
+        adapter= CartAdapter(requireContext())
+        adapter.setOnQuantityClickListener(object :QuantityButtonListener{
             override fun onIncreaseClicked(adapterPosition: Int) {
-                println("Increse clicked at $adapterPosition")
-                println("incresed item is ${cartViewModel.cartItems.value?.get(adapterPosition)?.productName}")
+                println("Increase clicked at $adapterPosition")
+                println("increased item is ${cartViewModel.cartItems.value?.get(adapterPosition)?.productName}")
                 val product=cartViewModel.cartItems.value?.get(adapterPosition)
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
-                    cartViewModel.updateQuantity(product!!,product.quantity+1)
+                        cartViewModel.updateQuantity(product!!,product.quantity+1)
                     }
                     job.join()
                 }
             }
 
             override fun onDecreaseClicked(adapterPosition:Int) {
-                println("Decresae clicked")
+                println("Decrease clicked")
                 val product=cartViewModel.cartItems.value?.get(adapterPosition)
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
@@ -123,7 +123,7 @@ private val cartViewModel:CartViewModel by activityViewModels()
                 }
             }
         })
-            manager= LinearLayoutManager(context)
+        manager= LinearLayoutManager(context)
 
         val itemTOuchHelperCallBack = object :ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT){
             override fun onMove(
@@ -138,9 +138,9 @@ private val cartViewModel:CartViewModel by activityViewModels()
                 val position=viewHolder.adapterPosition
                 val product=cartViewModel.cartItems.value?.get(position)
                 AlertDialog.Builder(requireActivity())
-                    .setTitle("Are you sure?")
-                    .setMessage("1 Item will be removed from the Cart")
-                    .setPositiveButton("OK"){ _,_ ->
+                    .setTitle("Remove Item")
+                    .setMessage("Are you sure you want to remove this item?")
+                    .setPositiveButton("REMOVE"){ _,_ ->
                         removeItemFromCart(product)
                     }
                     .setNegativeButton("CANCEL"){_,_ ->
@@ -155,30 +155,33 @@ private val cartViewModel:CartViewModel by activityViewModels()
         val itemTouch=ItemTouchHelper(itemTOuchHelperCallBack)
         itemTouch.attachToRecyclerView(recyclerView)
 
-            GlobalScope.launch {
-                val job=launch {
-                    adapter.setData(cartViewModel.getCartItems())
-                    val priceAfterDiscount=cartViewModel.getCartAmountAfterDiscount()
-                    val priceBeforeDiscount=cartViewModel.getCartAmountBeforeDiscount()
-                    withContext(Dispatchers.Main){
-                        totalAmountTextView.text=priceAfterDiscount.toString()
-                        totalAmountBeforeDiscount.text=priceBeforeDiscount.toString()
-                        var discountAmount=priceBeforeDiscount-priceAfterDiscount
-                        val df = DecimalFormat("#.##")
-                        df.roundingMode = RoundingMode.UP
-                        discountAmount = df.format(discountAmount).toDouble()
-                        offerTextView.text="-$"+discountAmount.toString()
-                    }
-                }
-                job.join()
+        GlobalScope.launch {
+            val job=launch {
+                adapter.setData(cartViewModel.getCartItems())
+                val priceAfterDiscount=cartViewModel.getCartAmountAfterDiscount()
+                val priceBeforeDiscount=cartViewModel.getCartAmountBeforeDiscount()
                 withContext(Dispatchers.Main){
-                    val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
-                    divider?.dividerInsetStart=375
-                    recyclerView.addItemDecoration(divider!!)
-                    //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
-                    recyclerView.adapter=adapter
-                    recyclerView.layoutManager=manager
+                    val decimalFormat = DecimalFormat("#.##")
+                    decimalFormat.roundingMode = RoundingMode.UP
+                    val priceAfterDiscountRounded= decimalFormat.format(priceAfterDiscount).toDouble()
+                    totalAmountTextView.text="$"+priceAfterDiscountRounded.toString()
+                    totalAmountBeforeDiscount.text=priceBeforeDiscount.toString()
+                    var discountAmount=priceBeforeDiscount-priceAfterDiscount
+                    /*val df = DecimalFormat("#.##")
+                    df.roundingMode = RoundingMode.UP*/
+                    discountAmount = decimalFormat.format(discountAmount).toDouble()
+                    offerTextView.text="-$"+discountAmount.toString()
                 }
+            }
+            job.join()
+            withContext(Dispatchers.Main){
+                val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
+                divider?.dividerInsetStart=375
+                recyclerView.addItemDecoration(divider!!)
+                //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
+                recyclerView.adapter=adapter
+                recyclerView.layoutManager=manager
+            }
 
             //}
             /*recyclerView.setHasFixedSize(true)
@@ -200,17 +203,23 @@ private val cartViewModel:CartViewModel by activityViewModels()
         })
 
         cartViewModel.cartAmountAfterDiscount.observe(viewLifecycleOwner, Observer {
-            totalAmountTextView.text="$"+it.toString()
+            val decimalFormat = DecimalFormat("#.##")
+            decimalFormat.roundingMode = RoundingMode.UP
+            val cartAmountAfterDiscountRounded = decimalFormat.format(it).toDouble()
+            val withSymbol="$$cartAmountAfterDiscountRounded"
+            totalAmountTextView.text=withSymbol
+
             GlobalScope.launch{
                 val job=launch(Dispatchers.IO) {
                     val priceAfterDiscount=it
                     val priceBeforeDiscount=cartViewModel.getCartAmountBeforeDiscount()
                     withContext(Dispatchers.Main){
                         var discountAmount=(priceBeforeDiscount-priceAfterDiscount)
-                        val df = DecimalFormat("#.##")
-                        df.roundingMode = RoundingMode.DOWN
-                        discountAmount = df.format(discountAmount).toDouble()
-                        offerTextView.text="-$"+discountAmount.toString()
+                        val newDecimalFormat = DecimalFormat("#.##")
+                        newDecimalFormat.roundingMode = RoundingMode.DOWN
+                        discountAmount = newDecimalFormat.format(discountAmount).toDouble()
+                        val offer="-$$discountAmount"
+                        offerTextView.text=offer
                     }
                 }
                 job.join()
@@ -225,7 +234,8 @@ private val cartViewModel:CartViewModel by activityViewModels()
         })*/
 
         cartViewModel.cartAmountBeforeDiscount.observe(viewLifecycleOwner, Observer {
-            totalAmountBeforeDiscount.text="$"+it.toString()
+            val formatted="$$it"
+            totalAmountBeforeDiscount.text=formatted
         })
     }
 
@@ -240,10 +250,10 @@ private val cartViewModel:CartViewModel by activityViewModels()
                 .setAction("UNDO") {
                     if (product != null) {
                         GlobalScope.launch {
-                            val job = launch(Dispatchers.IO) {
+                            val addingJob = launch(Dispatchers.IO) {
                                 cartViewModel.addToCart(product)
                             }
-                            job.join()
+                            addingJob.join()
                         }
                     }
                 }.show()

@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
-import com.example.shopping.Enum.CategoryType
+import com.example.shopping.enums.CategoryType
 import com.example.shopping.viewmodel.ProductViewModel
 
 class CategoryActivity : AppCompatActivity() {

@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.shopping.Enum.CategoryType
+import com.example.shopping.enums.CategoryType
 import com.example.shopping.database.AppDB
 import com.example.shopping.model.CarouselImage
 import com.example.shopping.model.Product
@@ -288,6 +288,20 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                 return 0
             }
         })
+    }
+
+    fun markAsFavorite(productId: Int){
+        val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
+        dao.markAsFavorite(productId)
+        getALlProducts()
+        getCategoryWiseProductList()
+    }
+
+    fun removeFavorite(productId: Int){
+        val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
+        dao.removeFavorite(productId)
+        getALlProducts()
+        getCategoryWiseProductList()
     }
 
 

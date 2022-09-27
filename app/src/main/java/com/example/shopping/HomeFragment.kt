@@ -67,7 +67,7 @@ class HomeFragment : Fragment() {
         val timer = Timer()
         timer.schedule(timerTask, 1000, 3000)
 
-        val categoryList= listOf<Category>(
+        val categoryList= listOf(
             Category("Men's fashion",R.drawable.men),
             Category("Women's fashion",R.drawable.women),
             Category("Electronics",R.drawable.laptop),

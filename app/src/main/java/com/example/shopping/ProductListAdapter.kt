@@ -6,11 +6,10 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.RatingBar
-import android.widget.TextView
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.Product
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -21,6 +20,8 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
     private lateinit var list:ArrayList<Product>
     private lateinit var listener: ItemClickListener
 
+    private lateinit var favoriteButtonListener:FavoriteButtonListener
+
     fun setData(list:ArrayList<Product>){
         this.list=list
     }
@@ -29,8 +30,12 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
         this.listener=listener
     }
 
+    fun setFavoriteButtonListener(listener: FavoriteButtonListener){
+        favoriteButtonListener=listener
+    }
 
-    class ViewHolder(view: View,listener: ItemClickListener):RecyclerView.ViewHolder(view){
+
+    inner class ViewHolder(view: View,listener: ItemClickListener):RecyclerView.ViewHolder(view){
 
         fun TextView.showStrikeThrough(show: Boolean) {
             paintFlags =
@@ -46,6 +51,12 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
         val ratedValue:TextView
         val productNewPriceTextView:TextView
         val offer:TextView
+
+        val imageButton:ImageView
+
+        //val checkBox:CheckBox
+
+
         init {
             imageView=view.findViewById(R.id.product_card_imageview)
             productNameTextView=view.findViewById(R.id.productCard_ProductName)
@@ -56,6 +67,19 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
             ratedValue=view.findViewById(R.id.product_card_rated_value)
             productNewPriceTextView=view.findViewById(R.id.product_card_offer_price)
             offer=view.findViewById(R.id.product_discount)
+            imageButton=view.findViewById(R.id.favorite_button)
+            //checkBox=view.findViewById(R.id.heart_checkbox)
+
+            /*checkBox.setOnCheckedChangeListener { compoundButton, b ->
+                favoriteButtonListener.handle(adapterPosition)
+            }*/
+
+
+
+
+            imageButton.setOnClickListener {
+                favoriteButtonListener.handle(adapterPosition)
+            }
 
             view.setOnClickListener{
                 listener.onItemClick(adapterPosition)
@@ -80,6 +104,11 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
                 }
                 imageSettingCoroutine.join()
             }
+
+            if(product.favorite){
+                imageButton.setImageResource(R.drawable.heart_red)
+            }
+
             imageView.setImageBitmap(bitmapValue)
             productOldPriceTextView.text="$"+product.originalPrice.toString()
             //productBrandTextView.text=product.brand
@@ -110,6 +139,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
     override fun onViewRecycled(holder: ViewHolder) {
         super.onViewRecycled(holder)
         holder.imageView.setImageBitmap(null)
+        holder.imageButton.setImageResource(R.drawable.border_heart)
     }
 
 }
