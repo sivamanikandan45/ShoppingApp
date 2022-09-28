@@ -6,6 +6,9 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.FavoriteProduct
@@ -17,10 +20,14 @@ import java.net.URL
 
 class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
     private lateinit var list: List<FavoriteProduct>
-    //private lateinit var listener: ItemClickListener
+    private lateinit var wishListListener: WishlistListener
 
     fun setData(list: List<FavoriteProduct>){
         this.list=list
+    }
+
+    fun setWishListListener(listener: WishlistListener){
+        wishListListener=listener
     }
 
     /*fun setOnItemClickListener(listener: ItemClickListener){
@@ -28,9 +35,9 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
     }*/
 
 
-    class ViewHolder(view: View):RecyclerView.ViewHolder(view){
+    inner class ViewHolder(view: View):RecyclerView.ViewHolder(view){
 
-        fun TextView.showStrikeThrough(show: Boolean) {
+        private fun TextView.showStrikeThrough(show: Boolean) {
             paintFlags =
                 if (show) paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 else paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
@@ -40,14 +47,44 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
         val productName: TextView
         val productPrice: TextView
         val oldProductPrice:TextView
-        //val productRatingBar: RatingBar
         val discount: TextView
+        val menu:ImageButton
+        val addToCartBtn:Button
+
         init {
             imageView=view.findViewById<ShapeableImageView>(R.id.favorite_imageview)
             productName=view.findViewById<TextView>(R.id.favorite_productName)
             productPrice=view.findViewById<TextView>(R.id.favorite_offer_price)
             oldProductPrice=view.findViewById<TextView>(R.id.favorite_product_price)
             discount=view.findViewById<TextView>(R.id.favorite_product_discount)
+            menu=view.findViewById(R.id.wishlist_item_menu)
+            addToCartBtn=view.findViewById(R.id.favorite_add_to_cart_btn)
+
+            addToCartBtn.setOnClickListener {
+                wishListListener.addToCart(adapterPosition)
+            }
+
+            menu.setOnClickListener {
+                val popupMenu=PopupMenu(menu.context,menu)
+                popupMenu.inflate(R.menu.wishlist_menu)
+                popupMenu.setOnMenuItemClickListener {
+                    when(it.itemId){
+                        R.id.remove_action_wishlist->{
+                            println("Clicked item: $adapterPosition")
+                            wishListListener.removeItem(adapterPosition)
+                            true
+                        }
+                        else->{
+                            println(adapterPosition)
+                            false
+                        }
+                    }
+                }
+                popupMenu.show()
+            }
+
+
+
             /*view.setOnClickListener{
                 listener.onItemClick(adapterPosition)
             }*/
@@ -61,7 +98,7 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
             //productRatingBar.rating=product.rating.toFloat()
             oldProductPrice.text="$"+product.originalPrice.toString()
             oldProductPrice.showStrikeThrough(true)
-            discount.text=product.rating
+            discount.text="${product.discountPercentage}%"
             var bitmapValue: Bitmap?=null
             GlobalScope.launch {
                 val job=launch(Dispatchers.IO) {
@@ -82,8 +119,7 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder {
-        val view=
-            LayoutInflater.from(parent.context).inflate(R.layout.item_wish_list,parent,false)
+        val view= LayoutInflater.from(parent.context).inflate(R.layout.item_wish_list,parent,false)
         return ViewHolder(view)
     }
 

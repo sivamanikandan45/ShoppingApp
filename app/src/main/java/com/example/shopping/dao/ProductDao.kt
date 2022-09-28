@@ -24,6 +24,9 @@ interface ProductDao{
     @Query("UPDATE Product SET favorite=0 WHERE productId=:productId")
     fun removeFavorite(productId:Int)
 
+    @Query("SELECT * FROM Product ORDER BY discountPercentage DESC LIMIT 10")
+    fun getTopOffers():List<Product>
+
 
 
 }

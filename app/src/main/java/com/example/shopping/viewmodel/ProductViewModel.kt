@@ -28,7 +28,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
     var categoryList = MutableLiveData<List<Product>>()
 
     var selectedProduct=MutableLiveData<Product>()
-
+    val topOfferList= MutableLiveData<List<Product>>()
 
     init {
         viewModelScope.launch {
@@ -49,6 +49,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
         val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
         val list=dao.getProductList()
         productList.postValue(list)
+        getTopOfferList()
     }
 
     private suspend fun loadData() {
@@ -154,22 +155,22 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
             when(categoryType){
                 CategoryType.MEN->{
                     val job=launch {
-                        val list1 = getCategoryFromDB("mens-shirts")
-                        val list2 = getCategoryFromDB("mens-shoes")
-                        val list3 = getCategoryFromDB("mens-watches")
-                        list = list1 + list2 + list3
+                        val shirtList = getCategoryFromDB("mens-shirts")
+                        val shoesList = getCategoryFromDB("mens-shoes")
+                        val watchList = getCategoryFromDB("mens-watches")
+                        list = shirtList + shoesList + watchList
                         categoryList.postValue(list)
                     }
                     job.join()
                 }
                 CategoryType.WOMEN->{
                     val job=launch {
-                        val list1 = getCategoryFromDB("womens-dresses")
-                        val list2 = getCategoryFromDB("womens-watches")
-                        val list3 = getCategoryFromDB("womens-shoes")
-                        val list4 = getCategoryFromDB("womens-bags")
-                        val list5 = getCategoryFromDB("womens-jwellery")
-                        list = list1 + list2 + list3 + list4 + list5
+                        val dressList = getCategoryFromDB("womens-dresses")
+                        val watchList = getCategoryFromDB("womens-watches")
+                        val shoesList = getCategoryFromDB("womens-shoes")
+                        val bagsList = getCategoryFromDB("womens-bags")
+                        val jewelleryList = getCategoryFromDB("womens-jewellery")
+                        list = dressList + watchList + shoesList + bagsList + jewelleryList
                         categoryList.postValue(list)
                     }
                     job.join()
@@ -184,9 +185,9 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
 
                 CategoryType.FURNITURE->{
                     val job=launch {
-                        val list1=getCategoryFromDB("furniture")
-                        val list2=getCategoryFromDB("home-decoration")
-                        list=list1+list2
+                        val furnitureList=getCategoryFromDB("furniture")
+                        val homeDecorList=getCategoryFromDB("home-decoration")
+                        list=furnitureList+homeDecorList
                         categoryList.postValue(list)
                     }
                     job.join()
@@ -207,9 +208,9 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                 }
                 CategoryType.BEAUTY->{
                     val job=launch {
-                        val list1=getCategoryFromDB("skincare")
+                        val skincareList=getCategoryFromDB("skincare")
                         val list2=getCategoryFromDB("fragrances")
-                        list=list1+list2
+                        list=skincareList+list2
                         categoryList.postValue(list)
                     }
                     job.join()
@@ -302,6 +303,12 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
         dao.removeFavorite(productId)
         getALlProducts()
         getCategoryWiseProductList()
+    }
+
+    fun getTopOfferList(){
+        val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
+        val list=dao.getTopOffers()
+        topOfferList.postValue(list)
     }
 
 

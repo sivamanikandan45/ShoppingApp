@@ -43,6 +43,7 @@ class FavoriteViewModel(application: Application):AndroidViewModel(application) 
             dao.removeFromFavorites(productId)
             getFavoriteListFromDB()
         }
+        getFavoriteListFromDB()
     }
 
     fun getWishlistItems():List<FavoriteProduct>{

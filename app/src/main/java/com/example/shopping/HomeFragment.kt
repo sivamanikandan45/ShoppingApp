@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.shopping.model.Category
@@ -20,9 +21,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.collections.ArrayList
 
 class HomeFragment : Fragment() {
-    val cartViewModel:CartViewModel by activityViewModels()
+    private val cartViewModel:CartViewModel by activityViewModels()
+    private lateinit var topOfferListAdapter:TopOfferListAdapter
+    private lateinit var topOfferLayoutManager: GridLayoutManager
+    private lateinit var topOfferRecyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,6 +101,25 @@ class HomeFragment : Fragment() {
         productViewModel.productList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             println(productViewModel.productList.value)
         })
+
+        productViewModel.topOfferList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            topOfferListAdapter.setData(ArrayList(productViewModel.topOfferList.value!!))
+        })
+
+        topOfferRecyclerView=view.findViewById(R.id.top_offer_recycler)
+        topOfferListAdapter=TopOfferListAdapter()
+        topOfferListAdapter.setOnItemClickListener(object :ItemClickListener{
+            override fun onItemClick(position: Int) {
+                println("Clicked aat $position")
+            }
+
+        })
+        topOfferRecyclerView.adapter=topOfferListAdapter
+        topOfferRecyclerView.setHasFixedSize(true)
+        //topOfferRecyclerView.layoutManager=GridLayoutManager(requireContext(),2)
+        val manager1=LinearLayoutManager(requireContext())
+        manager1.orientation=LinearLayoutManager.HORIZONTAL
+        topOfferRecyclerView.layoutManager=manager1
 
         var amount=0
         GlobalScope.launch {
