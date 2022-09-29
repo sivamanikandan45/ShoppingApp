@@ -2,6 +2,7 @@ package com.example.shopping
 
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -50,7 +51,7 @@ class ProductListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //(activity as AppCompatActivity).supportActionBar?.title="Hello"
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         productRecyclerView=view.findViewById<RecyclerView>(R.id.product_list_recyclerView)
         adapter=ProductListAdapter()
 
@@ -170,7 +171,7 @@ class ProductListFragment : Fragment() {
     }
 
     private fun searchData(newText: String?) {
-        var list= mutableListOf<Product>()
+        val list= mutableListOf<Product>()
         for(product in productViewModel.categoryList.value!!){
             if(product.title.lowercase().contains(newText!!.lowercase())){
                 list.add(product)

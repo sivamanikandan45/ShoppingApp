@@ -74,7 +74,28 @@
             android:layout_marginEnd="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/top_offer_label"
-            tools:itemCount="10"/>
+            tools:itemCount="5"/>
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Recently Viewed"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/top_offer_label"
+            app:layout_constraintTop_toBottomOf="@+id/top_offer_recycler" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recently_viewed_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/textView4"
+            tools:itemCount="5"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

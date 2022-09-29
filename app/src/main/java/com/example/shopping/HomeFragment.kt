@@ -26,7 +26,7 @@ import kotlin.collections.ArrayList
 class HomeFragment : Fragment() {
     private val cartViewModel:CartViewModel by activityViewModels()
     private lateinit var topOfferListAdapter:TopOfferListAdapter
-    private lateinit var topOfferLayoutManager: GridLayoutManager
+    private lateinit var topOfferLayoutManager: LinearLayoutManager
     private lateinit var topOfferRecyclerView: RecyclerView
 
     override fun onCreateView(
@@ -116,10 +116,9 @@ class HomeFragment : Fragment() {
         })
         topOfferRecyclerView.adapter=topOfferListAdapter
         topOfferRecyclerView.setHasFixedSize(true)
-        //topOfferRecyclerView.layoutManager=GridLayoutManager(requireContext(),2)
-        val manager1=LinearLayoutManager(requireContext())
-        manager1.orientation=LinearLayoutManager.HORIZONTAL
-        topOfferRecyclerView.layoutManager=manager1
+        topOfferLayoutManager=LinearLayoutManager(requireContext())
+        topOfferLayoutManager.orientation=LinearLayoutManager.HORIZONTAL
+        topOfferRecyclerView.layoutManager=topOfferLayoutManager
 
         var amount=0
         GlobalScope.launch {
@@ -129,8 +128,5 @@ class HomeFragment : Fragment() {
             job.join()
             println("Cart count  from home is $amount")
         }
-
-
-
     }
 }

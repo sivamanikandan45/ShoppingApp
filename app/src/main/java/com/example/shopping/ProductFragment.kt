@@ -152,7 +152,8 @@ class ProductFragment : Fragment() {
                 .show()
         }
 
-        //(activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        //(activity as AppCompatActivity).supportActionBar?.title=product.title
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
