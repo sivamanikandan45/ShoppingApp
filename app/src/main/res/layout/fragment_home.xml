@@ -12,14 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/autoScrollingViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp"/>
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/autoScrollingViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_margin="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/category_label"
@@ -38,33 +38,34 @@
             android:id="@+id/category_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            tools:itemCount="5"
-            app:layout_constraintTop_toBottomOf="@id/category_label" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/category_label"
+            tools:itemCount="5" />
 
         <TextView
             android:id="@+id/top_offer_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16sp"
             android:text="Top Offers"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginTop="16sp"
             app:layout_constraintStart_toStartOf="@+id/category_label"
             app:layout_constraintTop_toBottomOf="@+id/category_recycler_view" />
 
-        <!--<Button
+        <Button
+            android:id="@+id/clear_all"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="View All"
-            app:layout_constraintBottom_toBottomOf="@+id/top_offer_label"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/top_offer_label" />-->
+            android:text="Clear All"
+            android:textAllCaps="false"
+            app:layout_constraintBaseline_toBaselineOf="@+id/textView4"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/top_offer_recycler"
@@ -74,7 +75,7 @@
             android:layout_marginEnd="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/top_offer_label"
-            tools:itemCount="5"/>
+            tools:itemCount="5" />
 
         <TextView
             android:id="@+id/textView4"
@@ -92,10 +93,16 @@
             android:id="@+id/recently_viewed_recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/textView4"
-            tools:itemCount="5"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/textView4"
+            tools:itemCount="5" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/recently_viewed_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="textView4,recently_viewed_recycler,clear_all" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

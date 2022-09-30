@@ -16,11 +16,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.net.URL
 
-class SimilarProductListAdapter:RecyclerView.Adapter<SimilarProductListAdapter.ViewHolder>() {
-    private lateinit var list: List<Product>
+class RecentlyViewedListAdapter:RecyclerView.Adapter<RecentlyViewedListAdapter.ViewHolder>(){
+    private lateinit var list: List<RecentlyViewed>
     //private lateinit var listener: ItemClickListener
 
-    fun setData(list: List<Product>){
+    fun setData(list: List<RecentlyViewed>){
         this.list=list
     }
 
@@ -30,11 +30,11 @@ class SimilarProductListAdapter:RecyclerView.Adapter<SimilarProductListAdapter.V
 
 
     class ViewHolder(view: View):RecyclerView.ViewHolder(view){
-        val imageView:ShapeableImageView
-        val productName:TextView
-        val productPrice:TextView
-        val productRatingBar:RatingBar
-        val productRatedValue:TextView
+        val imageView: ShapeableImageView
+        val productName: TextView
+        val productPrice: TextView
+        val productRatingBar: RatingBar
+        val productRatedValue: TextView
         init {
             imageView=view.findViewById<ShapeableImageView>(R.id.similar_product_imageView)
             productName=view.findViewById<TextView>(R.id.similar_product_name)
@@ -48,7 +48,7 @@ class SimilarProductListAdapter:RecyclerView.Adapter<SimilarProductListAdapter.V
 
 
 
-        fun bind(product: Product) {
+        fun bind(product: RecentlyViewed) {
             productName.text=product.title
             productPrice.text="$"+product.priceAfterDiscount.toString()
             productRatingBar.rating=product.rating.toFloat()
@@ -73,7 +73,8 @@ class SimilarProductListAdapter:RecyclerView.Adapter<SimilarProductListAdapter.V
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder {
-        val view=LayoutInflater.from(parent.context).inflate(R.layout.item_similar_product,parent,false)
+        val view=
+            LayoutInflater.from(parent.context).inflate(R.layout.item_similar_product,parent,false)
         return ViewHolder(view)
     }
 

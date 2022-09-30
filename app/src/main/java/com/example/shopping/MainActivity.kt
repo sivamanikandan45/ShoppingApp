@@ -3,6 +3,7 @@ package com.example.shopping
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
@@ -139,4 +140,19 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         println("Main activity is destotying.....!!!1")
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                if(supportFragmentManager.backStackEntryCount>0){
+                    supportFragmentManager.popBackStack()
+                }else{
+                    onBackPressed()
+                }
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 }

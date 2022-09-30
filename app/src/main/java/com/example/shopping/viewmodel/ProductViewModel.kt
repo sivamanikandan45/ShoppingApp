@@ -8,7 +8,9 @@ import com.example.shopping.enums.CategoryType
 import com.example.shopping.database.AppDB
 import com.example.shopping.model.CarouselImage
 import com.example.shopping.model.Product
+import com.example.shopping.model.RecentlyViewed
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -309,6 +311,18 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
         val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
         val list=dao.getTopOffers()
         topOfferList.postValue(list)
+    }
+
+    fun getTopOfferFromDB():List<Product>{
+        var list= listOf<Product>()
+        GlobalScope.launch{
+            val job=launch(Dispatchers.IO) {
+                val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
+                list=dao.getTopOffers()
+            }
+            job.join()
+        }
+        return list
     }
 
 

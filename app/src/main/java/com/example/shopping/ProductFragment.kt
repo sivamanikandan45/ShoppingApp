@@ -17,9 +17,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.shopping.model.CarouselImage
+import com.example.shopping.model.RecentlyViewed
 import com.example.shopping.model.SelectedProduct
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.ProductViewModel
+import com.example.shopping.viewmodel.RecentlyViewedViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -28,6 +30,8 @@ import kotlinx.coroutines.withContext
 import java.util.*
 
 class ProductFragment : Fragment() {
+
+    private val recentlyViewedViewModel:RecentlyViewedViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +69,14 @@ class ProductFragment : Fragment() {
 
         println("cart is ${cartViewModel.cartItems.value}")
         val product=productViewModel.selectedProduct.value
+        if(product!=null){
+            val recentlyViewed=RecentlyViewed(product.productId,product.title,product.description,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,product.rating,product.stock,product.brand,product.category,product.thumbnail)
+            GlobalScope.launch {
+                val job = launch(Dispatchers.IO) { recentlyViewedViewModel.addToRecentlyViewed(recentlyViewed) }
+                job.join()
+            }
+
+        }
         println("Selected product is $product")
 
         var list: MutableList<String> = mutableListOf<String>()

@@ -7,8 +7,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.Group
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +20,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.shopping.model.Category
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.ProductViewModel
+import com.example.shopping.viewmodel.RecentlyViewedViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -29,6 +34,11 @@ class HomeFragment : Fragment() {
     private lateinit var topOfferLayoutManager: LinearLayoutManager
     private lateinit var topOfferRecyclerView: RecyclerView
 
+    private  val recentlyViewedViewModel:RecentlyViewedViewModel by activityViewModels()
+    private lateinit var recentlyViewedRecyclerView: RecyclerView
+    private lateinit var recentlyViewedAdapter:RecentlyViewedListAdapter
+    private lateinit var recentlyViewedLayoutManager: LinearLayoutManager
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,10 +50,12 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        //val cartViewModel:CartViewModel by activityViewModels<>()
         var amount=0
         GlobalScope.launch {
             val job=launch{
                 amount=cartViewModel.getCartItemCount()
+                recentlyViewedViewModel.getRecentlyViewedFromDB()
             }
             job.join()
             println("Cart count  from home is $amount")
@@ -53,6 +65,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         (activity as AppCompatActivity).supportActionBar?.title="Shopping"
 
         val productViewModel:ProductViewModel by activityViewModels()
@@ -100,25 +113,85 @@ class HomeFragment : Fragment() {
 
         productViewModel.productList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             println(productViewModel.productList.value)
+            topOfferListAdapter.setData(ArrayList(productViewModel.getTopOfferFromDB()))
         })
 
         productViewModel.topOfferList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             topOfferListAdapter.setData(ArrayList(productViewModel.topOfferList.value!!))
+            //topOfferListAdapter.setOnItemClickListener()
         })
 
         topOfferRecyclerView=view.findViewById(R.id.top_offer_recycler)
         topOfferListAdapter=TopOfferListAdapter()
-        topOfferListAdapter.setOnItemClickListener(object :ItemClickListener{
+        /*GlobalScope.launch {
+            val job=launch{
+                println(productViewModel.getTopOfferFromDB())
+
+            }
+            job.join()
+        }*/
+        topOfferListAdapter.setOnItemClickListener(object : ItemClickListener{
+            override fun onItemClick(position: Int) {
+                parentFragmentManager.commit {
+                    addToBackStack(null)
+                    //val viewModel:ProductViewModel by activityViewModels()
+                    productViewModel.selectedProduct.value= productViewModel.topOfferList.value?.get(position)
+                    println(productViewModel.selectedProduct.value)
+                    replace(R.id.fragment_container,ProductFragment() )
+                }
+            }
+        })
+        /*topOfferListAdapter.setOnItemClickListener(object :ItemClickListener{
             override fun onItemClick(position: Int) {
                 println("Clicked aat $position")
             }
-
-        })
+        })*/
         topOfferRecyclerView.adapter=topOfferListAdapter
+
         topOfferRecyclerView.setHasFixedSize(true)
         topOfferLayoutManager=LinearLayoutManager(requireContext())
         topOfferLayoutManager.orientation=LinearLayoutManager.HORIZONTAL
         topOfferRecyclerView.layoutManager=topOfferLayoutManager
+
+        recentlyViewedRecyclerView=view.findViewById(R.id.recently_viewed_recycler)
+        recentlyViewedAdapter=RecentlyViewedListAdapter()
+
+        GlobalScope.launch {
+            val job=launch(Dispatchers.IO) {
+                recentlyViewedAdapter.setData(recentlyViewedViewModel.recentlyViewedItems())
+            }
+            job.join()
+        }
+        recentlyViewedViewModel.recentlyViewedProductList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            val group=view.findViewById<Group>(R.id.recently_viewed_group)
+            if(it.isEmpty()){
+//                val group=view.findViewById<Group>(R.id.recently_viewed_group)
+                group.visibility=View.GONE
+            }else{
+                group.visibility=View.VISIBLE
+                recentlyViewedAdapter.setData(it)
+                recentlyViewedAdapter.notifyDataSetChanged()
+            }
+        })
+        recentlyViewedLayoutManager= LinearLayoutManager(requireContext())
+        recentlyViewedLayoutManager.orientation=LinearLayoutManager.HORIZONTAL
+        recentlyViewedRecyclerView.adapter=recentlyViewedAdapter
+        recentlyViewedRecyclerView.setHasFixedSize(true)
+        recentlyViewedRecyclerView.layoutManager=recentlyViewedLayoutManager
+
+        val clearRecentlyViewedBtn=view.findViewById<Button>(R.id.clear_all)
+        clearRecentlyViewedBtn.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Clear History")
+                .setMessage("Are you sure you want to remove all?")
+                .setPositiveButton("CLear"){_,_->
+                    deleteAllRecentlyViewed()
+                }.setNegativeButton("CANCEL"){_,_->
+
+                }
+                .show()
+
+        }
 
         var amount=0
         GlobalScope.launch {
@@ -129,4 +202,11 @@ class HomeFragment : Fragment() {
             println("Cart count  from home is $amount")
         }
     }
+
+    private fun deleteAllRecentlyViewed() {
+        GlobalScope.launch {
+            recentlyViewedViewModel.clearAllRecentlyViewed()
+        }
+    }
+
 }
