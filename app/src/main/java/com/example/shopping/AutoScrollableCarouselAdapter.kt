@@ -7,8 +7,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.imageview.ShapeableImageView
 
 class AutoScrollableCarouselAdapter(private val list:List<Int>):RecyclerView.Adapter<AutoScrollableCarouselAdapter.ViewHolder>() {
-    class ViewHolder(view: View):RecyclerView.ViewHolder(view){
+
+    private lateinit var listener: ItemClickListener
+
+    fun setOnItemClickListener(listener: ItemClickListener){
+        this.listener=listener
+    }
+
+    inner class ViewHolder(view: View):RecyclerView.ViewHolder(view){
         val imageView: ShapeableImageView =view.findViewById(R.id.slider_image)
+        init {
+            view.setOnClickListener {
+                listener.onItemClick(adapterPosition)
+            }
+        }
     }
 
     override fun onCreateViewHolder(

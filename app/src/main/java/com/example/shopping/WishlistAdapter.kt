@@ -10,8 +10,10 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.FavoriteProduct
+import com.example.shopping.util.WishlistDiffUtil
 import com.google.android.material.imageview.ShapeableImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -19,11 +21,16 @@ import kotlinx.coroutines.launch
 import java.net.URL
 
 class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
-    private lateinit var list: List<FavoriteProduct>
+    //private lateinit var list: List<FavoriteProduct>
+    private var list= listOf<FavoriteProduct>()
     private lateinit var wishListListener: WishlistListener
 
     fun setData(list: List<FavoriteProduct>){
+        val oldList=this.list
+        val wishlistDiffUtil= WishlistDiffUtil(oldList,list)
+        val diffResult=DiffUtil.calculateDiff(wishlistDiffUtil)
         this.list=list
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun setWishListListener(listener: WishlistListener){
@@ -115,6 +122,7 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
         }
 
     }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int

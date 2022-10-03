@@ -106,7 +106,7 @@ class WishlistFragment : Fragment() {
                 scroll.visibility=View.VISIBLE
                 empty.visibility=View.GONE
                 adapter.setData(favoriteViewModel.favoriteItems.value!!)
-                adapter.notifyDataSetChanged()
+                //adapter.notifyDataSetChanged()
             }
 
             //adapter.setData(favoriteViewModel.favoriteItems.value!!)

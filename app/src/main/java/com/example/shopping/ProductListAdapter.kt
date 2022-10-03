@@ -7,9 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.Product
-import com.squareup.picasso.Picasso
+import com.example.shopping.util.ProductDiffUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -17,13 +18,19 @@ import java.net.URL
 
 
 class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
-    private lateinit var list:ArrayList<Product>
+    //private lateinit var list:ArrayList<Product>
+    private var list= listOf<Product>()
     private lateinit var listener: ItemClickListener
 
     private lateinit var favoriteButtonListener:FavoriteButtonListener
 
-    fun setData(list:ArrayList<Product>){
+    fun setData(list:List<Product>){
+        //this.list=list
+        val oldList=this.list
+        val diffUtil= ProductDiffUtil(oldList,list)
+        val diffResult= DiffUtil.calculateDiff(diffUtil)
         this.list=list
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun setOnItemClickListener(listener: ItemClickListener){

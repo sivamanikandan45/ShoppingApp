@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.shopping.model.Category
+import com.example.shopping.model.Product
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.RecentlyViewedViewModel
@@ -39,6 +40,9 @@ class HomeFragment : Fragment() {
     private lateinit var recentlyViewedAdapter:RecentlyViewedListAdapter
     private lateinit var recentlyViewedLayoutManager: LinearLayoutManager
 
+    private lateinit var categoryList:List<Category>
+    private lateinit var images:List<Int>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,7 +54,6 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        //val cartViewModel:CartViewModel by activityViewModels<>()
         var amount=0
         GlobalScope.launch {
             val job=launch{
@@ -60,7 +63,6 @@ class HomeFragment : Fragment() {
             job.join()
             println("Cart count  from home is $amount")
         }
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -70,10 +72,15 @@ class HomeFragment : Fragment() {
 
         val productViewModel:ProductViewModel by activityViewModels()
 
-
         val autoScrollableCarousel=view.findViewById<ViewPager2>(R.id.autoScrollingViewPager)
-        val images= listOf(R.drawable.poster1,R.drawable.poster2,R.drawable.poster3)
+        images= listOf(R.drawable.poster1,R.drawable.poster2,R.drawable.poster3)
         val autoScrollableCarouselAdapter=AutoScrollableCarouselAdapter(images)
+        autoScrollableCarouselAdapter.setOnItemClickListener(object :ItemClickListener{
+            override fun onItemClick(position: Int) {
+                showCategoryListForCarouselImage(position)
+            }
+        })
+
         autoScrollableCarousel.adapter = autoScrollableCarouselAdapter
         val timerTask: TimerTask = object : TimerTask() {
             override fun run() {
@@ -85,7 +92,7 @@ class HomeFragment : Fragment() {
         val timer = Timer()
         timer.schedule(timerTask, 1000, 3000)
 
-        val categoryList= listOf(
+        categoryList= listOf(
             Category("Men's fashion",R.drawable.men),
             Category("Women's fashion",R.drawable.women),
             Category("Electronics",R.drawable.laptop),
@@ -190,7 +197,6 @@ class HomeFragment : Fragment() {
 
                 }
                 .show()
-
         }
 
         var amount=0
@@ -201,6 +207,22 @@ class HomeFragment : Fragment() {
             job.join()
             println("Cart count  from home is $amount")
         }
+    }
+
+    private fun showCategoryListForCarouselImage(position: Int) {
+        val intent = Intent(context, CategoryActivity::class.java)
+        when (images[position]) {
+            R.drawable.poster1 -> {
+                intent.putExtra("category", "Men's fashion")
+            }
+            R.drawable.poster2 -> {
+                intent.putExtra("category", "Beauty")
+            }
+            R.drawable.poster3 -> {
+                intent.putExtra("category", "Sunglasses")
+            }
+        }
+        startActivity(intent)
     }
 
     private fun deleteAllRecentlyViewed() {

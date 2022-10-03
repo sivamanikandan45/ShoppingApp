@@ -96,8 +96,8 @@ class ProductListFragment : Fragment() {
                 }
             }
         })
-
-        adapter.setData(ArrayList(productViewModel.getCategoryWiseProductList()))
+        adapter.setData(productViewModel.getCategoryWiseProductList())
+        //adapter.setData(ArrayList(productViewModel.getCategoryWiseProductList()))
         manager=GridLayoutManager(context,2)
         productRecyclerView.setHasFixedSize(true)
         productRecyclerView.adapter=adapter
@@ -105,8 +105,9 @@ class ProductListFragment : Fragment() {
 
         productViewModel.categoryList.observe(viewLifecycleOwner, Observer {
             //println("change observed form the observer and the list is $it")
-            adapter.setData(ArrayList(it))
-            adapter.notifyDataSetChanged()
+            //adapter.setData(ArrayList(it))
+            adapter.setData(it)
+            //adapter.notifyDataSetChanged()
         })
 
 
