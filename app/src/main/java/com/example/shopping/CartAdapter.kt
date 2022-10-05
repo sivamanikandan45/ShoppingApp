@@ -8,8 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.SelectedProduct
+import com.example.shopping.util.CartDiffUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -17,13 +19,19 @@ import java.math.RoundingMode
 import java.net.URL
 import java.text.DecimalFormat
 
-class CartAdapter(val context: Context):RecyclerView.Adapter<CartAdapter.ViewHolder>() {
-    private lateinit var list: List<SelectedProduct>
+class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
+    //private lateinit var list: List<SelectedProduct>
+    private var list= listOf<SelectedProduct>()
     private lateinit var listener: QuantityButtonListener
     //private val cartViewModel= ViewModelProvider(requireContext()).get(CartViewModel::class.java)
 
     fun setData(list: List<SelectedProduct>){
+        //this.list=list
+        val oldlist=this.list
+        val diffUtil=CartDiffUtil(oldlist,list)
+        val diffResult=DiffUtil.calculateDiff(diffUtil)
         this.list=list
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun setOnQuantityClickListener(listener: QuantityButtonListener){

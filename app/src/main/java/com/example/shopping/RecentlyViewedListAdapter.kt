@@ -18,18 +18,18 @@ import java.net.URL
 
 class RecentlyViewedListAdapter:RecyclerView.Adapter<RecentlyViewedListAdapter.ViewHolder>(){
     private lateinit var list: List<RecentlyViewed>
-    //private lateinit var listener: ItemClickListener
+    private lateinit var listener: ItemClickListener
 
     fun setData(list: List<RecentlyViewed>){
         this.list=list
     }
 
-    /*fun setOnItemClickListener(listener: ItemClickListener){
+    fun setOnItemClickListener(listener: ItemClickListener){
         this.listener=listener
-    }*/
+    }
 
 
-    class ViewHolder(view: View):RecyclerView.ViewHolder(view){
+    inner class ViewHolder(view: View):RecyclerView.ViewHolder(view){
         val imageView: ShapeableImageView
         val productName: TextView
         val productPrice: TextView
@@ -41,9 +41,9 @@ class RecentlyViewedListAdapter:RecyclerView.Adapter<RecentlyViewedListAdapter.V
             productPrice=view.findViewById<TextView>(R.id.similar_product_price)
             productRatingBar=view.findViewById<RatingBar>(R.id.similar_product_rating_bar)
             productRatedValue=view.findViewById<TextView>(R.id.similar_product_rated_value)
-            /*view.setOnClickListener{
+            view.setOnClickListener{
                 listener.onItemClick(adapterPosition)
-            }*/
+            }
         }
 
 

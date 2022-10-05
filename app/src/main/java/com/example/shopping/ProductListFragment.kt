@@ -18,6 +18,7 @@ import com.example.shopping.viewmodel.ProductViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -178,8 +179,8 @@ class ProductListFragment : Fragment() {
                 list.add(product)
             }
         }
-        adapter.setData(ArrayList(list))
-        adapter.notifyDataSetChanged()
+        adapter.setData(list)
+        //adapter.notifyDataSetChanged()
     }
 
 

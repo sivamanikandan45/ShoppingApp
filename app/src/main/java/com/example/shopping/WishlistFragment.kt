@@ -5,15 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ScrollView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.FavoriteProduct
+import com.example.shopping.model.Product
 import com.example.shopping.model.SelectedProduct
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.FavoriteViewModel
@@ -29,7 +30,7 @@ class WishlistFragment : Fragment() {
     private lateinit var manager: LinearLayoutManager
     private lateinit var adapter: WishlistAdapter
     private val favoriteViewModel: FavoriteViewModel by activityViewModels()
-    private val viewModel:ProductViewModel by activityViewModels()
+    private val productViewModel:ProductViewModel by activityViewModels()
     private val cartViewModel:CartViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -43,12 +44,27 @@ class WishlistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Wishlist"
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         val empty=view.findViewById<ConstraintLayout>(R.id.empty_page)
         val scroll=view.findViewById<RecyclerView>(R.id.wishlist_recyclerView)
 
         recyclerView=view.findViewById(R.id.wishlist_recyclerView)
         adapter= WishlistAdapter()
+        adapter.setOnItemClickListener(object :ItemClickListener{
+            override fun onItemClick(position: Int) {
+                parentFragmentManager.commit {
+                    addToBackStack(null)
+                    val selectedProduct=favoriteViewModel.favoriteItems.value?.get(position)
+                    if(selectedProduct!=null){
+                        val product=Product(selectedProduct.productId,selectedProduct.title,selectedProduct.description,selectedProduct.originalPrice,selectedProduct.discountPercentage,selectedProduct.priceAfterDiscount,selectedProduct.rating,selectedProduct.stock,selectedProduct.brand,selectedProduct.category,selectedProduct.thumbnail,true)
+                        productViewModel.selectedProduct.value=product
+                        replace(R.id.fragment_container,ProductFragment())
+                    }
+                }
+            }
+        })
+
         adapter.setWishListListener(object :WishlistListener{
             override fun addToCart(position: Int) {
                 GlobalScope.launch {
@@ -72,7 +88,7 @@ class WishlistFragment : Fragment() {
                     val job=launch(Dispatchers.IO) {
                         if(product!=null){
                             favoriteViewModel.deleteFromFavorites(product.productId)
-                            viewModel.removeFavorite(product.productId)
+                            productViewModel.removeFavorite(product.productId)
                         }
                     }
                     job.join()
@@ -120,7 +136,7 @@ class WishlistFragment : Fragment() {
             val job=launch(Dispatchers.IO) {
                 if(product!=null){
                     favoriteViewModel.addToFavorites(product)
-                    viewModel.markAsFavorite(product.productId)
+                    productViewModel.markAsFavorite(product.productId)
                 }
             }
             job.join()

@@ -162,6 +162,19 @@ class HomeFragment : Fragment() {
 
         recentlyViewedRecyclerView=view.findViewById(R.id.recently_viewed_recycler)
         recentlyViewedAdapter=RecentlyViewedListAdapter()
+        recentlyViewedAdapter.setOnItemClickListener(object :ItemClickListener{
+            override fun onItemClick(position: Int) {
+                parentFragmentManager.commit {
+                    addToBackStack(null)
+                    val selectedProduct=recentlyViewedViewModel.recentlyViewedProductList.value?.get(position)
+                    if(selectedProduct!=null){
+                        val product=Product(selectedProduct.productId,selectedProduct.title,selectedProduct.description,selectedProduct.originalPrice,selectedProduct.discountPercentage,selectedProduct.priceAfterDiscount,selectedProduct.rating,selectedProduct.stock,selectedProduct.brand,selectedProduct.category,selectedProduct.thumbnail,true)
+                        productViewModel.selectedProduct.value=product
+                        replace(R.id.fragment_container,ProductFragment())
+                    }
+                }
+            }
+        })
 
         GlobalScope.launch {
             val job=launch(Dispatchers.IO) {
@@ -169,6 +182,7 @@ class HomeFragment : Fragment() {
             }
             job.join()
         }
+
         recentlyViewedViewModel.recentlyViewedProductList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             val group=view.findViewById<Group>(R.id.recently_viewed_group)
             if(it.isEmpty()){

@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.shopping.enums.CategoryType
 import com.example.shopping.database.AppDB
 import com.example.shopping.model.CarouselImage
+import com.example.shopping.model.FavoriteProduct
 import com.example.shopping.model.Product
-import com.example.shopping.model.RecentlyViewed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -211,27 +211,28 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                 CategoryType.BEAUTY->{
                     val job=launch {
                         val skincareList=getCategoryFromDB("skincare")
-                        val list2=getCategoryFromDB("fragrances")
-                        list=skincareList+list2
+                        val perfumeList=getCategoryFromDB("fragrances")
+                        list=skincareList+perfumeList
                         categoryList.postValue(list)
                     }
                     job.join()
                 }
                 CategoryType.OTHERS->{
                     val job=launch {
-                        val list1=getCategoryFromDB("tops")
-                        val list2=getCategoryFromDB("automotive")
-                        val list3=getCategoryFromDB("motorcycle")
-                        val list4=getCategoryFromDB("lighting")
-                        list=list1+list2+list3+list4
+                        val dressList=getCategoryFromDB("tops")
+                        val automotiveList=getCategoryFromDB("automotive")
+                        val motorcycleList=getCategoryFromDB("motorcycle")
+                        val lightingList=getCategoryFromDB("lighting")
+                        list=dressList+automotiveList+motorcycleList+lightingList
                         categoryList.postValue(list)
                     }
-                    categoryList.postValue(list)
+                    //categoryList.postValue(list)
                     job.join()
                 }
             }
         }
-        categoryList.postValue(list)
+        //categoryList.postValue(list)
+        println("Changed list is $list")
         return list
     }
 

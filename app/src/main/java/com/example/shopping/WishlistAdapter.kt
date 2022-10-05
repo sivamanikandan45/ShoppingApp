@@ -24,9 +24,13 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
     //private lateinit var list: List<FavoriteProduct>
     private var list= listOf<FavoriteProduct>()
     private lateinit var wishListListener: WishlistListener
+    private lateinit var listener:ItemClickListener
 
     fun setData(list: List<FavoriteProduct>){
+        println("set Data is called")
         val oldList=this.list
+        println("old list is $oldList")
+        println("New list is $list")
         val wishlistDiffUtil= WishlistDiffUtil(oldList,list)
         val diffResult=DiffUtil.calculateDiff(wishlistDiffUtil)
         this.list=list
@@ -37,9 +41,9 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
         wishListListener=listener
     }
 
-    /*fun setOnItemClickListener(listener: ItemClickListener){
+    fun setOnItemClickListener(listener: ItemClickListener){
         this.listener=listener
-    }*/
+    }
 
 
     inner class ViewHolder(view: View):RecyclerView.ViewHolder(view){
@@ -66,6 +70,10 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
             discount=view.findViewById<TextView>(R.id.favorite_product_discount)
             menu=view.findViewById(R.id.wishlist_item_menu)
             addToCartBtn=view.findViewById(R.id.favorite_add_to_cart_btn)
+
+            view.setOnClickListener {
+                listener.onItemClick(adapterPosition)
+            }
 
             addToCartBtn.setOnClickListener {
                 wishListListener.addToCart(adapterPosition)

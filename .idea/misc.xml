@@ -5,6 +5,7 @@
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.13309352517985612" />
         <entry key="app/src/main/res/drawable/account_selector.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/add_to_cart_btn.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/border_heart.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/bottom_sheet_background.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/cart_selector.xml" value="0.1" />
@@ -25,6 +26,7 @@
         <entry key="app/src/main/res/drawable/ic_outline_more_vert_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_twotone_favorite_24.xml" value="0.1986263427734376" />
         <entry key="app/src/main/res/drawable/item_wish_list.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/qty_btn.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/rounded_btn.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/wishlist_selector.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_category.xml" value="0.12968591691995948" />
@@ -38,7 +40,7 @@
         <entry key="app/src/main/res/layout/fragment_sort_bottom_sheet.xml" value="0.2890960693359375" />
         <entry key="app/src/main/res/layout/fragment_wishlist.xml" value="0.15476190476190477" />
         <entry key="app/src/main/res/layout/item_auto_scrollable_carousel.xml" value="0.20380434782608695" />
-        <entry key="app/src/main/res/layout/item_cart.xml" value="0.9111617312072893" />
+        <entry key="app/src/main/res/layout/item_cart.xml" value="0.5428436279296875" />
         <entry key="app/src/main/res/layout/item_category.xml" value="0.25383148193359384" />
         <entry key="app/src/main/res/layout/item_product_list.xml" value="0.327445652173913" />
         <entry key="app/src/main/res/layout/item_similar_product.xml" value="0.356536865234375" />

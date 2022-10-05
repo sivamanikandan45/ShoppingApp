@@ -160,6 +160,7 @@ class ProductFragment : Fragment() {
                 }
                 job.join()
             }
+            //val coord=view.findViewById<CoordinatorLayout>(R.id.button_layout)
             Snackbar.make(it,"Added to the Cart",Snackbar.LENGTH_LONG)
                 .show()
         }

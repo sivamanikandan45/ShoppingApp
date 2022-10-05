@@ -18,17 +18,16 @@ import java.net.URL
 
 
 class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
-    //private lateinit var list:ArrayList<Product>
+    //private lateinit var list:List<Product>
     private var list= listOf<Product>()
     private lateinit var listener: ItemClickListener
 
     private lateinit var favoriteButtonListener:FavoriteButtonListener
 
     fun setData(list:List<Product>){
-        //this.list=list
         val oldList=this.list
         val diffUtil= ProductDiffUtil(oldList,list)
-        val diffResult= DiffUtil.calculateDiff(diffUtil)
+        val diffResult= DiffUtil.calculateDiff(diffUtil,false)
         this.list=list
         diffResult.dispatchUpdatesTo(this)
     }

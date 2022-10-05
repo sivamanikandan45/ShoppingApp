@@ -83,7 +83,7 @@
         android:id="@+id/increase_qty_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/blue_200"
+        android:background="@drawable/qty_btn"
         android:src="@drawable/ic_baseline_add_24"
         app:layout_constraintBottom_toBottomOf="@+id/cart_qty"
         app:layout_constraintStart_toEndOf="@+id/cart_qty"
@@ -107,7 +107,7 @@
         android:id="@+id/decrease_qty_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/blue_200"
+        android:background="@drawable/qty_btn"
         android:src="@drawable/ic_baseline_remove_16"
         app:layout_constraintStart_toStartOf="@+id/cart_item_product_old_price"
         app:layout_constraintTop_toBottomOf="@+id/cart_item_product_old_price" />

@@ -98,7 +98,7 @@ class CartFragment : Fragment() {
         tv2.visibility=View.VISIBLE*/
 
         recyclerView=view.findViewById(R.id.cart_recycler_view)
-        adapter= CartAdapter(requireContext())
+        adapter= CartAdapter()
         adapter.setOnQuantityClickListener(object :QuantityButtonListener{
             override fun onIncreaseClicked(adapterPosition: Int) {
                 println("Increase clicked at $adapterPosition")
@@ -198,7 +198,7 @@ class CartFragment : Fragment() {
                 scroll.visibility=View.VISIBLE
                 empty.visibility=View.GONE
                 adapter.setData(cartViewModel.cartItems.value!!)
-                adapter.notifyDataSetChanged()
+                //adapter.notifyDataSetChanged()
             }
         })
 
