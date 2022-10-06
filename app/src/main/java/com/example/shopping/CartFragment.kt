@@ -1,10 +1,12 @@
 package com.example.shopping
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -91,8 +93,16 @@ class CartFragment : Fragment() {
         val tv1=view.findViewById<TextView>(R.id.empty_label)
         tv1.visibility=View.GONE
         val totalAmountTextView=view.findViewById<TextView>(R.id.total_amount_value)
+        val finalTotalAmountTextView=view.findViewById<TextView>(R.id.final_total_amt)
         val totalAmountBeforeDiscount=view.findViewById<TextView>(R.id.original_price)
         val offerTextView=view.findViewById<TextView>(R.id.discount_amount)
+        val savingInfo=view.findViewById<TextView>(R.id.saving_info)
+        val placeOrderButton=view.findViewById<Button>(R.id.place_order_btn)
+
+        placeOrderButton.setOnClickListener {
+            val intent=Intent(requireContext(),CheckoutActivity::class.java)
+            startActivity(intent)
+        }
         //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
         /*val tv2=view.findViewById<TextView>(R.id.empty_label_11)
         tv2.visibility=View.VISIBLE*/
@@ -165,12 +175,14 @@ class CartFragment : Fragment() {
                     decimalFormat.roundingMode = RoundingMode.UP
                     val priceAfterDiscountRounded= decimalFormat.format(priceAfterDiscount).toDouble()
                     totalAmountTextView.text="$"+priceAfterDiscountRounded.toString()
+                    finalTotalAmountTextView.text="$"+priceAfterDiscountRounded.toString()
                     totalAmountBeforeDiscount.text=priceBeforeDiscount.toString()
                     var discountAmount=priceBeforeDiscount-priceAfterDiscount
                     /*val df = DecimalFormat("#.##")
                     df.roundingMode = RoundingMode.UP*/
                     discountAmount = decimalFormat.format(discountAmount).toDouble()
                     offerTextView.text="-$"+discountAmount.toString()
+                    savingInfo.text="You will save $$discountAmount on this order"
                 }
             }
             job.join()
@@ -208,6 +220,7 @@ class CartFragment : Fragment() {
             val cartAmountAfterDiscountRounded = decimalFormat.format(it).toDouble()
             val withSymbol="$$cartAmountAfterDiscountRounded"
             totalAmountTextView.text=withSymbol
+            finalTotalAmountTextView.text=withSymbol
 
             GlobalScope.launch{
                 val job=launch(Dispatchers.IO) {
@@ -220,6 +233,7 @@ class CartFragment : Fragment() {
                         discountAmount = newDecimalFormat.format(discountAmount).toDouble()
                         val offer="-$$discountAmount"
                         offerTextView.text=offer
+                        savingInfo.text="You will save $$discountAmount on this order"
                     }
                 }
                 job.join()
