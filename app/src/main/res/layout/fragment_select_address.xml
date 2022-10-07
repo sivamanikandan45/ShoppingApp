@@ -47,15 +47,21 @@
     </androidx.cardview.widget.CardView>
 
 
-    <RadioGroup
+    <!--<RadioGroup
         android:id="@+id/address_radio_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/add_new_address"
+        android:layout_marginTop="16dp"/>-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/address_list_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/add_new_address"
         android:layout_marginTop="16dp"/>
 
-
-    <androidx.cardview.widget.CardView
+    <!--<androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="56dp"
         app:cardBackgroundColor="@color/black"
@@ -67,6 +73,21 @@
             android:textColor="@color/white"
             android:text="DELIVER HERE"
             android:textStyle="bold"/>
-    </androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>-->
+
+    <Button
+        android:id="@+id/deliver_here"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginEnd="64dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="deliver here"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/address_list_recycler_view"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

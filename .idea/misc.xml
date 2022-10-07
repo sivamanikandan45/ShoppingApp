@@ -34,19 +34,23 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.22056159420289856" />
         <entry key="app/src/main/res/layout/auto_scrollable_carousel_item.xml" value="0.15476190476190477" />
         <entry key="app/src/main/res/layout/fragment_account.xml" value="0.15476190476190477" />
-        <entry key="app/src/main/res/layout/fragment_add_delivery_address.xml" value="0.22289156626506024" />
+        <entry key="app/src/main/res/layout/fragment_add_delivery_address.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_address.xml" value="0.20380434782608695" />
         <entry key="app/src/main/res/layout/fragment_cart.xml" value="0.22839506172839505" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.2596491228070175" />
+        <entry key="app/src/main/res/layout/fragment_order_summary.xml" value="0.3333333333333333" />
+        <entry key="app/src/main/res/layout/fragment_payment.xml" value="0.27453493864639944" />
         <entry key="app/src/main/res/layout/fragment_product.xml" value="0.22560975609756098" />
         <entry key="app/src/main/res/layout/fragment_product_list.xml" value="0.12968591691995948" />
-        <entry key="app/src/main/res/layout/fragment_select_address.xml" value="0.2084507042253521" />
+        <entry key="app/src/main/res/layout/fragment_select_address.xml" value="0.3833301597917584" />
         <entry key="app/src/main/res/layout/fragment_sort_bottom_sheet.xml" value="0.2890960693359375" />
         <entry key="app/src/main/res/layout/fragment_wishlist.xml" value="0.15476190476190477" />
+        <entry key="app/src/main/res/layout/item_address.xml" value="0.4226596334706182" />
         <entry key="app/src/main/res/layout/item_auto_scrollable_carousel.xml" value="0.20380434782608695" />
         <entry key="app/src/main/res/layout/item_cart.xml" value="0.5428436279296875" />
         <entry key="app/src/main/res/layout/item_category.xml" value="0.25383148193359384" />
         <entry key="app/src/main/res/layout/item_product_list.xml" value="0.327445652173913" />
+        <entry key="app/src/main/res/layout/item_selected_product.xml" value="0.33229166666666665" />
         <entry key="app/src/main/res/layout/item_similar_product.xml" value="0.356536865234375" />
         <entry key="app/src/main/res/layout/item_top_offer.xml" value="0.20380434782608695" />
         <entry key="app/src/main/res/layout/item_wish_list.xml" value="0.6329299926757812" />

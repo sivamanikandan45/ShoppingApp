@@ -5,14 +5,23 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
-import android.widget.RadioGroup
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import androidx.core.view.updatePadding
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.shopping.viewmodel.AddressViewModel
+import com.example.shopping.viewmodel.CheckoutViewModel
 
 class SelectAddressFragment : Fragment() {
+    private lateinit var addressListRecyclerView:RecyclerView
+    private lateinit var addressListManager: LinearLayoutManager
+    private lateinit var addressListAdapter: AddressListAdapter
+    private val addressViewModel:AddressViewModel by activityViewModels()
+    private val checkoutViewModel:CheckoutViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,7 +36,44 @@ class SelectAddressFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.title="Select Address"
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        createRadioButtons()
+        addressListRecyclerView=view.findViewById(R.id.address_list_recycler_view)
+        addressListAdapter= AddressListAdapter()
+        /*addressListAdapter.setOnItemClickListener(object :ItemClickListener{
+            override fun onItemClick(position: Int) {
+                addressListAdapter.selectedPosition=position
+                addressListAdapter.notifyDataSetChanged()
+                println("Item clicked at $position")
+            }
+        })*/
+
+        addressListAdapter.setData(addressViewModel.getAddressLists())
+        println(addressViewModel.getAddressLists())
+        addressListManager= LinearLayoutManager(requireContext())
+        addressListRecyclerView.adapter=addressListAdapter
+        addressListRecyclerView.layoutManager=addressListManager
+
+        addressViewModel.addressList.observe(viewLifecycleOwner, Observer {
+            println("observed $it")
+            addressListAdapter.setData(it)
+            addressListAdapter.notifyDataSetChanged()
+        })
+
+        val deliverHereBtn=view.findViewById<Button>(R.id.deliver_here)
+        deliverHereBtn.setOnClickListener {
+            checkoutViewModel.selectedAddress.value=addressViewModel.addressList.value?.get(addressListAdapter.selectedPosition)
+            println("Selected address is ${checkoutViewModel.selectedAddress.value}")
+            parentFragmentManager.commit{
+                addToBackStack(null)
+                replace(R.id.checkout_fragment_container,OrderSummaryFragment())
+            }
+        }
+
+
+
+
+
+
+        //createRadioButtons()
 
 
 
@@ -42,7 +88,7 @@ class SelectAddressFragment : Fragment() {
 
     }
 
-    private fun createRadioButtons() {
+    /*private fun createRadioButtons() {
         val group=view?.findViewById<RadioGroup>(R.id.address_radio_group)
         if(group!=null){
             val array= arrayOf("Apple","Ball","Cat")
@@ -51,9 +97,10 @@ class SelectAddressFragment : Fragment() {
                 val radioButton=RadioButton(context)
                 radioButton.text=address
                 radioButton.textSize=14F
-                radioButton.updatePadding(16)
+                radioButton.updatePadding(50)
+               // radioButton.MarginLayoutParams.updateMargins()
                 group.addView(radioButton)
             }
         }
-    }
+    }*/
 }

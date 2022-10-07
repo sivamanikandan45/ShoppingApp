@@ -6,7 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.shopping.database.AppDB
 import com.example.shopping.model.Address
+import com.example.shopping.model.Product
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class AddressViewModel(application: Application): AndroidViewModel(application){
@@ -32,6 +34,18 @@ class AddressViewModel(application: Application): AndroidViewModel(application){
         val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
         dao.insertAddress(address)
         getAddressFromDB()
+    }
+
+    fun getAddressLists():List<Address>{
+        var list= listOf<Address>()
+        GlobalScope.launch{
+            val job=launch(Dispatchers.IO) {
+                val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
+                list=dao.getAllAddress()
+            }
+            job.join()
+        }
+        return list
     }
 
 }

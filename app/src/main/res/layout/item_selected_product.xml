@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/cart_item_product_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="16dp"
+        android:scaleType="fitXY"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:shapeAppearanceOverlay="@style/curvedCorner"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/cart_item_product_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:ellipsize="end"
+        android:layout_marginEnd="16dp"
+        android:maxLines="1"
+        android:text="@string/title_product_name"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cart_item_product_image"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/cart_item_product_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="$29,999"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/cart_item_product_old_price"
+        app:layout_constraintStart_toEndOf="@+id/cart_item_product_old_price"
+        app:layout_constraintTop_toTopOf="@+id/cart_item_product_old_price" />
+
+    <TextView
+        android:id="@+id/cart_item_product_old_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$29,999"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@+id/cart_item_product_brand"
+        app:layout_constraintTop_toBottomOf="@+id/cart_item_product_brand" />
+
+    <TextView
+        android:id="@+id/cart_item_offer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10% OFF"
+        android:layout_marginStart="8dp"
+        android:textColor="#4c9a2a"
+        app:layout_constraintStart_toEndOf="@+id/cart_item_product_price"
+        app:layout_constraintTop_toTopOf="@+id/cart_item_product_old_price" />
+
+
+    <TextView
+        android:id="@+id/cart_item_product_brand"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="@string/title_brand"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/cart_item_product_name"
+        app:layout_constraintTop_toBottomOf="@+id/cart_item_product_name" />
+
+    <TextView
+        android:id="@+id/qty_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Quantity:"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/black"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/cart_item_product_old_price"
+        app:layout_constraintTop_toBottomOf="@+id/cart_item_product_old_price" />
+
+    <TextView
+        android:id="@+id/cart_qty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="2"
+        android:text="1"
+        android:layout_marginStart="8dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@+id/qty_label"
+        app:layout_constraintTop_toTopOf="@+id/qty_label" />
+</androidx.constraintlayout.widget.ConstraintLayout>
