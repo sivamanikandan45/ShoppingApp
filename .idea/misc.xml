@@ -6,6 +6,7 @@
         <entry key="../../../../layout/custom_preview.xml" value="0.13309352517985612" />
         <entry key="app/src/main/res/drawable/account_selector.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/add_to_cart_btn.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/atm_card.xml" value="0.151" />
         <entry key="app/src/main/res/drawable/border_heart.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/bottom_sheet_background.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/cart_selector.xml" value="0.1" />
@@ -36,14 +37,18 @@
         <entry key="app/src/main/res/layout/fragment_account.xml" value="0.15476190476190477" />
         <entry key="app/src/main/res/layout/fragment_add_delivery_address.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_address.xml" value="0.20380434782608695" />
+        <entry key="app/src/main/res/layout/fragment_card_payment.xml" value="0.4509250143299932" />
         <entry key="app/src/main/res/layout/fragment_cart.xml" value="0.22839506172839505" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.2596491228070175" />
+        <entry key="app/src/main/res/layout/fragment_order_placed.xml" value="0.20380434782608695" />
         <entry key="app/src/main/res/layout/fragment_order_summary.xml" value="0.3333333333333333" />
         <entry key="app/src/main/res/layout/fragment_payment.xml" value="0.27453493864639944" />
         <entry key="app/src/main/res/layout/fragment_product.xml" value="0.22560975609756098" />
         <entry key="app/src/main/res/layout/fragment_product_list.xml" value="0.12968591691995948" />
         <entry key="app/src/main/res/layout/fragment_select_address.xml" value="0.3833301597917584" />
         <entry key="app/src/main/res/layout/fragment_sort_bottom_sheet.xml" value="0.2890960693359375" />
+        <entry key="app/src/main/res/layout/fragment_u_p_i.xml" value="0.20380434782608695" />
+        <entry key="app/src/main/res/layout/fragment_upi.xml" value="0.12352563767206101" />
         <entry key="app/src/main/res/layout/fragment_wishlist.xml" value="0.15476190476190477" />
         <entry key="app/src/main/res/layout/item_address.xml" value="0.4226596334706182" />
         <entry key="app/src/main/res/layout/item_auto_scrollable_carousel.xml" value="0.20380434782608695" />

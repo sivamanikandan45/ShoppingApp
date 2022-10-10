@@ -19,6 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <RadioGroup
+        android:id="@+id/payment_options"
         android:layout_marginTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,6 +28,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView5">
 
         <RadioButton
+            android:id="@+id/upi_payment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="UPI"
@@ -34,6 +36,7 @@
             android:paddingStart="16dp"
             android:buttonTint="@color/blue_700"/>
         <RadioButton
+            android:id="@+id/card_payment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Credit/Debit Card"
@@ -41,6 +44,7 @@
             android:paddingStart="16dp"
             android:buttonTint="@color/blue_700"/>
         <RadioButton
+            android:id="@+id/cod"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Cash on Delivery"
@@ -48,5 +52,33 @@
             android:paddingStart="16dp"
             android:buttonTint="@color/blue_700"/>
     </RadioGroup>
+
+    <Button
+        android:id="@+id/place_order_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="64dp"
+        android:text="place order"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <Button
+        android:id="@+id/pay"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="64dp"
+        android:text="Pay"
+        android:enabled="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
