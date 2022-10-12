@@ -13,4 +13,7 @@ interface AddressDao {
 
     @Query("SELECT * FROM ADDRESS")
     fun getAllAddress():List<Address>
+
+    @Query("DELETE FROM ADDRESS where addressId=:addressId")
+    fun deleteAddress(addressId:Int)
 }

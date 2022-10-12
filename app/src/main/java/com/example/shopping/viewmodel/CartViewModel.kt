@@ -64,6 +64,12 @@ class CartViewModel(application: Application):AndroidViewModel(application) {
         return list
     }
 
+    fun clearCartItems(){
+        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getCartDao()
+        dao.clearAll()
+        getCartFromDB()
+    }
+
     fun getCartAmountAfterDiscount():Double{
         val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getCartDao()
         val price=dao.getCartAmountAfterDiscount()

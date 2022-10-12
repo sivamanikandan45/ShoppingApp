@@ -35,4 +35,7 @@ interface CartDao {
 
     @Query("UPDATE SelectedProduct SET olcPriceForSelectedQuantity=:oldPriceForSelectedQuantity where productId=:id")
     fun updateOldPriceForSelectedQuantity(id:Int, oldPriceForSelectedQuantity:Double)
+
+    @Query("Delete FROM SelectedProduct where 1=1")
+    fun clearAll()
 }

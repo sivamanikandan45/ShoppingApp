@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.Address
 
-class AddressListAdapter:RecyclerView.Adapter<AddressListAdapter.ViewHolder>(){
+class SelectAddressListAdapter:RecyclerView.Adapter<SelectAddressListAdapter.ViewHolder>(){
     private lateinit var list:List<Address>
    // private lateinit var listener: ItemClickListener
     var selectedPosition=0

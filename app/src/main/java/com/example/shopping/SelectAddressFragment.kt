@@ -19,7 +19,7 @@ import com.example.shopping.viewmodel.CheckoutViewModel
 class SelectAddressFragment : Fragment() {
     private lateinit var addressListRecyclerView:RecyclerView
     private lateinit var addressListManager: LinearLayoutManager
-    private lateinit var addressListAdapter: AddressListAdapter
+    private lateinit var selectAddressListAdapter: SelectAddressListAdapter
     private val addressViewModel:AddressViewModel by activityViewModels()
     private val checkoutViewModel:CheckoutViewModel by activityViewModels()
 
@@ -37,7 +37,7 @@ class SelectAddressFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         addressListRecyclerView=view.findViewById(R.id.address_list_recycler_view)
-        addressListAdapter= AddressListAdapter()
+        selectAddressListAdapter= SelectAddressListAdapter()
         /*addressListAdapter.setOnItemClickListener(object :ItemClickListener{
             override fun onItemClick(position: Int) {
                 addressListAdapter.selectedPosition=position
@@ -46,21 +46,21 @@ class SelectAddressFragment : Fragment() {
             }
         })*/
 
-        addressListAdapter.setData(addressViewModel.getAddressLists())
+        selectAddressListAdapter.setData(addressViewModel.getAddressLists())
         println(addressViewModel.getAddressLists())
         addressListManager= LinearLayoutManager(requireContext())
-        addressListRecyclerView.adapter=addressListAdapter
+        addressListRecyclerView.adapter=selectAddressListAdapter
         addressListRecyclerView.layoutManager=addressListManager
 
         addressViewModel.addressList.observe(viewLifecycleOwner, Observer {
             println("observed $it")
-            addressListAdapter.setData(it)
-            addressListAdapter.notifyDataSetChanged()
+            selectAddressListAdapter.setData(it)
+            selectAddressListAdapter.notifyDataSetChanged()
         })
 
         val deliverHereBtn=view.findViewById<Button>(R.id.deliver_here)
         deliverHereBtn.setOnClickListener {
-            checkoutViewModel.selectedAddress.value=addressViewModel.addressList.value?.get(addressListAdapter.selectedPosition)
+            checkoutViewModel.selectedAddress.value=addressViewModel.addressList.value?.get(selectAddressListAdapter.selectedPosition)
             println("Selected address is ${checkoutViewModel.selectedAddress.value}")
             parentFragmentManager.commit{
                 addToBackStack(null)

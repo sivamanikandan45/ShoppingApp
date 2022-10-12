@@ -36,6 +36,12 @@ class AddressViewModel(application: Application): AndroidViewModel(application){
         getAddressFromDB()
     }
 
+    fun deleteAddress(addressId:Int){
+        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
+        dao.deleteAddress(addressId)
+        getAddressFromDB()
+    }
+
     fun getAddressLists():List<Address>{
         var list= listOf<Address>()
         GlobalScope.launch{

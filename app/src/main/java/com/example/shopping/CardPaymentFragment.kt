@@ -27,7 +27,7 @@ class CardPaymentFragment : Fragment() {
 
         val monthDropDownTextField=view.findViewById<AutoCompleteTextView>(R.id.month_dropdown)
         val monthList= listOf("01 - Jan","02 - Feb","03 - Mar","04 - Apr","05 - May","06 - Jun","07 - Jul","08 - Aug","09 - Sep","10 - Oct","11 - Nov","12 - Dec")
-        var monthDropDownAdapter = ArrayAdapter(requireContext(), R.layout.list_item, monthList)
+        val monthDropDownAdapter = ArrayAdapter(requireContext(), R.layout.list_item, monthList)
         monthDropDownTextField.setAdapter(monthDropDownAdapter)
 
 
@@ -36,7 +36,7 @@ class CardPaymentFragment : Fragment() {
         for(i in 0 until 50){
             yearList.add(i,(i+22).toString())
         }
-        var yearDropDownAdapter = ArrayAdapter(requireContext(), R.layout.list_item, yearList)
+        val yearDropDownAdapter = ArrayAdapter(requireContext(), R.layout.list_item, yearList)
         yearDropDownTextField.setAdapter(yearDropDownAdapter)
 
 

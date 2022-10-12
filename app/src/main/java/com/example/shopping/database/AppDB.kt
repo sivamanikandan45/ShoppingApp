@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.example.shopping.dao.*
 import com.example.shopping.model.*
 
-@Database(entities = [Product::class,CarouselImage::class,SelectedProduct::class,FavoriteProduct::class,RecentlyViewed::class,Address::class], version = 1)
+@Database(entities = [Product::class,CarouselImage::class,SelectedProduct::class,FavoriteProduct::class,RecentlyViewed::class,Address::class,Order::class,OrderedProduct::class], version = 1)
 abstract class AppDB :RoomDatabase(){
     abstract fun getProductDao():ProductDao
     abstract fun getImageDao():ImageDao
@@ -15,6 +15,8 @@ abstract class AppDB :RoomDatabase(){
     abstract fun getFavoriteDao():FavoriteDao
     abstract fun getRecentlyViewedDao():RecentlyViewedDao
     abstract fun getAddressDao():AddressDao
+    abstract fun getOrderDao():OrderDao
+    abstract fun getOrderedProductDao():OrderedProductDao
 
     companion object{
         @Volatile
