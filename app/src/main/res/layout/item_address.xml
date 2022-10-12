@@ -43,7 +43,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:maxLines="2"
-            android:text="No.3, Dubai Main Road, Dubai Cross Street, Dubai - 600089"
+            android:text="@string/sample_address"
             android:textColor="@color/black"
             android:textSize="14sp"
             android:lines="2"

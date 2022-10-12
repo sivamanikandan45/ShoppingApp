@@ -6,8 +6,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.commit
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.shopping.viewmodel.AddressViewModel
+import com.example.shopping.viewmodel.OrderViewModel
 
 class MyOrdersFragment : Fragment() {
+
+    private val orderViewModel: OrderViewModel by activityViewModels()
+    private lateinit var orderListRecyclerView: RecyclerView
+    private lateinit var orderListManager: LinearLayoutManager
+    private lateinit var orderAdapter: OrderAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -22,6 +34,31 @@ class MyOrdersFragment : Fragment() {
         val activity=(activity as AppCompatActivity)
         activity.supportActionBar?.title="My Orders"
         activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        orderListRecyclerView=view.findViewById(R.id.orders_recycler_view)
+        orderAdapter= OrderAdapter()
+        orderAdapter.setOnItemClickListener(object :ItemClickListener{
+            override fun onItemClick(position: Int) {
+                replaceFragment(OrderDetailFragment())
+            }
+        })
+        orderAdapter.setData(orderViewModel.getOrderList())
+        orderListManager= LinearLayoutManager(requireContext())
+        orderListRecyclerView.adapter=orderAdapter
+        orderListRecyclerView.layoutManager=orderListManager
+
+        orderViewModel.orderList.observe(viewLifecycleOwner, Observer {
+            println("observed $it")
+            orderAdapter.setData(it)
+            orderAdapter.notifyDataSetChanged()
+        })
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        parentFragmentManager.commit {
+            addToBackStack(null)
+            replace(R.id.fragment_container, fragment)
+        }
     }
 
 

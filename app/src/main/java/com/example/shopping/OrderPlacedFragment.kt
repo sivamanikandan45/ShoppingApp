@@ -60,29 +60,35 @@ class OrderPlacedFragment : Fragment() {
 
                 val date = Date()
                 val ordDate = formatter.format(date)
-                val order= Order(
-                    0,
-                    selectedAddressId!!,
-                    priceBeforeDiscount,
-                    discountAmount,
-                    priceAfterDiscount,
-                    ordDate,
-                    deliveryDate
-                )
-                println("Hello world")
-
-                val rowId=orderViewModel.placeOrder(order)
-                println("Row iD is $rowId")
-                val id=orderViewModel.getIdUsingRowId(rowId)
-                println("Id of the $id")
-
-                for(i in 0 until cartViewModel.cartItems.value?.size!!){
-                    val prod= cartViewModel.cartItems.value!![i]
-                    val orderedProduct=OrderedProduct(0,id,prod.productId,prod.productName,prod.productBrand,prod.olcPriceForSelectedQuantity,prod.priceForSelectedQuantity,prod.discount,prod.quantity,prod.imageUrl)
-                    orderViewModel.addOrderedProduct(orderedProduct)
+                val itemCount=cartViewModel.cartItems.value?.size
+                val order= itemCount?.let {
+                    Order(
+                        0,
+                        selectedAddressId!!,
+                        it,
+                        priceBeforeDiscount,
+                        discountAmount,
+                        priceAfterDiscount,
+                        ordDate,
+                        deliveryDate,
+                        checkoutViewModel.paymentMode
+                    )
                 }
+                println("Hello world")
+                if(order!=null){
+                    val rowId=orderViewModel.placeOrder(order)
+                    println("Row iD is $rowId")
+                    val id=orderViewModel.getIdUsingRowId(rowId)
+                    println("Id of the $id")
 
-                cartViewModel.clearCartItems()
+                    for(i in 0 until cartViewModel.cartItems.value?.size!!){
+                        val prod= cartViewModel.cartItems.value!![i]
+                        val orderedProduct=OrderedProduct(0,id,prod.productId,prod.productName,prod.productBrand,prod.olcPriceForSelectedQuantity,prod.priceForSelectedQuantity,prod.discount,prod.quantity,prod.imageUrl)
+                        orderViewModel.addOrderedProduct(orderedProduct)
+                    }
+
+                    cartViewModel.clearCartItems()
+                }
                 //delay(1000)
             }
             job.join()

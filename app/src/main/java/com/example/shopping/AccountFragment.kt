@@ -7,9 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
+import com.example.shopping.viewmodel.OrderViewModel
 
 class AccountFragment : Fragment() {
+
+    /*private val orderViewModel:OrderViewModel by activityViewModels()*/
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

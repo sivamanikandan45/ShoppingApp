@@ -10,4 +10,5 @@ import com.example.shopping.model.Order
 
 class CheckoutViewModel:ViewModel(){
     val selectedAddress=MutableLiveData<Address>()
+    var paymentMode:String=""
 }

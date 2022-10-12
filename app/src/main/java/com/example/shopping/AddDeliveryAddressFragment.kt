@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
+import com.example.shopping.enums.MODE
 import com.example.shopping.model.Address
 import com.example.shopping.viewmodel.AddressViewModel
 import com.google.android.material.textfield.TextInputEditText
@@ -40,6 +41,18 @@ class AddDeliveryAddressFragment : Fragment() {
         val addressStreetInputLayout=view.findViewById<TextInputLayout>(R.id.addressline1)
         val areaInputLayout=view.findViewById<TextInputLayout>(R.id.addressline2)
 
+        if(addressViewModel.mode==MODE.EDIT){
+            (activity as AppCompatActivity).supportActionBar?.title="Edit Delivery Address"
+            val selectedAddress=addressViewModel.selectedAddress.value
+            nameInputLayout.editText?.setText(selectedAddress?.name!!)
+            phoneInputLayout.editText?.setText(selectedAddress?.phone)
+            selectedAddress?.pinCode?.let { pinCodeInputLayout.editText?.setText(it.toString()) }
+            stateInputLayout.editText?.setText(selectedAddress?.state)
+            cityInputLayout.editText?.setText(selectedAddress?.city)
+            addressStreetInputLayout.editText?.setText(selectedAddress?.street)
+            areaInputLayout.editText?.setText(selectedAddress?.area)
+        }
+
         val saveAddressButton=view.findViewById<Button>(R.id.save_address)
         saveAddressButton.setOnClickListener {
             if(validateInputs()){
@@ -50,8 +63,15 @@ class AddDeliveryAddressFragment : Fragment() {
                 val city=cityInputLayout.editText?.text.toString()
                 val street=addressStreetInputLayout.editText?.text.toString()
                 val area=areaInputLayout.editText?.text.toString()
-                val address=Address(0,name,phone,pinCode,state,city,street, area)
-                saveAddress(address)
+                if(addressViewModel.mode==MODE.CREATE){
+                    val address=Address(0,name,phone,pinCode,state,city,street, area)
+                    saveAddress(address)
+                }
+                if(addressViewModel.mode==MODE.EDIT){
+                    val id=addressViewModel.selectedAddress.value?.addressId!!
+                    val address=Address(id,name,phone,pinCode,state,city,street, area)
+                    updateAddress(address)
+                }
 
             }else{
                 println("Some input error")
@@ -63,6 +83,18 @@ class AddDeliveryAddressFragment : Fragment() {
         GlobalScope.launch {
             val job=launch (Dispatchers.IO){
                 addressViewModel.addAddress(address)
+            }
+            job.join()
+            withContext(Dispatchers.Main){
+                activity?.onBackPressed()
+            }
+        }
+    }
+
+    private fun updateAddress(address: Address) {
+        GlobalScope.launch {
+            val job=launch (Dispatchers.IO){
+                addressViewModel.updateAddress(address)
             }
             job.join()
             withContext(Dispatchers.Main){

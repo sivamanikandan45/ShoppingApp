@@ -9,10 +9,13 @@ import android.widget.Button
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.fragment.app.findFragment
+import com.example.shopping.viewmodel.CheckoutViewModel
 
 class PaymentFragment : Fragment() {
+    private val checkoutViewModel:CheckoutViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,18 +51,22 @@ class PaymentFragment : Fragment() {
         }
 
         placeOrderBtn.setOnClickListener {
+            checkoutViewModel.paymentMode="Cash On Delivery"
             replaceFragment(OrderPlacedFragment())
         }
 
         payButton.setOnClickListener {
+
             val upiBtn=view.findViewById<RadioButton>(R.id.upi_payment)
             val cardBtn=view.findViewById<RadioButton>(R.id.card_payment)
 
             when{
                 upiBtn.isChecked->{
+                    checkoutViewModel.paymentMode="UPI Payment"
                     replaceFragment(UpiFragment())
                 }
                 cardBtn.isChecked->{
+                    checkoutViewModel.paymentMode="Card Payment"
                     replaceFragment(CardPaymentFragment())
                 }
             }

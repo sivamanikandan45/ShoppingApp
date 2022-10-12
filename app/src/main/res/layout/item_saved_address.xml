@@ -30,7 +30,7 @@
             android:layout_marginTop="4dp"
             android:lines="2"
             android:maxLines="2"
-            android:text="No.3, Dubai Main Road, Dubai Cross Street, Dubai - 600089"
+            android:text="@string/sample_address"
             android:textColor="@color/black"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="@+id/cust_name"

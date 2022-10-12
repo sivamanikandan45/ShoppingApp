@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".OrderDetailFragment">
+
+    <TextView
+        android:id="@+id/order_details_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Order Id: #1"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/mode_of_payment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Payment Mode: Cash On Delivery"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@+id/order_details_id"
+        app:layout_constraintTop_toBottomOf="@+id/order_details_id"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No. of Items"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@+id/mode_of_payment"
+        app:layout_constraintTop_toBottomOf="@+id/mode_of_payment"
+        android:layout_marginTop="8dp"/>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

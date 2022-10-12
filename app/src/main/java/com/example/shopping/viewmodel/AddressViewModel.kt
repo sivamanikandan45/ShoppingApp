@@ -5,6 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.shopping.database.AppDB
+import com.example.shopping.enums.CategoryType
+import com.example.shopping.enums.MODE
 import com.example.shopping.model.Address
 import com.example.shopping.model.Product
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +16,9 @@ import kotlinx.coroutines.launch
 class AddressViewModel(application: Application): AndroidViewModel(application){
 
     var addressList= MutableLiveData<List<Address>>()
+
+    var mode:MODE = MODE.CREATE
+    val selectedAddress=MutableLiveData<Address>()
 
     init{
         viewModelScope.launch{
@@ -48,10 +53,17 @@ class AddressViewModel(application: Application): AndroidViewModel(application){
             val job=launch(Dispatchers.IO) {
                 val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
                 list=dao.getAllAddress()
+                addressList.postValue(list)
             }
             job.join()
         }
         return list
+    }
+
+    fun updateAddress(address: Address) {
+        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
+        dao.updateAddress(address)
+        getAddressFromDB()
     }
 
 }
