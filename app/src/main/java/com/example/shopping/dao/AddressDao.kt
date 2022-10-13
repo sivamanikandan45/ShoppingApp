@@ -20,4 +20,7 @@ interface AddressDao {
 
     @Update
     fun updateAddress(address: Address)
+
+    @Query("SELECT * FROM Address where addressId=:addressId")
+    fun getAddress(addressId: Int):Address
 }

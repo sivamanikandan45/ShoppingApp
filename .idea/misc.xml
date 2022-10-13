@@ -69,7 +69,7 @@
         <entry key="app/src/main/res/layout/product_list_item.xml" value="0.3795897927327722" />
         <entry key="app/src/main/res/menu/address_menu.xml" value="0.17777777777777778" />
         <entry key="app/src/main/res/menu/bottom_navigation_menu.xml" value="0.1" />
-        <entry key="app/src/main/res/menu/category_activity_menu.xml" value="0.20833333333333334" />
+        <entry key="app/src/main/res/menu/category_activity_menu.xml" value="0.1" />
         <entry key="app/src/main/res/menu/product_fragment_menu.xml" value="0.20833333333333334" />
         <entry key="app/src/main/res/menu/wishlist_menu.xml" value="0.33229166666666665" />
       </map>

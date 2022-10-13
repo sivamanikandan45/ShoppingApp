@@ -9,11 +9,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
+import com.example.shopping.viewmodel.FavoriteViewModel
 import com.example.shopping.viewmodel.OrderViewModel
 
 class AccountFragment : Fragment() {
 
-    /*private val orderViewModel:OrderViewModel by activityViewModels()*/
+
+    private val favoriteViewModel:FavoriteViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +34,7 @@ class AccountFragment : Fragment() {
         val myOrdersBtn=view.findViewById<ConstraintLayout>(R.id.my_orders)
 
         wishlistButton.setOnClickListener {
+            favoriteViewModel.calledFrom="Account"
             replaceFragment(WishlistFragment())
         }
 

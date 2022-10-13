@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.Order
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 class OrderAdapter:RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
 
@@ -26,23 +28,27 @@ class OrderAdapter:RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
         val itemCountTextView:TextView
         val orderDateTextView:TextView
         val billAmountTextView:TextView
-        val addressTextView:TextView
+        //val addressTextView:TextView
 
         init {
             orderIdTextView=view.findViewById(R.id.order_id)
             itemCountTextView=view.findViewById(R.id.order_item_count)
             orderDateTextView=view.findViewById(R.id.order_date)
             billAmountTextView=view.findViewById(R.id.order_bill_amount)
-            addressTextView=view.findViewById(R.id.address)
+//            addressTextView=view.findViewById(R.id.address)
             view.setOnClickListener {
                 listener.onItemClick(adapterPosition)
             }
         }
         fun bind(order: Order) {
+            val df = DecimalFormat("#.##")
+            df.roundingMode = RoundingMode.UP
+            val caad= df.format(order.totalAfterDiscount).toDouble()
+
             orderIdTextView.text="#${order.orderId}"
             itemCountTextView.text="${order.itemCount} Item"
             orderDateTextView.text="Ordered on ${order.orderedDate}"
-            billAmountTextView.text="$${order.totalAfterDiscount}"
+            billAmountTextView.text="$$caad"
             //addressTextView.text=order
         }
 

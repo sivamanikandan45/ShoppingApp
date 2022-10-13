@@ -66,4 +66,14 @@ class AddressViewModel(application: Application): AndroidViewModel(application){
         getAddressFromDB()
     }
 
+    fun getAddress(addressId: Int):Address {
+        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
+        val address=dao.getAddress(addressId)
+        return address
+    }
+
+
+
+
+
 }

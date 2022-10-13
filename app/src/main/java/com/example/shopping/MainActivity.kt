@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.CustomViewModel
+import com.example.shopping.viewmodel.FavoriteViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
 
         val viewModel= ViewModelProvider(this)[CustomViewModel::class.java]
         val cartViewModel= ViewModelProvider(this)[CartViewModel::class.java]
+        val favViewModel= ViewModelProvider(this)[FavoriteViewModel::class.java]
         var amount=0
 
         GlobalScope.launch {
@@ -47,6 +49,7 @@ class MainActivity : AppCompatActivity() {
                     viewModel.fragmentId=R.id.cart
                 }
                 R.id.wishlist->{
+                    favViewModel.calledFrom="Main"
                     replaceFragment(WishlistFragment())
                     viewModel.fragmentId=R.id.wishlist
                 }

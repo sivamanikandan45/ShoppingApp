@@ -44,7 +44,12 @@ class WishlistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Wishlist"
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
+        if(favoriteViewModel.calledFrom=="Main"){
+            (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        }else if(favoriteViewModel.calledFrom=="Account"){
+            (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
 
         val empty=view.findViewById<ConstraintLayout>(R.id.empty_page)
         val scroll=view.findViewById<RecyclerView>(R.id.wishlist_recyclerView)

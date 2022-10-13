@@ -13,6 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.viewmodel.AddressViewModel
 import com.example.shopping.viewmodel.OrderViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MyOrdersFragment : Fragment() {
 
@@ -20,6 +23,16 @@ class MyOrdersFragment : Fragment() {
     private lateinit var orderListRecyclerView: RecyclerView
     private lateinit var orderListManager: LinearLayoutManager
     private lateinit var orderAdapter: OrderAdapter
+
+    override fun onStart() {
+        super.onStart()
+        GlobalScope.launch {
+            val job=launch(Dispatchers.IO) {
+                orderViewModel.getOrdersFromDB()
+            }
+            job.join()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,6 +52,7 @@ class MyOrdersFragment : Fragment() {
         orderAdapter= OrderAdapter()
         orderAdapter.setOnItemClickListener(object :ItemClickListener{
             override fun onItemClick(position: Int) {
+                orderViewModel.selectedOrder.value=orderViewModel.orderList.value?.get(position)
                 replaceFragment(OrderDetailFragment())
             }
         })

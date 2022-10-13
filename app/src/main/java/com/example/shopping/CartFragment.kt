@@ -45,6 +45,7 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Cart"
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         /*val bottomSheet=view.findViewById<FrameLayout>(R.id.bottom_sheet)
         val behavior=BottomSheetBehavior.from(bottomSheet).apply {

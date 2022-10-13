@@ -6,13 +6,14 @@
 <!--        android:id="@+id/filter"-->
 <!--        android:icon="@drawable/ic_outline_filter_alt_24"-->
 <!--        app:showAsAction="ifRoom"-->
-<!--        android:title="filter" />-->
+<!--        android:title="filter"ifRoom|collapseActionView />-->
 
     <item
         android:id="@+id/sort"
         android:icon="@drawable/ic_baseline_sort_24"
         android:title="sort"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
+
 
     <item android:id="@+id/category_search"
         android:title="Search"

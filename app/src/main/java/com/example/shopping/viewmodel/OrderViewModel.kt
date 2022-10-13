@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.shopping.database.AppDB
+import com.example.shopping.model.Address
 import com.example.shopping.model.Order
 import com.example.shopping.model.OrderedProduct
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 
 class OrderViewModel(application: Application): AndroidViewModel(application){
     var orderList= MutableLiveData<List<Order>>()
+    val selectedOrder=MutableLiveData<Order>()
 
     init{
         viewModelScope.launch{

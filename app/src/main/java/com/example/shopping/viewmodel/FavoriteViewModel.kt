@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 class FavoriteViewModel(application: Application):AndroidViewModel(application) {
 
     var favoriteItems= MutableLiveData<List<FavoriteProduct>>()
+    var calledFrom=""
 
     init {
         viewModelScope.launch{
