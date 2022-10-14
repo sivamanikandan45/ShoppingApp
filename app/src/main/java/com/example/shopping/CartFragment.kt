@@ -12,6 +12,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -82,7 +84,7 @@ class CartFragment : Fragment() {
             recyclerView.visibility=View.GONE*//*
         }else{*/
         val empty=view.findViewById<ConstraintLayout>(R.id.empty_page)
-        val scroll=view.findViewById<ScrollView>(R.id.scroll)
+        val scroll=view.findViewById<NestedScrollView>(R.id.scroll)
         println("Cart items while loading ${cartViewModel.cartItems.value}")
         /*if(cartViewModel.cartItems.value?.isEmpty()==true){
             empty.visibility=View.VISIBLE
@@ -193,6 +195,7 @@ class CartFragment : Fragment() {
                 recyclerView.addItemDecoration(divider!!)
                 //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
                 recyclerView.adapter=adapter
+                //ViewCompat.setNestedScrollingEnabled(recyclerView, false);
                 recyclerView.layoutManager=manager
             }
 

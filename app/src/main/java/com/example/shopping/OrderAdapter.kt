@@ -45,7 +45,7 @@ class OrderAdapter:RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
             df.roundingMode = RoundingMode.UP
             val caad= df.format(order.totalAfterDiscount).toDouble()
 
-            orderIdTextView.text="#${order.orderId}"
+            orderIdTextView.text="Order Id: #${order.orderId}"
             itemCountTextView.text="${order.itemCount} Item"
             orderDateTextView.text="Ordered on ${order.orderedDate}"
             billAmountTextView.text="$$caad"

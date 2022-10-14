@@ -129,11 +129,9 @@ class ProductListFragment : Fragment() {
             //activity?.invalidateOptionsMenu()
         }
         searchView.setOnCloseListener{
-            /*sortItem.isVisible=true
-            searchItem.isVisible=true
-            //searchView.isIconified=true
-            activity?.invalidateOptionsMenu()*/
-            //onCreateOptionsMenu(menu,inflater)
+            /*searchView.queryHint=""
+            searchView.isIconified = true
+            searchView.onActionViewCollapsed()*/
             true
         }
 

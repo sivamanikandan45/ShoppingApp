@@ -35,6 +35,7 @@ class SelectAddressFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Select Address"
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        val deliverHereBtn=view.findViewById<Button>(R.id.deliver_here)
 
         addressListRecyclerView=view.findViewById(R.id.address_list_recycler_view)
         selectAddressListAdapter= SelectAddressListAdapter()
@@ -55,10 +56,13 @@ class SelectAddressFragment : Fragment() {
         addressViewModel.addressList.observe(viewLifecycleOwner, Observer {
             println("observed $it")
             selectAddressListAdapter.setData(it)
+            if(it.isEmpty()){
+                deliverHereBtn.isEnabled=false
+            }
             selectAddressListAdapter.notifyDataSetChanged()
         })
 
-        val deliverHereBtn=view.findViewById<Button>(R.id.deliver_here)
+
         deliverHereBtn.setOnClickListener {
             checkoutViewModel.selectedAddress.value=addressViewModel.addressList.value?.get(selectAddressListAdapter.selectedPosition)
             println("Selected address is ${checkoutViewModel.selectedAddress.value}")

@@ -64,20 +64,21 @@ class OrderDetailFragment : Fragment() {
             originalBillAmount.text="$${selectedOrder.originalTotalPrice}"
             discountAmount.text="$${selectedOrder.discount}"
             totalBillAmount.text="$${selectedOrder.totalAfterDiscount}"
+            deliveryAddress.text="${selectedOrder.customerName},\n${selectedOrder.street}, ${selectedOrder.area}, ${selectedOrder.city}, ${selectedOrder.state} - ${selectedOrder.pinCode}\n${selectedOrder.customerPhone}"
 
             GlobalScope.launch {
                 val job=launch(Dispatchers.IO) {
                     orderedProducts=orderViewModel.getOrderedProduct(selectedOrder.orderId)
-                    val address=addressViewModel.getAddress(selectedOrder.addressId)
+                    //val address=addressViewModel.getAddress(selectedOrder.addressId)
                     withContext(Dispatchers.Main){
                         adapter.setData(orderedProducts)
                         recyclerView.adapter=adapter
                         recyclerView.layoutManager=manager
-                        if(address!=null){
+                        /*if(address!=null){
                             deliveryAddress.text="${address.name},\n${address.street}, ${address.area}, ${address.city}, ${address.state} - ${address.pinCode}\n${address.phone}"
                         }else{
                             deliveryAddress.text="Not Found"
-                        }
+                        }*/
 
                     }
                     /*println(address)
