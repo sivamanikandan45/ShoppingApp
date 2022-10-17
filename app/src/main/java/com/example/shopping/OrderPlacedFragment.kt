@@ -101,13 +101,15 @@ class OrderPlacedFragment : Fragment() {
 
                     cartViewModel.clearCartItems()
                 }
-                //delay(1000)
+                delay(1000)
             }
             job.join()
-            /*withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main){
                 val intent=Intent(requireContext(),MainActivity::class.java)
+                intent.putExtra("fragment","cart")
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)
-            }*/
+            }
         }
             //job.join()
     }

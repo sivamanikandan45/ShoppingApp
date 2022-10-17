@@ -27,6 +27,10 @@ interface ProductDao{
     @Query("SELECT * FROM Product ORDER BY discountPercentage DESC LIMIT 10")
     fun getTopOffers():List<Product>
 
+    @Query("SELECT * FROM Product where productId=:id")
+    fun getProduct(id:Int):Product
+
+
 
 
 }

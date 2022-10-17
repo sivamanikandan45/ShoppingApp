@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
@@ -48,6 +49,8 @@ class MyOrdersFragment : Fragment() {
         activity.supportActionBar?.title="My Orders"
         activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        val emptyPage=view.findViewById<ConstraintLayout>(R.id.empty_order)
+
         orderListRecyclerView=view.findViewById(R.id.orders_recycler_view)
         orderAdapter= OrderAdapter()
         orderAdapter.setOnItemClickListener(object :ItemClickListener{
@@ -56,15 +59,30 @@ class MyOrdersFragment : Fragment() {
                 replaceFragment(OrderDetailFragment())
             }
         })
-        orderAdapter.setData(orderViewModel.getOrderList())
+        val list=orderViewModel.getOrderList()
+        if(list.isEmpty()){
+            emptyPage.visibility=View.VISIBLE
+            orderListRecyclerView.visibility=View.GONE
+        }
+        orderAdapter.setData(list)
         orderListManager= LinearLayoutManager(requireContext())
         orderListRecyclerView.adapter=orderAdapter
         orderListRecyclerView.layoutManager=orderListManager
 
         orderViewModel.orderList.observe(viewLifecycleOwner, Observer {
-            println("observed $it")
+
+            if(it.isEmpty()){
+                emptyPage.visibility=View.VISIBLE
+                orderListRecyclerView.visibility=View.GONE
+            }else{
+                emptyPage.visibility=View.GONE
+                orderListRecyclerView.visibility=View.VISIBLE
+                orderAdapter.setData(it)
+                orderAdapter.notifyDataSetChanged()
+            }
+            /*println("observed $it")
             orderAdapter.setData(it)
-            orderAdapter.notifyDataSetChanged()
+            orderAdapter.notifyDataSetChanged()*/
         })
     }
 

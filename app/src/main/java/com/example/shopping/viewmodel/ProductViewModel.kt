@@ -9,10 +9,7 @@ import com.example.shopping.database.AppDB
 import com.example.shopping.model.CarouselImage
 import com.example.shopping.model.FavoriteProduct
 import com.example.shopping.model.Product
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.json.JSONObject
 import org.json.JSONTokener
 import java.io.BufferedReader
@@ -30,6 +27,17 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
     var categoryList = MutableLiveData<List<Product>>()
 
     var selectedProduct=MutableLiveData<Product>()
+    //var productStack=Stack<Product>()
+    /*fun push(product:Product){
+        productStack.push(product)
+        selectedProduct.value=productStack.peek()
+    }
+
+    fun pop(){
+        productStack.pop()
+        selectedProduct.value=productStack.peek()
+    }*/
+
     val topOfferList= MutableLiveData<List<Product>>()
 
     init {
@@ -326,6 +334,18 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
         return list
     }
 
+    /*fun getProductByID(id: Int): Product? {
+        var product: Product? =null
+        GlobalScope.launch{
+            val job=launch(Dispatchers.IO) {
+                val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
+                product=dao.getProduct(id)
+                println("Got form db $product")
+            }
+            job.join()
+        }
+        return product
+    }*/
 
 
 }

@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
@@ -69,6 +70,7 @@ class ProductFragment : Fragment() {
 
         println("cart is ${cartViewModel.cartItems.value}")
         val product=productViewModel.selectedProduct.value
+        println("Selected Product is $product")
         if(product!=null){
             val recentlyViewed=RecentlyViewed(product.productId,product.title,product.description,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,product.rating,product.stock,product.brand,product.category,product.thumbnail)
             GlobalScope.launch {
@@ -122,16 +124,23 @@ class ProductFragment : Fragment() {
                     val adapter=SimilarProductListAdapter()
                     list?.remove(product)
                     adapter.setData(list!!)
-                    /*adapter.setOnItemClickListener(object : ItemClickListener{
+                    adapter.setOnItemClickListener(object : ItemClickListener{
                         override fun onItemClick(position: Int) {
-                            parentFragmentManager.commit {
+                            /*parentFragmentManager.commit {
                                 addToBackStack(null)
                                 val viewModel:ProductViewModel by activityViewModels()
                                 viewModel.selectedProduct.value= list[position]
+                                //viewModel.push(list[position])
+
+
                                 replace(R.id.category_fragment_container,ProductFragment() )
-                            }
+                                *//*val intent=Intent(requireContext(),CategoryActivity::class.java)
+                                intent.putExtra("SelectedProduct",position)
+                                intent.putExtra("category",list[position].category)
+                                startActivity(intent)*//*
+                            }*/
                         }
-                    })*/
+                    })
                     similarProductRecyclerView.adapter=adapter
                     val layoutManager=LinearLayoutManager(requireContext())
                     layoutManager.orientation=LinearLayoutManager.HORIZONTAL
@@ -171,6 +180,19 @@ class ProductFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.product_fragment_menu,menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.cart_menu->{
+                val intent= Intent(requireContext(),MainActivity::class.java)
+                intent.putExtra("fragment","cart")
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK+Intent.FLAG_ACTIVITY_CLEAR_TOP
+                //intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     fun TextView.showStrikeThrough(show: Boolean) {

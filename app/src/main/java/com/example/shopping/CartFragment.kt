@@ -192,7 +192,7 @@ class CartFragment : Fragment() {
             withContext(Dispatchers.Main){
                 val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
                 divider?.dividerInsetStart=375
-                recyclerView.addItemDecoration(divider!!)
+                divider?.let { recyclerView.addItemDecoration(it) }
                 //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
                 recyclerView.adapter=adapter
                 //ViewCompat.setNestedScrollingEnabled(recyclerView, false);

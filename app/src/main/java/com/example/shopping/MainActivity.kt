@@ -21,6 +21,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+
         //replaceFragment(HomeFragment())
 
         val viewModel= ViewModelProvider(this)[CustomViewModel::class.java]
@@ -35,6 +37,30 @@ class MainActivity : AppCompatActivity() {
             job.join()
             println("Cart count is $amount")
         }
+
+
+
+        /*viewModel.fragmentId.observe(this, Observer {
+            when(it){
+                R.id.home->{
+                    replaceFragment(HomeFragment())
+                    viewModel.fragmentId.value=R.id.home
+                }
+                R.id.cart->{
+                    replaceFragment(CartFragment())
+                    viewModel.fragmentId.value=R.id.cart
+                }
+                R.id.wishlist->{
+                    favViewModel.calledFrom="Main"
+                    replaceFragment(WishlistFragment())
+                    viewModel.fragmentId.value=R.id.wishlist
+                }
+                R.id.account->{
+                    replaceFragment(AccountFragment())
+                    viewModel.fragmentId.value=R.id.account
+                }
+            }
+        })*/
 
 
         val bottomNavigationView=findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
@@ -60,6 +86,25 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+
+        if(intent!=null){
+            val frag=intent.getStringExtra("fragment")
+            if(frag=="cart"){
+                println("Got cart")
+                viewModel.fragmentId=R.id.cart
+                /*replaceFragment(CartFragment())
+                viewModel.fragmentId=R.id.cart*/
+                viewModel.fragmentName.value="Cart"
+            }
+        }
+
+        viewModel.fragmentName.observe(this, Observer {
+            if(it.equals("Cart")){
+                bottomNavigationView.selectedItemId=R.id.cart
+                /*replaceFragment(CartFragment())
+                viewModel.fragmentId=R.id.cart*/
+            }
+        })
 
         println("cart items is ${cartViewModel.noOfItem}")
 
@@ -104,6 +149,7 @@ class MainActivity : AppCompatActivity() {
             }
             job1.join()
         }*/
+
 
 
 

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
@@ -40,6 +41,8 @@ class SavedAddressFragment : Fragment() {
         activity.supportActionBar?.title="Saved Address"
         activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        val emptyPage=view.findViewById<ConstraintLayout>(R.id.empty_address)
+
         addressListRecyclerView=view.findViewById(R.id.address_list_recycler_view)
         savedAddressListAdapter= SavedAddressListAdapter()
         savedAddressListAdapter.setAddressMenuListener(object : AddressMenuListener {
@@ -64,7 +67,13 @@ class SavedAddressFragment : Fragment() {
             }
         })
 
-        savedAddressListAdapter.setData(addressViewModel.getAddressLists())
+        val list=addressViewModel.getAddressLists()
+        if(list.isEmpty()){
+            emptyPage.visibility=View.VISIBLE
+            addressListRecyclerView.visibility=View.GONE
+        }
+
+        savedAddressListAdapter.setData(list)
         println(addressViewModel.getAddressLists())
         addressListManager= LinearLayoutManager(requireContext())
         addressListRecyclerView.adapter=savedAddressListAdapter
@@ -75,8 +84,15 @@ class SavedAddressFragment : Fragment() {
 
         addressViewModel.addressList.observe(viewLifecycleOwner, Observer {
             println("observed $it")
-            savedAddressListAdapter.setData(it)
-            savedAddressListAdapter.notifyDataSetChanged()
+            if(it.isEmpty()){
+                emptyPage.visibility=View.VISIBLE
+                addressListRecyclerView.visibility=View.GONE
+            }else{
+                emptyPage.visibility=View.GONE
+                addressListRecyclerView.visibility=View.VISIBLE
+                savedAddressListAdapter.setData(it)
+                savedAddressListAdapter.notifyDataSetChanged()
+            }
         })
 
         val addNewAddressBtn=view.findViewById<CardView>(R.id.add_new_address)

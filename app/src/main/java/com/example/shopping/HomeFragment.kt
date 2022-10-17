@@ -1,12 +1,9 @@
 package com.example.shopping
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -22,7 +19,6 @@ import com.example.shopping.model.Product
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.RecentlyViewedViewModel
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -50,6 +46,27 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
+
+    /*override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        //super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.home_menu,menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.product_search->{
+                val intent=Intent(requireContext(),SearchResultActivity::class.java)
+                startActivity(intent)
+                true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }*/
 
 
     override fun onStart() {
@@ -125,6 +142,7 @@ class HomeFragment : Fragment() {
 
         productViewModel.topOfferList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             topOfferListAdapter.setData(ArrayList(productViewModel.topOfferList.value!!))
+            topOfferListAdapter.notifyDataSetChanged()
             //topOfferListAdapter.setOnItemClickListener()
         })
 
@@ -143,7 +161,8 @@ class HomeFragment : Fragment() {
                     addToBackStack(null)
                     //val viewModel:ProductViewModel by activityViewModels()
                     productViewModel.selectedProduct.value= productViewModel.topOfferList.value?.get(position)
-                    println(productViewModel.selectedProduct.value)
+                    //productViewModel.push(productViewModel.topOfferList.value?.get(position)!!)
+                    //println(productViewModel.selectedProduct.value)
                     replace(R.id.fragment_container,ProductFragment() )
                 }
             }
@@ -170,6 +189,7 @@ class HomeFragment : Fragment() {
                     if(selectedProduct!=null){
                         val product=Product(selectedProduct.productId,selectedProduct.title,selectedProduct.description,selectedProduct.originalPrice,selectedProduct.discountPercentage,selectedProduct.priceAfterDiscount,selectedProduct.rating,selectedProduct.stock,selectedProduct.brand,selectedProduct.category,selectedProduct.thumbnail,true)
                         productViewModel.selectedProduct.value=product
+                        //productViewModel.push(product)
                         replace(R.id.fragment_container,ProductFragment())
                     }
                 }

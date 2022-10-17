@@ -17,7 +17,8 @@ import kotlinx.coroutines.launch
 import java.net.URL
 
 class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>() {
-    private lateinit var list:ArrayList<Product>
+    //private lateinit var list:ArrayList<Product>
+    private var list= ArrayList<Product>()
     private lateinit var listener: ItemClickListener
 
     //private lateinit var favoriteButtonListener:FavoriteButtonListener
