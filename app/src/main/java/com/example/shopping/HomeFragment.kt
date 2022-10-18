@@ -1,5 +1,7 @@
 package com.example.shopping
 
+import android.app.SearchManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
@@ -7,7 +9,9 @@ import androidx.fragment.app.Fragment
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.Group
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.GridLayoutManager
@@ -47,7 +51,7 @@ class HomeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
-    /*override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
@@ -55,19 +59,10 @@ class HomeFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         //super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.home_menu,menu)
+        val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchView=menu.findItem(R.id.product_search)?.actionView as SearchView
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
     }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.product_search->{
-                val intent=Intent(requireContext(),SearchResultActivity::class.java)
-                startActivity(intent)
-                true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }*/
-
 
     override fun onStart() {
         super.onStart()

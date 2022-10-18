@@ -54,9 +54,9 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
             df.roundingMode = RoundingMode.UP
             val caad= df.format(selectedProduct.priceForSelectedQuantity).toDouble()
 
-            productPriceTextView.text="$"+caad.toString()
+            productPriceTextView.text="₹"+caad.toString()
             productBrandTextView.text=selectedProduct.productBrand
-            productOldPriceTextView.text="$"+selectedProduct.olcPriceForSelectedQuantity.toString()
+            productOldPriceTextView.text="₹"+selectedProduct.olcPriceForSelectedQuantity.toString()
             productOldPriceTextView.showStrikeThrough(true)
             discountTextView.text=selectedProduct.discount.toString()+"% OFF"
             quantityTextView.text=selectedProduct.quantity.toString()

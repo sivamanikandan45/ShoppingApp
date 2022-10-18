@@ -111,11 +111,11 @@ class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>()
             }*/
 
             imageView.setImageBitmap(bitmapValue)
-            productOldPriceTextView.text="$"+product.originalPrice.toString()
+            productOldPriceTextView.text="₹"+product.originalPrice.toString()
             //productBrandTextView.text=product.brand
             productRatingBar.rating=product.rating.toFloat()
             ratedValue.text=product.rating
-            productNewPriceTextView.text="$"+product.priceAfterDiscount.toString()
+            productNewPriceTextView.text="₹"+product.priceAfterDiscount.toString()
             offer.text=product.discountPercentage.toString()+"% Off"
         }
 

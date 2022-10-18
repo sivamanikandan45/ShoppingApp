@@ -109,9 +109,9 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
 
         fun bind(product: FavoriteProduct) {
             productName.text=product.title
-            productPrice.text="$"+product.priceAfterDiscount.toString()
+            productPrice.text="₹"+product.priceAfterDiscount.toString()
             //productRatingBar.rating=product.rating.toFloat()
-            oldProductPrice.text="$"+product.originalPrice.toString()
+            oldProductPrice.text="₹"+product.originalPrice.toString()
             oldProductPrice.showStrikeThrough(true)
             discount.text="${product.discountPercentage}%"
             var bitmapValue: Bitmap?=null

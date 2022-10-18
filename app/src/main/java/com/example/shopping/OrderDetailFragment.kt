@@ -57,13 +57,13 @@ class OrderDetailFragment : Fragment() {
         if(selectedOrder!=null){
             orderId.text="#${selectedOrder.orderId}"
             orderedDate.text=selectedOrder.orderedDate
-            billAmount.text="$${selectedOrder.totalAfterDiscount}"
+            billAmount.text="₹${selectedOrder.totalAfterDiscount}"
             modeOfPayment.text=selectedOrder.paymentMode
             noOfItem.text="${selectedOrder.itemCount} Item"
             expectedDeliveryDate.text=selectedOrder.expectedDeliveryDate
-            originalBillAmount.text="$${selectedOrder.originalTotalPrice}"
-            discountAmount.text="$${selectedOrder.discount}"
-            totalBillAmount.text="$${selectedOrder.totalAfterDiscount}"
+            originalBillAmount.text="₹${selectedOrder.originalTotalPrice}"
+            discountAmount.text="₹${selectedOrder.discount}"
+            totalBillAmount.text="₹${selectedOrder.totalAfterDiscount}"
             deliveryAddress.text="${selectedOrder.customerName},\n${selectedOrder.street}, ${selectedOrder.area}, ${selectedOrder.city}, ${selectedOrder.state} - ${selectedOrder.pinCode}\n${selectedOrder.customerPhone}"
 
             GlobalScope.launch {

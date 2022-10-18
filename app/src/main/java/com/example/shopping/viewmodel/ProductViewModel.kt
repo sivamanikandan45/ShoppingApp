@@ -83,9 +83,11 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                     val productId:Int=jsonArray.getJSONObject(i).getString("id").toInt()
                     val title:String=jsonArray.getJSONObject(i).getString("title").capitalize()
                     val description:String=jsonArray.getJSONObject(i).getString("description").capitalize()
-                    val originalPrice:Double=jsonArray.getJSONObject(i).getString("price").toDouble()
+                    var originalPrice:Double=jsonArray.getJSONObject(i).getString("price").toDouble()
+                    originalPrice *= 82.25
                     val discountPercentage:Double=jsonArray.getJSONObject(i).getString("discountPercentage").toDouble()
                     var priceAfterDiscount:Double=jsonArray.getJSONObject(i).getString("price").toDouble()
+                    priceAfterDiscount*=82.25
                     val rating=jsonArray.getJSONObject(i).getString("rating")
                     val stock:Int=jsonArray.getJSONObject(i).getString("stock").toInt()
                     val brand:String=jsonArray.getJSONObject(i).getString("brand")
@@ -262,6 +264,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                 return 0
             }
         })
+
         /*for(item in categoryList.value!!){
             println(item.title)
         }*/
@@ -328,6 +331,18 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
             val job=launch(Dispatchers.IO) {
                 val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
                 list=dao.getTopOffers()
+            }
+            job.join()
+        }
+        return list
+    }
+
+    fun getAllProducts():List<Product>{
+        var list= listOf<Product>()
+        GlobalScope.launch{
+            val job=launch(Dispatchers.IO) {
+                val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
+                list=dao.getProductList()
             }
             job.join()
         }

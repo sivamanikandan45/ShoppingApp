@@ -151,12 +151,12 @@ class ProductFragment : Fragment() {
         }
 
         productNameTextView.text=product?.title
-        productPriceTextView.text="$"+product?.priceAfterDiscount.toString()
+        productPriceTextView.text="₹"+product?.priceAfterDiscount.toString()
         brandTextView.text=product?.brand
         ratingBar.rating= product?.rating?.toFloat()!!
         descriptionTextView.text=product.description
         ratedValueTextView.text=product.rating
-        oldPrice.text="$"+product.originalPrice.toString()
+        oldPrice.text="₹"+product.originalPrice.toString()
         oldPrice.showStrikeThrough(true)
         discount.text=product.discountPercentage.toString()+"% Off"
 
@@ -187,8 +187,8 @@ class ProductFragment : Fragment() {
             R.id.cart_menu->{
                 val intent= Intent(requireContext(),MainActivity::class.java)
                 intent.putExtra("fragment","cart")
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK+Intent.FLAG_ACTIVITY_CLEAR_TOP
-                //intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                //intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK+Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
             }
         }

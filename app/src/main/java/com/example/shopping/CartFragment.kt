@@ -177,15 +177,15 @@ class CartFragment : Fragment() {
                     val decimalFormat = DecimalFormat("#.##")
                     decimalFormat.roundingMode = RoundingMode.UP
                     val priceAfterDiscountRounded= decimalFormat.format(priceAfterDiscount).toDouble()
-                    totalAmountTextView.text="$"+priceAfterDiscountRounded.toString()
-                    finalTotalAmountTextView.text="$"+priceAfterDiscountRounded.toString()
+                    totalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
+                    finalTotalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
                     totalAmountBeforeDiscount.text=priceBeforeDiscount.toString()
                     var discountAmount=priceBeforeDiscount-priceAfterDiscount
                     /*val df = DecimalFormat("#.##")
                     df.roundingMode = RoundingMode.UP*/
                     discountAmount = decimalFormat.format(discountAmount).toDouble()
-                    offerTextView.text="-$"+discountAmount.toString()
-                    savingInfo.text="You will save $$discountAmount on this order"
+                    offerTextView.text="-₹"+discountAmount.toString()
+                    savingInfo.text="You will save ₹$discountAmount on this order"
                 }
             }
             job.join()
@@ -222,7 +222,7 @@ class CartFragment : Fragment() {
             val decimalFormat = DecimalFormat("#.##")
             decimalFormat.roundingMode = RoundingMode.UP
             val cartAmountAfterDiscountRounded = decimalFormat.format(it).toDouble()
-            val withSymbol="$$cartAmountAfterDiscountRounded"
+            val withSymbol="₹$cartAmountAfterDiscountRounded"
             totalAmountTextView.text=withSymbol
             finalTotalAmountTextView.text=withSymbol
 
@@ -235,9 +235,9 @@ class CartFragment : Fragment() {
                         val newDecimalFormat = DecimalFormat("#.##")
                         newDecimalFormat.roundingMode = RoundingMode.DOWN
                         discountAmount = newDecimalFormat.format(discountAmount).toDouble()
-                        val offer="-$$discountAmount"
+                        val offer="-₹$discountAmount"
                         offerTextView.text=offer
-                        savingInfo.text="You will save $$discountAmount on this order"
+                        savingInfo.text="You will save ₹$discountAmount on this order"
                     }
                 }
                 job.join()
@@ -252,7 +252,7 @@ class CartFragment : Fragment() {
         })*/
 
         cartViewModel.cartAmountBeforeDiscount.observe(viewLifecycleOwner, Observer {
-            val formatted="$$it"
+            val formatted="₹$it"
             totalAmountBeforeDiscount.text=formatted
         })
     }

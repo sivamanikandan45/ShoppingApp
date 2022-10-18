@@ -74,15 +74,15 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
                     val decimalFormat = DecimalFormat("#.##")
                     decimalFormat.roundingMode = RoundingMode.UP
                     val priceAfterDiscountRounded= decimalFormat.format(priceAfterDiscount).toDouble()
-                    totalAmountTextView.text="$"+priceAfterDiscountRounded.toString()
-                    finalTotalAmountTextView.text="$"+priceAfterDiscountRounded.toString()
+                    totalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
+                    finalTotalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
                     totalAmountBeforeDiscount.text=priceBeforeDiscount.toString()
                     var discountAmount=priceBeforeDiscount-priceAfterDiscount
                     val df = DecimalFormat("#.##")
                     df.roundingMode = RoundingMode.UP
                     discountAmount = decimalFormat.format(discountAmount).toDouble()
-                    offerTextView.text="-$"+discountAmount.toString()
-                    savingInfo.text="You will save $$discountAmount on this order"
+                    offerTextView.text="-₹"+discountAmount.toString()
+                    savingInfo.text="You will save ₹$discountAmount on this order"
                 }
             }
             job.join()

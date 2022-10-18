@@ -35,9 +35,9 @@ class OrderedProductListAdapter :RecyclerView.Adapter<OrderedProductListAdapter.
             val df = DecimalFormat("#.##")
             df.roundingMode = RoundingMode.UP
             val caad= df.format(orderedProduct.priceForSelectedQuantity).toDouble()
-            productPriceTextView.text="$"+caad.toString()
+            productPriceTextView.text="₹"+caad.toString()
             productBrandTextView.text=orderedProduct.brand
-            productOldPriceTextView.text="$"+orderedProduct.oldPriceForSelectedQuantity.toString()
+            productOldPriceTextView.text="₹"+orderedProduct.oldPriceForSelectedQuantity.toString()
             productOldPriceTextView.showStrikeThrough(true)
             discountTextView.text=orderedProduct.discount.toString()+"% OFF"
             quantityTextView.text=orderedProduct.quantity.toString()

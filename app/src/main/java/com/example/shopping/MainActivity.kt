@@ -87,6 +87,10 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+        bottomNavigationView.setOnItemReselectedListener {
+            //println("${it.itemId} is reselected")
+        }
+
         if(intent!=null){
             val frag=intent.getStringExtra("fragment")
             if(frag=="cart"){

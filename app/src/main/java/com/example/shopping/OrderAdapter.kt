@@ -48,7 +48,7 @@ class OrderAdapter:RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
             orderIdTextView.text="Order Id: #${order.orderId}"
             itemCountTextView.text="${order.itemCount} Item"
             orderDateTextView.text="Ordered on ${order.orderedDate}"
-            billAmountTextView.text="$$caad"
+            billAmountTextView.text="₹$caad"
             //addressTextView.text=order
         }
 

@@ -50,7 +50,7 @@ class SimilarProductListAdapter:RecyclerView.Adapter<SimilarProductListAdapter.V
 
         fun bind(product: Product) {
             productName.text=product.title
-            productPrice.text="$"+product.priceAfterDiscount.toString()
+            productPrice.text="₹"+product.priceAfterDiscount.toString()
             productRatingBar.rating=product.rating.toFloat()
             productRatedValue.text=product.rating
             var bitmapValue: Bitmap?=null
