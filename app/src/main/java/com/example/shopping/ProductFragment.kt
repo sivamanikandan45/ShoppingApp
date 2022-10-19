@@ -5,9 +5,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.*
-import android.widget.Button
-import android.widget.RatingBar
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
@@ -17,10 +15,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.example.shopping.model.CarouselImage
-import com.example.shopping.model.RecentlyViewed
-import com.example.shopping.model.SelectedProduct
+import com.example.shopping.model.*
 import com.example.shopping.viewmodel.CartViewModel
+import com.example.shopping.viewmodel.FavoriteViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.RecentlyViewedViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -33,6 +30,8 @@ import java.util.*
 class ProductFragment : Fragment() {
 
     private val recentlyViewedViewModel:RecentlyViewedViewModel by activityViewModels()
+    private val viewModel:ProductViewModel by activityViewModels()
+    private val favoriteViewModel:FavoriteViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,6 +105,31 @@ class ProductFragment : Fragment() {
             }
         }
 
+        val favoriteButton:ImageView=view.findViewById(R.id.favorite_button)
+        if(product?.favorite==true){
+            favoriteButton.setImageResource(R.drawable.heart_red)
+        }else{
+            favoriteButton.setImageResource(R.drawable.border_heart)
+        }
+
+        favoriteButton.setOnClickListener{
+            println("Favorite btn is clicked")
+            if(product?.favorite!=true){
+                favoriteButton.setImageResource(R.drawable.heart_red)
+                addToFavorite(product)
+                product?.favorite=true
+                Snackbar.make(view,"Added to WishList",Snackbar.LENGTH_LONG)
+                    .show()
+
+            }else{
+                favoriteButton.setImageResource(R.drawable.border_heart)
+                removeFromFavorite(product)
+                product?.favorite=false
+                Snackbar.make(view,"Removed from WishList",Snackbar.LENGTH_LONG)
+                    .show()
+            }
+        }
+
 
         val productNameTextView:TextView=view.findViewById(R.id.product_name)
         val brandTextView:TextView=view.findViewById(R.id.brand_name)
@@ -116,6 +140,31 @@ class ProductFragment : Fragment() {
         val oldPrice:TextView=view.findViewById(R.id.product_price)
         val discount:TextView=view.findViewById(R.id.product_discount)
         val similarProductRecyclerView=view.findViewById<RecyclerView>(R.id.similar_product_recyler)
+
+        val increaseButton: ImageButton=view.findViewById(R.id.increase_qty_btn)
+        val decreaseButton: ImageButton=view.findViewById(R.id.decrease_qty_btn)
+        val quantityTextView:TextView=view.findViewById(R.id.cart_qty)
+        increaseButton.setOnClickListener {
+            var quantity=quantityTextView.text.toString().toInt()
+            if(quantity<10){
+                quantity++
+                quantityTextView.text=quantity.toString()
+                //listener.onIncreaseClicked(adapterPosition)
+            }else{
+                Toast.makeText(it.context,"You can add only 10 items from a particular Product", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        decreaseButton.setOnClickListener{
+            var quantity=quantityTextView.text.toString().toInt()
+            if(quantity>1){
+                quantity--
+                quantityTextView.text=quantity.toString()
+                //listener.onDecreaseClicked(adapterPosition)
+            }else if(quantity==1){
+                Toast.makeText(it.context,"Atleast 1 item should be selected", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         lifecycleScope.launch {
             val job=launch(Dispatchers.IO){
@@ -164,7 +213,10 @@ class ProductFragment : Fragment() {
         addToCartBtn.setOnClickListener {
             GlobalScope.launch {
                 val job=launch (Dispatchers.IO){
-                    val selectedProduct=SelectedProduct(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,1,product.originalPrice,product.priceAfterDiscount)
+                    val count=quantityTextView.text.toString().toInt()
+                    val oldPriceForSelectedQty=count*product.originalPrice
+                    val priceForSelectedQty=count*product.priceAfterDiscount
+                    val selectedProduct=SelectedProduct(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,count,oldPriceForSelectedQty,priceForSelectedQty)
                     cartViewModel.addToCart(selectedProduct)
                 }
                 job.join()
@@ -176,6 +228,41 @@ class ProductFragment : Fragment() {
 
         //(activity as AppCompatActivity).supportActionBar?.title=product.title
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun removeFromFavorite(product: Product?) {
+        GlobalScope.launch {
+            val job=launch(Dispatchers.IO) {
+                favoriteViewModel.deleteFromFavorites(product?.productId)
+                product?.productId?.let { viewModel.removeFavorite(it) }
+            }
+            job.join()
+        }
+    }
+
+    private fun addToFavorite(product: Product?) {
+        GlobalScope.launch {
+            val job = launch(Dispatchers.IO) {
+                if (product != null) {
+                    val favoriteProduct = FavoriteProduct(
+                        product.productId,
+                        product.title,
+                        product.description,
+                        product.originalPrice,
+                        product.discountPercentage,
+                        product.priceAfterDiscount,
+                        product.rating,
+                        product.stock,
+                        product.brand,
+                        product.category,
+                        product.thumbnail
+                    )
+                    favoriteViewModel.addToFavorites(favoriteProduct)
+                    viewModel.markAsFavorite(product.productId)
+                }
+            }
+            job.join()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

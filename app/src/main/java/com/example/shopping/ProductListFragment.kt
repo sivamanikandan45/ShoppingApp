@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -13,12 +14,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.FavoriteProduct
 import com.example.shopping.model.Product
 import com.example.shopping.viewmodel.FavoriteViewModel
-
 import com.example.shopping.viewmodel.ProductViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -33,6 +32,17 @@ class ProductListFragment : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         searchItem=menu.findItem(R.id.category_search)
+        searchItem.setOnActionExpandListener(object :MenuItem.OnActionExpandListener{
+            override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+                sortItem.isVisible=true
+                return true
+            }
+
+        })
         sortItem=menu.findItem(R.id.sort)
         super.onPrepareOptionsMenu(menu)
     }
@@ -99,7 +109,13 @@ class ProductListFragment : Fragment() {
         })
         adapter.setData(productViewModel.getCategoryWiseProductList())
         //adapter.setData(ArrayList(productViewModel.getCategoryWiseProductList()))
-        manager=GridLayoutManager(context,2)
+        manager = if (activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            GridLayoutManager(context,2)
+        } else {
+            //mRecycler.setLayoutManager(GridLayoutManager(mContext, 4))
+            GridLayoutManager(context,4)
+        }
+       // manager=GridLayoutManager(context,2)
         productRecyclerView.setHasFixedSize(true)
         productRecyclerView.adapter=adapter
         productRecyclerView.layoutManager=manager
@@ -125,15 +141,38 @@ class ProductListFragment : Fragment() {
         val searchView=menu.findItem(R.id.category_search)?.actionView as SearchView
 
         searchView.setOnSearchClickListener {
+            println("On search callled")
             sortItem.isVisible=false
             //activity?.invalidateOptionsMenu()
         }
-        searchView.setOnCloseListener{
-            /*searchView.queryHint=""
-            searchView.isIconified = true
-            searchView.onActionViewCollapsed()*/
-            true
-        }
+
+
+
+        /*searchItem.setOnActionExpandListener(object :MenuItem.OnActionExpandListener{
+            override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+                sortItem.isVisible=true
+                return true
+            }
+
+        })*/
+
+
+
+        //searchView.
+
+        /*searchView.setOnCloseListener {
+            searchView.onActionViewCollapsed()
+            sortItem.isVisible=true
+            false
+        }*/
+
+
+
+
 
 
         searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
@@ -146,7 +185,13 @@ class ProductListFragment : Fragment() {
                 return true
             }
         })
+
+       // searchView.setIconifiedByDefault(true)
     }
+
+
+
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
@@ -180,6 +225,8 @@ class ProductListFragment : Fragment() {
         adapter.setData(list)
         //adapter.notifyDataSetChanged()
     }
+
+
 
 
 }

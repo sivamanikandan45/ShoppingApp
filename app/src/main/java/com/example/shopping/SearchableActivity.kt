@@ -2,6 +2,7 @@ package com.example.shopping
 
 import android.app.SearchManager
 import android.content.Intent
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -40,11 +41,18 @@ class SearchableActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         recycle=findViewById(R.id.search_result_recyclerView)
-        var x= DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-        recycle.addItemDecoration(x);
+        /*var x= DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        recycle.addItemDecoration(x);*/
         recycle.setHasFixedSize(true)
-        manager=GridLayoutManager(this,2)
+        manager = if (this.resources?.configuration?.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            GridLayoutManager(this,2)
+        } else {
+            //mRecycler.setLayoutManager(GridLayoutManager(mContext, 4))
+            GridLayoutManager(this,4)
+        }
+        //manager=GridLayoutManager(this,2)
         adapter= TopOfferListAdapter()
+        adapter.setViewType(1)
         recycle.layoutManager=manager
         recycle.adapter=adapter
         adapter.setOnItemClickListener(object:ItemClickListener{

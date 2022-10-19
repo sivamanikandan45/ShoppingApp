@@ -3,6 +3,7 @@ package com.example.shopping
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -93,6 +94,7 @@ class MainActivity : AppCompatActivity() {
 
         if(intent!=null){
             val frag=intent.getStringExtra("fragment")
+            //intent.putExtra("fragment","")
             if(frag=="cart"){
                 println("Got cart")
                 viewModel.fragmentId=R.id.cart
@@ -105,6 +107,8 @@ class MainActivity : AppCompatActivity() {
         viewModel.fragmentName.observe(this, Observer {
             if(it.equals("Cart")){
                 bottomNavigationView.selectedItemId=R.id.cart
+                viewModel.fragmentName.value=""
+                intent.putExtra("fragment","")
                 /*replaceFragment(CartFragment())
                 viewModel.fragmentId=R.id.cart*/
             }
@@ -207,5 +211,7 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+
 
 }

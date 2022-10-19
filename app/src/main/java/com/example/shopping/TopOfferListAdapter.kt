@@ -20,6 +20,11 @@ class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>()
     //private lateinit var list:ArrayList<Product>
     private var list= ArrayList<Product>()
     private lateinit var listener: ItemClickListener
+    private var viewType=0
+
+    fun setViewType(viewType:Int){
+        this.viewType=viewType
+    }
 
     //private lateinit var favoriteButtonListener:FavoriteButtonListener
 
@@ -125,9 +130,28 @@ class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>()
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder {
-        val view=
-            LayoutInflater.from(parent.context).inflate(R.layout.item_top_offer,parent,false)
-        return ViewHolder(view,listener)
+
+        return if(viewType==0){
+            val view=
+                LayoutInflater.from(parent.context).inflate(R.layout.item_top_offer,parent,false)
+            ViewHolder(view,listener)
+        }else{
+            val view=
+                LayoutInflater.from(parent.context).inflate(R.layout.item_search,parent,false)
+            ViewHolder(view,listener)
+        }
+        /*when(viewType){
+            0->{
+                val view=
+                    LayoutInflater.from(parent.context).inflate(R.layout.item_top_offer,parent,false)
+                return ViewHolder(view,listener)
+            }
+            1->{
+                val view=
+                    LayoutInflater.from(parent.context).inflate(R.layout.item_search,parent,false)
+                return ViewHolder(view,listener)
+            }
+        }*/
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -142,5 +166,9 @@ class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>()
         super.onViewRecycled(holder)
         holder.imageView.setImageBitmap(null)
         //holder.imageButton.setImageResource(R.drawable.border_heart)
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return viewType
     }
 }

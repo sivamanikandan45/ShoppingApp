@@ -15,7 +15,7 @@ data class Product(@PrimaryKey val productId:Int,
                    val brand:String,
                    val category:String,
                    val thumbnail:String,
-                   val favorite: Boolean =false){
+                   var favorite: Boolean =false){
 
     override fun equals(other: Any?): Boolean {
         if(other is Product){

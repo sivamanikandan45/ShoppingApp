@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -114,7 +115,14 @@ class WishlistFragment : Fragment() {
             job.join()
         }
 
-        manager= GridLayoutManager(context,2)
+        manager = if (activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            GridLayoutManager(context,2)
+        } else {
+            //mRecycler.setLayoutManager(GridLayoutManager(mContext, 4))
+            GridLayoutManager(context,4)
+        }
+
+        //manager= GridLayoutManager(context,2)
         recyclerView.adapter=adapter
         recyclerView.layoutManager=manager
 

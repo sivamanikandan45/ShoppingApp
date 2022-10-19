@@ -6,9 +6,8 @@
     tools:context=".ProductListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:clipToPadding="false"
+        android:layout_marginEnd="8dp"
         android:id="@+id/product_list_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
