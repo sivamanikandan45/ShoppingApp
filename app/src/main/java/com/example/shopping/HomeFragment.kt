@@ -119,6 +119,7 @@ class HomeFragment : Fragment() {
         categoryListAdapter.setOnItemClickListener(object :ItemClickListener{
             override fun onItemClick(position: Int) {
                 val intent=Intent(context,CategoryActivity::class.java)
+                intent.putExtra("fragment_name","product_list")
                 intent.putExtra("category", categoryList[position].categoryName)
                 startActivity(intent)
             }
@@ -159,6 +160,12 @@ class HomeFragment : Fragment() {
                     //productViewModel.push(productViewModel.topOfferList.value?.get(position)!!)
                     //println(productViewModel.selectedProduct.value)
                     replace(R.id.fragment_container,ProductFragment() )
+
+                    /*val intent=Intent(context,CategoryActivity::class.java)
+                    intent.putExtra("fragment_name","product")
+                    intent.putExtra("selected_product_id",productViewModel.topOfferList.value?.get(position)?.productId)
+                    startActivity(intent)*/
+
                 }
             }
         })
@@ -240,6 +247,7 @@ class HomeFragment : Fragment() {
 
     private fun showCategoryListForCarouselImage(position: Int) {
         val intent = Intent(context, CategoryActivity::class.java)
+        intent.putExtra("fragment_name","product_list")
         when (images[position]) {
             R.drawable.poster1 -> {
                 intent.putExtra("category", "Men's fashion")

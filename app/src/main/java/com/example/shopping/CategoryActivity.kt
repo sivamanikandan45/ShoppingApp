@@ -5,9 +5,14 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.shopping.enums.CategoryType
 import com.example.shopping.viewmodel.ProductViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CategoryActivity : AppCompatActivity() {
     private lateinit var productViewModel:ProductViewModel
@@ -15,12 +20,32 @@ class CategoryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val productViewModel= ViewModelProvider(this)[ProductViewModel::class.java]
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_category)
+
+        val fragName=intent.getStringExtra("fragment_name")
+        println("I have got fragName $fragName")
+    if(fragName=="product_list"){
         val category=intent.getStringExtra("category")
         setCategory(category,productViewModel)
         supportActionBar?.title=category
-        //supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        setContentView(R.layout.activity_category)
         replaceFragment(ProductListFragment())
+    }else if(fragName=="product"){
+        val id=intent.getIntExtra("selected_product_id",0)
+        GlobalScope.launch {
+            val job=launch (Dispatchers.IO){
+                productViewModel.getProductByID(id)
+            }
+            job.join()
+            withContext(Dispatchers.Main){
+                productViewModel.selectedProduct.observe(this@CategoryActivity, Observer {
+                    println("The product $it")
+                    replaceFragment(ProductFragment())
+                })
+            }
+        }
+
+    }
+
         /*if(intent!=null){
             val position=intent.getIntExtra("SelectedProduct",-1)
             if(position!=-1){

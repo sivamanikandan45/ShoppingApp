@@ -2,10 +2,8 @@ package com.example.shopping
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ScrollView
 import android.widget.TextView
@@ -192,6 +190,7 @@ class CartFragment : Fragment() {
             withContext(Dispatchers.Main){
                 val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
                 divider?.dividerInsetStart=375
+                divider?.isLastItemDecorated = false
                 divider?.let { recyclerView.addItemDecoration(it) }
                 //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
                 recyclerView.adapter=adapter

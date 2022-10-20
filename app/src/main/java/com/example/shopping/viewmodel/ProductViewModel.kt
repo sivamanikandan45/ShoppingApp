@@ -349,18 +349,16 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
         return list
     }
 
-    /*fun getProductByID(id: Int): Product? {
-        var product: Product? =null
+    fun getProductByID(id: Int){
         GlobalScope.launch{
             val job=launch(Dispatchers.IO) {
                 val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
-                product=dao.getProduct(id)
-                println("Got form db $product")
+                val product=dao.getProduct(id)
+                selectedProduct.postValue(product)
             }
             job.join()
         }
-        return product
-    }*/
+    }
 
 
 }

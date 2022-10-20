@@ -112,6 +112,13 @@
         app:layout_constraintStart_toStartOf="@+id/cart_item_product_old_price"
         app:layout_constraintTop_toBottomOf="@+id/cart_item_product_old_price" />
 
+    <!--<com.google.android.material.divider.MaterialDivider
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/decrease_qty_btn"
+        app:layout_constraintEnd_toEndOf="parent"/>-->
+
 
     <!--<Spinner
         android:id="@+id/spinner"

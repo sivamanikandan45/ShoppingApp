@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
@@ -25,6 +26,10 @@ class AddDeliveryAddressFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        /*activity?.window?.setSoftInputMode(
+            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN+WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+        )*/
+
         return inflater.inflate(R.layout.fragment_add_delivery_address, container, false)
     }
 

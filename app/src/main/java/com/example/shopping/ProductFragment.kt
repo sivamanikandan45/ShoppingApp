@@ -20,6 +20,8 @@ import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.FavoriteViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.RecentlyViewedViewModel
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -32,10 +34,28 @@ class ProductFragment : Fragment() {
     private val recentlyViewedViewModel:RecentlyViewedViewModel by activityViewModels()
     private val viewModel:ProductViewModel by activityViewModels()
     private val favoriteViewModel:FavoriteViewModel by activityViewModels()
+    private lateinit var cartItem: MenuItem
+    //private lateinit var toolbar: Toolbar
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //toolbar=activity.findViewById(R.id.toolbar)
         setHasOptionsMenu(true)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        cartItem=menu.findItem(R.id.cart_menu)
+        /*val badge = BadgeDrawable.create(requireContext())
+        BadgeUtils.attachBadgeDrawable(badge, view,menu )*/
+        /*val badgeDrawable=cartItem.getOrCreateBadge(R.id.cart)
+        badgeDrawable.isVisible=true
+        badgeDrawable.number=it
+        badgeDrawable.backgroundColor=Color.parseColor("#b00020")
+        badgeDrawable.badgeTextColor=Color.WHITE*/
+
+        super.onPrepareOptionsMenu(menu)
     }
 
     override fun onCreateView(
@@ -175,6 +195,10 @@ class ProductFragment : Fragment() {
                     adapter.setData(list!!)
                     adapter.setOnItemClickListener(object : ItemClickListener{
                         override fun onItemClick(position: Int) {
+                            val intent=Intent(context,CategoryActivity::class.java)
+                            intent.putExtra("fragment_name","product")
+                            intent.putExtra("selected_product_id",list[position].productId)
+                            startActivity(intent)
                             /*parentFragmentManager.commit {
                                 addToBackStack(null)
                                 val viewModel:ProductViewModel by activityViewModels()
@@ -199,32 +223,36 @@ class ProductFragment : Fragment() {
             job.join()
         }
 
-        productNameTextView.text=product?.title
-        productPriceTextView.text="₹"+product?.priceAfterDiscount.toString()
-        brandTextView.text=product?.brand
-        ratingBar.rating= product?.rating?.toFloat()!!
-        descriptionTextView.text=product.description
-        ratedValueTextView.text=product.rating
-        oldPrice.text="₹"+product.originalPrice.toString()
-        oldPrice.showStrikeThrough(true)
-        discount.text=product.discountPercentage.toString()+"% Off"
+        if(product!=null){
+            productNameTextView.text=product.title
+            productPriceTextView.text="₹"+product.priceAfterDiscount.toString()
+            brandTextView.text=product.brand
+            ratingBar.rating= product.rating?.toFloat()!!
+            descriptionTextView.text=product.description
+            ratedValueTextView.text=product.rating
+            oldPrice.text="₹"+product.originalPrice.toString()
+            oldPrice.showStrikeThrough(true)
+            discount.text=product.discountPercentage.toString()+"% Off"
 
-        val addToCartBtn=view.findViewById<Button>(R.id.add_to_cart_button)
-        addToCartBtn.setOnClickListener {
-            GlobalScope.launch {
-                val job=launch (Dispatchers.IO){
-                    val count=quantityTextView.text.toString().toInt()
-                    val oldPriceForSelectedQty=count*product.originalPrice
-                    val priceForSelectedQty=count*product.priceAfterDiscount
-                    val selectedProduct=SelectedProduct(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,count,oldPriceForSelectedQty,priceForSelectedQty)
-                    cartViewModel.addToCart(selectedProduct)
+            val addToCartBtn=view.findViewById<Button>(R.id.add_to_cart_button)
+            addToCartBtn.setOnClickListener {
+                GlobalScope.launch {
+                    val job=launch (Dispatchers.IO){
+                        val count=quantityTextView.text.toString().toInt()
+                        val oldPriceForSelectedQty=count*product.originalPrice
+                        val priceForSelectedQty=count*product.priceAfterDiscount
+                        val selectedProduct=SelectedProduct(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,count,oldPriceForSelectedQty,priceForSelectedQty)
+                        cartViewModel.addToCart(selectedProduct)
+                    }
+                    job.join()
                 }
-                job.join()
+                //val coord=view.findViewById<CoordinatorLayout>(R.id.button_layout)
+                Snackbar.make(it,"Added to the Cart",Snackbar.LENGTH_LONG)
+                    .show()
             }
-            //val coord=view.findViewById<CoordinatorLayout>(R.id.button_layout)
-            Snackbar.make(it,"Added to the Cart",Snackbar.LENGTH_LONG)
-                .show()
         }
+
+
 
         //(activity as AppCompatActivity).supportActionBar?.title=product.title
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)

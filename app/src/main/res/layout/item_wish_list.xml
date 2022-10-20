@@ -72,32 +72,28 @@
                 android:id="@+id/favorite_product_discount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="11% Off"
-                app:layout_constraintHorizontal_bias="0.0"
                 android:layout_marginEnd="8dp"
+                android:text="11% Off"
+                android:layout_marginStart="8dp"
                 android:textColor="#4c9a2a"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/favorite_offer_price"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/favorite_product_price"
                 app:layout_constraintTop_toTopOf="@+id/favorite_product_price" />
 
             <TextView
                 android:id="@+id/favorite_offer_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/open_sans"
                 android:text="@string/title_price"
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/favorite_product_price"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/favorite_product_price"
-                app:layout_constraintTop_toTopOf="@+id/favorite_product_price" />
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="@+id/favorite_product_price"
+                app:layout_constraintTop_toBottomOf="@+id/favorite_product_price" />
 
             <Button
                 android:id="@+id/favorite_add_to_cart_btn"
@@ -106,14 +102,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginTop="8dp"
                 android:text="Add to Cart"
                 android:textAllCaps="false"
-                app:layout_constraintVertical_bias="0.0"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/favorite_offer_price" />
+                app:layout_constraintTop_toBottomOf="@+id/favorite_offer_price"
+                app:layout_constraintVertical_bias="0.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

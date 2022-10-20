@@ -28,6 +28,7 @@ class SearchableActivity : AppCompatActivity() {
     private lateinit var manager: LinearLayoutManager
     private lateinit var emptypage:ConstraintLayout
     private lateinit var favoriteButtonListener:FavoriteButtonListener
+    val newList= mutableListOf<Product>()
    // private lateinit var viewModel: ProductViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,7 +58,10 @@ class SearchableActivity : AppCompatActivity() {
         recycle.adapter=adapter
         adapter.setOnItemClickListener(object:ItemClickListener{
             override fun onItemClick(position: Int) {
-                //println("$position is clicked")
+                val intent=Intent(this@SearchableActivity,CategoryActivity::class.java)
+                intent.putExtra("fragment_name","product")
+                intent.putExtra("selected_product_id",newList[position].productId)
+                startActivity(intent)
             }
         })
 
@@ -73,7 +77,6 @@ class SearchableActivity : AppCompatActivity() {
         println("Performing search for $query")
         val viewModel= ViewModelProvider(this)[ProductViewModel::class.java]
         viewModel.productList.observe(this, Observer {
-            val newList= mutableListOf<Product>()
             if(it!=null){
                 for(i in it){
                     if(i.title.lowercase().contains(query.lowercase())){

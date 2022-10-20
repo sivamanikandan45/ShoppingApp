@@ -32,8 +32,11 @@ class ProductListFragment : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         searchItem=menu.findItem(R.id.category_search)
+        sortItem=menu.findItem(R.id.sort)
         searchItem.setOnActionExpandListener(object :MenuItem.OnActionExpandListener{
             override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+                println("On search callled")
+                sortItem.isVisible=false
                 return true
             }
 
@@ -43,7 +46,6 @@ class ProductListFragment : Fragment() {
             }
 
         })
-        sortItem=menu.findItem(R.id.sort)
         super.onPrepareOptionsMenu(menu)
     }
 
@@ -140,11 +142,11 @@ class ProductListFragment : Fragment() {
         inflater.inflate(R.menu.category_activity_menu,menu)
         val searchView=menu.findItem(R.id.category_search)?.actionView as SearchView
 
-        searchView.setOnSearchClickListener {
+        /*searchView.setOnSearchClickListener {
             println("On search callled")
             sortItem.isVisible=false
             //activity?.invalidateOptionsMenu()
-        }
+        }*/
 
 
 
