@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,7 +11,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import com.example.shopping.viewmodel.FavoriteViewModel
-import com.example.shopping.viewmodel.OrderViewModel
 
 class AccountFragment : Fragment() {
 
@@ -34,24 +34,27 @@ class AccountFragment : Fragment() {
         val myOrdersBtn=view.findViewById<ConstraintLayout>(R.id.my_orders)
 
         wishlistButton.setOnClickListener {
-            favoriteViewModel.calledFrom="Account"
-            replaceFragment(WishlistFragment())
+            //favoriteViewModel.calledFrom="Account"
+            goToSelectedPage("wishlist")
         }
 
         savedAddressOption.setOnClickListener {
-            replaceFragment(SavedAddressFragment())
+            goToSelectedPage("savedAddress")
         }
 
         myOrdersBtn.setOnClickListener {
-            replaceFragment(MyOrdersFragment())
+            goToSelectedPage("myOrders")
         }
 
     }
 
-    private fun replaceFragment(fragment: Fragment) {
-        parentFragmentManager.commit {
+    private fun goToSelectedPage(fragmentName:String) {
+        val intent=Intent(requireContext(),AccountActivity::class.java)
+        intent.putExtra("frag_name",fragmentName)
+        startActivity(intent)
+        /*parentFragmentManager.commit {
             addToBackStack(null)
             replace(R.id.fragment_container, fragment)
-        }
+        }*/
     }
 }

@@ -27,6 +27,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
     var categoryList = MutableLiveData<List<Product>>()
 
     var selectedProduct=MutableLiveData<Product>()
+    var searchedQuery:String=""
     //var productStack=Stack<Product>()
     /*fun push(product:Product){
         productStack.push(product)
@@ -256,14 +257,21 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
     }
 
     fun sortByAlphabet() {
-        Collections.sort(categoryList.value!!,object :Comparator<Product>{
+        /*Collections.sort(categoryList.value!!,object :Comparator<Product>{
             override fun compare(p0: Product?, p1: Product?): Int {
                 if (p1 != null) {
                     return p0?.title?.compareTo(p1.title) ?: 0
                 }
                 return 0
             }
-        })
+        })*/
+
+
+        val newList=categoryList.value?.sortedBy {
+            it.title
+        }
+        categoryList.postValue(newList!!)
+        //categoryList.value=newList!!
 
         /*for(item in categoryList.value!!){
             println(item.title)
@@ -271,7 +279,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
     }
 
     fun sortByARating() {
-        Collections.sort(categoryList.value!!,object :Comparator<Product>{
+        /*Collections.sort(categoryList.value!!,object :Comparator<Product>{
             override fun compare(p0: Product?, p1: Product?): Int {
                 if (p1 != null) {
                     return p0?.rating?.compareTo(p1.rating) ?: 0
@@ -279,11 +287,17 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                 return 0
             }
         })
-        categoryList.postValue(categoryList.value!!.reversed())
+        categoryList.postValue(categoryList.value!!.reversed())*/
+        val newList=categoryList.value?.sortedByDescending {
+            it.rating
+        }
+        //categoryList.value=newList!!
+        categoryList.postValue(newList!!)
+
     }
 
     fun sortByPriceHghToLow() {
-        Collections.sort(categoryList.value!!,object :Comparator<Product>{
+        /*Collections.sort(categoryList.value!!,object :Comparator<Product>{
             override fun compare(p0: Product?, p1: Product?): Int {
                 if (p1 != null) {
                     return p0?.priceAfterDiscount?.compareTo(p1.priceAfterDiscount) ?: 0
@@ -291,18 +305,26 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                 return 0
             }
         })
-        categoryList.postValue(categoryList.value!!.reversed())
+        categoryList.postValue(categoryList.value!!.reversed())*/
+        val newList=categoryList.value?.sortedByDescending {
+            it.priceAfterDiscount
+        }
+        categoryList.value=newList!!
     }
 
     fun sortByPriceLowToHigh() {
-        Collections.sort(categoryList.value!!,object :Comparator<Product>{
+        /*Collections.sort(categoryList.value!!,object :Comparator<Product>{
             override fun compare(p0: Product?, p1: Product?): Int {
                 if (p1 != null) {
                     return p0?.priceAfterDiscount?.compareTo(p1.priceAfterDiscount) ?: 0
                 }
                 return 0
             }
-        })
+        })*/
+        val newList=categoryList.value?.sortedBy{
+            it.priceAfterDiscount
+        }
+        categoryList.value=newList!!
     }
 
     fun markAsFavorite(productId: Int){

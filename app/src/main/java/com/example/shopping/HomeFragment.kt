@@ -5,15 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.Group
 import androidx.core.content.ContextCompat.getSystemService
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.commit
+import androidx.fragment.app.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -65,6 +63,7 @@ class HomeFragment : Fragment() {
     }
 
     override fun onStart() {
+        //(activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         super.onStart()
         var amount=0
         GlobalScope.launch {
@@ -154,12 +153,15 @@ class HomeFragment : Fragment() {
         topOfferListAdapter.setOnItemClickListener(object : ItemClickListener{
             override fun onItemClick(position: Int) {
                 parentFragmentManager.commit {
-                    addToBackStack(null)
-                    //val viewModel:ProductViewModel by activityViewModels()
+                    /*hide(this@HomeFragment)
                     productViewModel.selectedProduct.value= productViewModel.topOfferList.value?.get(position)
-                    //productViewModel.push(productViewModel.topOfferList.value?.get(position)!!)
-                    //println(productViewModel.selectedProduct.value)
+                    add<ProductFragment>(R.id.fragment_container)
+                    addToBackStack(null)*/
+
+                    addToBackStack(null)
+                    productViewModel.selectedProduct.value= productViewModel.topOfferList.value?.get(position)
                     replace(R.id.fragment_container,ProductFragment() )
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 
                     /*val intent=Intent(context,CategoryActivity::class.java)
                     intent.putExtra("fragment_name","product")
@@ -191,8 +193,12 @@ class HomeFragment : Fragment() {
                     if(selectedProduct!=null){
                         val product=Product(selectedProduct.productId,selectedProduct.title,selectedProduct.description,selectedProduct.originalPrice,selectedProduct.discountPercentage,selectedProduct.priceAfterDiscount,selectedProduct.rating,selectedProduct.stock,selectedProduct.brand,selectedProduct.category,selectedProduct.thumbnail,true)
                         productViewModel.selectedProduct.value=product
-                        //productViewModel.push(product)
                         replace(R.id.fragment_container,ProductFragment())
+                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        /*hide(this@HomeFragment)
+                        productViewModel.selectedProduct.value=product
+                        add<ProductFragment>(R.id.fragment_container)*/
+
                     }
                 }
             }

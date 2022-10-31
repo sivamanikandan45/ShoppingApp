@@ -30,6 +30,7 @@
         <entry key="app/src/main/res/drawable/qty_btn.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/rounded_btn.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/wishlist_selector.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_account.xml" value="0.16210739614994935" />
         <entry key="app/src/main/res/layout/activity_account_option.xml" value="0.15476190476190477" />
         <entry key="app/src/main/res/layout/activity_category.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_checkout.xml" value="0.20380434782608695" />

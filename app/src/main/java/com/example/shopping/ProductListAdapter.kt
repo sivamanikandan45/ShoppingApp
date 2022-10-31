@@ -14,6 +14,7 @@ import com.example.shopping.util.ProductDiffUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.URL
 
 
@@ -27,6 +28,8 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
     fun setData(list:List<Product>){
         val oldList=this.list
         val diffUtil= ProductDiffUtil(oldList,list)
+        println("The old list is $oldList")
+        println("The new list is $list")
         val diffResult= DiffUtil.calculateDiff(diffUtil,false)
         this.list=list
         diffResult.dispatchUpdatesTo(this)
@@ -48,7 +51,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
                 if (show) paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 else paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
         }
-
+        var loadingPosition:Int=-1
         val imageView:ImageView
         val productNameTextView:TextView
 //        val productBrandTextView:TextView
@@ -94,21 +97,31 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
 
         fun bind(product: Product) {
             var bitmapValue:Bitmap?=null
+            imageView.setImageBitmap(bitmapValue)
             //var imageUrl:Uri?=null
             productNameTextView.text=product.title//.capitalize()//product.brand+" "+
             //Picasso.get().load(product.thumbnail).into(imageView);
             GlobalScope.launch {
                 val job=launch(Dispatchers.IO) {
                     val imageUrl = URL(product.thumbnail)
+                    bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                    withContext(Dispatchers.Main){
+                        if(loadingPosition==adapterPosition){
+                            if(list[adapterPosition].productId==product.productId){
+                                imageView.setImageBitmap(bitmapValue)
+                            }
+                        }
+                    }
+                    //bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                     //imageUrl = Uri.parse("Data you got from db");
-                     bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+
                 }
                 job.join()
-                val imageSettingCoroutine=launch(Dispatchers.Main){
+                /*val imageSettingCoroutine=launch(Dispatchers.Main){
                     imageView.setImageBitmap(bitmapValue)
                     //imageView.setImageURI(imageUrl)
                 }
-                imageSettingCoroutine.join()
+                imageSettingCoroutine.join()*/
             }
 
             if(product.favorite){
@@ -135,6 +148,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.loadingPosition=position
         holder.bind(list[position])
     }
 

@@ -189,7 +189,7 @@ class CartFragment : Fragment() {
             job.join()
             withContext(Dispatchers.Main){
                 val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
-                divider?.dividerInsetStart=375
+                /*divider?.dividerInsetStart=396*/
                 divider?.isLastItemDecorated = false
                 divider?.let { recyclerView.addItemDecoration(it) }
                 //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()

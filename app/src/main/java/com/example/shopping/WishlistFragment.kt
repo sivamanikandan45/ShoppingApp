@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
@@ -65,7 +66,10 @@ class WishlistFragment : Fragment() {
                     if(selectedProduct!=null){
                         val product=Product(selectedProduct.productId,selectedProduct.title,selectedProduct.description,selectedProduct.originalPrice,selectedProduct.discountPercentage,selectedProduct.priceAfterDiscount,selectedProduct.rating,selectedProduct.stock,selectedProduct.brand,selectedProduct.category,selectedProduct.thumbnail,true)
                         productViewModel.selectedProduct.value=product
-                        replace(R.id.fragment_container,ProductFragment())
+                        //replace(R.id.fragment_container,ProductFragment())
+                        hide(this@WishlistFragment)
+                        productViewModel.selectedProduct.value=product
+                        add<ProductFragment>(R.id.fragment_container)
                     }
                 }
             }

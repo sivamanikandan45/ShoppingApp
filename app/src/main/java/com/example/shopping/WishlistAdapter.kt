@@ -18,6 +18,7 @@ import com.google.android.material.imageview.ShapeableImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.URL
 
 class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
@@ -61,6 +62,7 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
         val discount: TextView
         val menu:ImageButton
         val addToCartBtn:Button
+        var loadingPosition=-1
 
         init {
             imageView=view.findViewById<ShapeableImageView>(R.id.favorite_imageview)
@@ -119,12 +121,20 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
                 val job=launch(Dispatchers.IO) {
                     val imageUrl = URL(product.thumbnail)
                     bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                    withContext(Dispatchers.Main){
+                        if(loadingPosition==adapterPosition){
+                            if(list[adapterPosition].productId==product.productId){
+                                imageView.setImageBitmap(bitmapValue)
+                            }
+                        }
+                    }
+                    //bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                 }
                 job.join()
-                val imageSettingCoroutine=launch(Dispatchers.Main){
+                /*val imageSettingCoroutine=launch(Dispatchers.Main){
                     imageView.setImageBitmap(bitmapValue)
                 }
-                imageSettingCoroutine.join()
+                imageSettingCoroutine.join()*/
             }
             imageView.setImageBitmap(bitmapValue)
         }
@@ -140,6 +150,7 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.loadingPosition=position
         holder.bind(list[position])
     }
 

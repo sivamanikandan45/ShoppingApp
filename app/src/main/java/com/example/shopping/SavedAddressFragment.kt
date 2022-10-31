@@ -106,7 +106,7 @@ class SavedAddressFragment : Fragment() {
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.commit {
             addToBackStack(null)
-            replace(R.id.fragment_container, fragment)
+            replace(R.id.account_fragment_container, fragment)
         }
     }
 }

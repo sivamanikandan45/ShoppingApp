@@ -14,6 +14,7 @@ import com.google.android.material.imageview.ShapeableImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.URL
 
 class RecentlyViewedListAdapter:RecyclerView.Adapter<RecentlyViewedListAdapter.ViewHolder>(){
@@ -35,6 +36,7 @@ class RecentlyViewedListAdapter:RecyclerView.Adapter<RecentlyViewedListAdapter.V
         val productPrice: TextView
         val productRatingBar: RatingBar
         val productRatedValue: TextView
+        var loadingPosition=-1
         init {
             imageView=view.findViewById<ShapeableImageView>(R.id.similar_product_imageView)
             productName=view.findViewById<TextView>(R.id.similar_product_name)
@@ -58,12 +60,21 @@ class RecentlyViewedListAdapter:RecyclerView.Adapter<RecentlyViewedListAdapter.V
                 val job=launch(Dispatchers.IO) {
                     val imageUrl = URL(product.thumbnail)
                     bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                    withContext(Dispatchers.Main){
+                        if(loadingPosition==adapterPosition){
+                            if(list[adapterPosition].productId==product.productId){
+                                println("The value of list and current item is ${list[adapterPosition].productId} ${product.productId}")
+                                println("The val of loading pos and adpaterpos is $loadingPosition $adapterPosition")
+                                imageView.setImageBitmap(bitmapValue)
+                            }
+                        }
+                    }
                 }
                 job.join()
-                val imageSettingCoroutine=launch(Dispatchers.Main){
+                /*val imageSettingCoroutine=launch(Dispatchers.Main){
                     imageView.setImageBitmap(bitmapValue)
                 }
-                imageSettingCoroutine.join()
+                imageSettingCoroutine.join()*/
             }
             imageView.setImageBitmap(bitmapValue)
         }
@@ -79,6 +90,7 @@ class RecentlyViewedListAdapter:RecyclerView.Adapter<RecentlyViewedListAdapter.V
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.loadingPosition=position
         holder.bind(list[position])
     }
 

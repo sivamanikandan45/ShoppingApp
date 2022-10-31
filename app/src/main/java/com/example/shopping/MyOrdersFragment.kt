@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
@@ -89,7 +90,8 @@ class MyOrdersFragment : Fragment() {
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.commit {
             addToBackStack(null)
-            replace(R.id.fragment_container, fragment)
+            replace(R.id.account_fragment_container, fragment)
+            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
     }
 

@@ -15,6 +15,7 @@ import com.example.shopping.util.CartDiffUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.RoundingMode
 import java.net.URL
 import java.text.DecimalFormat
@@ -39,6 +40,7 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
     }
 
     inner class ViewHolder(view:View,listener: QuantityButtonListener):RecyclerView.ViewHolder(view){
+
 
 
         fun TextView.showStrikeThrough(show: Boolean) {
@@ -88,12 +90,20 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
                 val job=launch(Dispatchers.IO) {
                     val imageUrl = URL(selectedProduct.imageUrl)
                     bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                    withContext(Dispatchers.Main){
+                        if(loadingPosition==adapterPosition){
+                            if(list[adapterPosition].productId==selectedProduct.productId){
+                                productImageView.setImageBitmap(bitmapValue)
+                            }
+                        }
+                    }
+                    //bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                 }
                 job.join()
-                val imageSettingCoroutine=launch(Dispatchers.Main){
+                /*val imageSettingCoroutine=launch(Dispatchers.Main){
                     productImageView.setImageBitmap(bitmapValue)
                 }
-                imageSettingCoroutine.join()
+                imageSettingCoroutine.join()*/
             }
             productImageView.setImageBitmap(bitmapValue)
         }
@@ -107,6 +117,7 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
         val increaseButton:ImageButton
         val decreaseButton:ImageButton
         val quantityTextView:TextView
+        var loadingPosition=-1
 
         init {
             productImageView=view.findViewById(R.id.cart_item_product_image)
@@ -127,6 +138,7 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.loadingPosition=position
         holder.bind(list[position])
     }
 

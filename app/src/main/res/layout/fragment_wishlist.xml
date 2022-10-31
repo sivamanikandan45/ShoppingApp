@@ -45,6 +45,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:id="@+id/wishlist_recyclerView"
         android:clipToPadding="false"
         android:layout_width="match_parent"

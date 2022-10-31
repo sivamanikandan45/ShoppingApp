@@ -76,6 +76,7 @@ class CategoryActivity : AppCompatActivity() {
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.commit {
             //add<ProductListFragment>(R.id.category_fragment_container)
+            //addToBackStack(null)
             replace(R.id.category_fragment_container,fragment)
         }
     }

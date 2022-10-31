@@ -14,6 +14,7 @@ import com.example.shopping.model.Product
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.URL
 
 class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>() {
@@ -57,6 +58,7 @@ class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>()
         val ratedValue: TextView
         val productNewPriceTextView: TextView
         val offer: TextView
+        var loadingPosition=-1
 
         //val imageButton: ImageView
 
@@ -100,15 +102,22 @@ class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>()
             GlobalScope.launch {
                 val job=launch(Dispatchers.IO) {
                     val imageUrl = URL(product.thumbnail)
-                    //imageUrl = Uri.parse("Data you got from db");
                     bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                    withContext(Dispatchers.Main){
+                        if(loadingPosition==adapterPosition){
+                            if(list[adapterPosition].productId==product.productId){
+                                imageView.setImageBitmap(bitmapValue)
+                            }
+                        }
+                    }
+                    //bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                 }
                 job.join()
-                val imageSettingCoroutine=launch(Dispatchers.Main){
+                /*val imageSettingCoroutine=launch(Dispatchers.Main){
                     imageView.setImageBitmap(bitmapValue)
                     //imageView.setImageURI(imageUrl)
                 }
-                imageSettingCoroutine.join()
+                imageSettingCoroutine.join()*/
             }
 
             /*if(product.favorite){
@@ -155,6 +164,7 @@ class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.loadingPosition=position
         holder.bind(list[position])
     }
 
