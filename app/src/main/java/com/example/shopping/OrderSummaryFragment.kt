@@ -13,8 +13,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.shopping.enums.CheckoutMode
+import com.example.shopping.model.SelectedProduct
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.CheckoutViewModel
+import com.example.shopping.viewmodel.ProductViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -27,6 +30,7 @@ class OrderSummaryFragment : Fragment() {
     private lateinit var manager: LinearLayoutManager
     private lateinit var adapter: SelectedProductListAdapter
     private val cartViewModel: CartViewModel by activityViewModels()
+    private val productViewModel: ProductViewModel by activityViewModels()
 
 private val checkoutViewModel:CheckoutViewModel by activityViewModels()
     override fun onCreateView(
@@ -68,6 +72,11 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
 
         GlobalScope.launch {
             val job=launch {
+                /*if(checkoutViewModel.mode==CheckoutMode.BUY_NOW){
+                    withContext(Dispatchers.Main){
+                        val selectedProduct=SelectedProduct(product)
+                    }
+                }*/
                 adapter.setData(cartViewModel.getCartItems())
                 val priceAfterDiscount=cartViewModel.getCartAmountAfterDiscount()
                 val priceBeforeDiscount=cartViewModel.getCartAmountBeforeDiscount()

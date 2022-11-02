@@ -19,6 +19,8 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Collections.addAll
 
 
 class ProductListFragment : Fragment() {
@@ -31,19 +33,21 @@ class ProductListFragment : Fragment() {
     private lateinit var sortItem:MenuItem
     private lateinit var searchItem: MenuItem
     private var searchedQuery=""
+    private lateinit var currentProductList:List<Product>
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         searchItem=menu.findItem(R.id.category_search)
         sortItem=menu.findItem(R.id.sort)
         searchItem.setOnActionExpandListener(object :MenuItem.OnActionExpandListener{
             override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
-                println("On search called")
+                println("On search called from onPrepareOptions menu")
                 sortItem.isVisible=false
                 return true
             }
 
             override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
                 sortItem.isVisible=true
+                setAdapterAttributes()
                 return true
             }
 
@@ -67,57 +71,11 @@ class ProductListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        println("On view created called again")
-
         productRecyclerView=view.findViewById<RecyclerView>(R.id.product_list_recyclerView)
         adapter=ProductListAdapter()
 
-        adapter.setFavoriteButtonListener(object :FavoriteButtonListener{
-            override fun handle(position: Int) {
-                val viewModel:ProductViewModel by activityViewModels()
-                val product=viewModel.categoryList.value?.get(position)
-                if(product?.favorite == true){
-                    GlobalScope.launch {
-                        val job=launch(Dispatchers.IO) {
-                            favoriteViewModel.deleteFromFavorites(product.productId)
-                            viewModel.removeFavorite(product.productId)
-                        }
-                        job.join()
-                        Snackbar.make(productRecyclerView,"Removed from WishList",Snackbar.LENGTH_LONG)
-                            .show()
-                    }
-                }else{
-                    GlobalScope.launch {
-                        val job=launch(Dispatchers.IO) {
-                            if(product!=null){
-                                val favoriteProduct=FavoriteProduct(product.productId,product.title,product.description,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,product.rating,product.stock,product.brand,product.category,product.thumbnail)
-                                favoriteViewModel.addToFavorites(favoriteProduct)
-                                viewModel.markAsFavorite(product.productId)
-                            }
-                        }
-                        job.join()
-                        Snackbar.make(productRecyclerView,"Added to WishList",Snackbar.LENGTH_LONG)
-                            .show()
-                    }
-                }
-            }
-        })
+        setAdapterAttributes()
 
-        adapter.setOnItemClickListener(object : ItemClickListener{
-            override fun onItemClick(position: Int) {
-                parentFragmentManager.commit {
-                    hide(this@ProductListFragment)
-                    productViewModel.selectedProduct.value= productViewModel.categoryList.value?.get(position)
-                    add<ProductFragment>(R.id.category_fragment_container)
-                    addToBackStack(null)
-                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-
-                    /*productViewModel.selectedProduct.value= productViewModel.categoryList.value?.get(position)
-                    replace(R.id.category_fragment_container,ProductFragment() )
-                    addToBackStack(null)*/
-                }
-            }
-        })
         adapter.setData(productViewModel.getCategoryWiseProductList())
         manager = if (activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_PORTRAIT) {
             GridLayoutManager(requireContext(),2)
@@ -145,8 +103,88 @@ class ProductListFragment : Fragment() {
 
     }
 
+    private fun setAdapterAttributes() {
+        productViewModel.categoryList.value?.let {
+            adapter.setData(it)
+        }
+        adapter.setFavoriteButtonListener(object : FavoriteButtonListener {
+            override fun handle(position: Int) {
+                val viewModel: ProductViewModel by activityViewModels()
+                val product = viewModel.categoryList.value?.get(position)
+                if (product?.favorite == true) {
+                    GlobalScope.launch {
+                        val job = launch(Dispatchers.IO) {
+                            favoriteViewModel.deleteFromFavorites(product.productId)
+                            viewModel.removeFavorite(product.productId)
+                        }
+                        job.join()
+                        Snackbar.make(
+                            productRecyclerView,
+                            "Removed from WishList",
+                            Snackbar.LENGTH_LONG
+                        )
+                            .show()
+                    }
+                } else {
+                    GlobalScope.launch {
+                        val job = launch(Dispatchers.IO) {
+                            if (product != null) {
+                                val favoriteProduct = FavoriteProduct(
+                                    product.productId,
+                                    product.title,
+                                    product.description,
+                                    product.originalPrice,
+                                    product.discountPercentage,
+                                    product.priceAfterDiscount,
+                                    product.rating,
+                                    product.stock,
+                                    product.brand,
+                                    product.category,
+                                    product.thumbnail
+                                )
+                                favoriteViewModel.addToFavorites(favoriteProduct)
+                                viewModel.markAsFavorite(product.productId)
+                            }
+                        }
+                        job.join()
+                        Snackbar.make(
+                            productRecyclerView,
+                            "Added to WishList",
+                            Snackbar.LENGTH_LONG
+                        )
+                            .show()
+                    }
+                }
+            }
+        })
+
+        adapter.setOnItemClickListener(object : ItemClickListener {
+            override fun onItemClick(position: Int) {
+                currentProductList= mutableListOf()
+                parentFragmentManager.commit {
+                    /*for(i in productViewModel.categoryList.value!!){
+                        currentProductList.add(i)
+                    }*/
+                   currentProductList= productViewModel.categoryList.value!!.map { it.copy() }
+                       // productViewModel.categoryList.value!!.toMutableList()
+                    println("Wihle opening the current list is $currentProductList")
+                    hide(this@ProductListFragment)
+                    productViewModel.selectedProduct.value =
+                        productViewModel.categoryList.value?.get(position)
+                    add<ProductFragment>(R.id.category_fragment_container)
+                    addToBackStack(null)
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+
+                    /*productViewModel.selectedProduct.value= productViewModel.categoryList.value?.get(position)
+                    replace(R.id.category_fragment_container,ProductFragment() )
+                    addToBackStack(null)*/
+                }
+            }
+        })
+    }
+
     private fun sortBySelectedOption() {
-        when (sortViewModel.selectedSort) {
+        when (productViewModel.selectedSort) {
             Sort.NONE -> {
 
             }
@@ -174,12 +212,14 @@ class ProductListFragment : Fragment() {
         searchItem.setOnActionExpandListener(object :MenuItem.OnActionExpandListener{
             override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
                 println("On search called")
+                searchView.isIconified=false
                 sortItem.isVisible=false
                 return true
             }
 
             override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
                 sortItem.isVisible=true
+                setAdapterAttributes()
                 return true
             }
 
@@ -191,7 +231,7 @@ class ProductListFragment : Fragment() {
             searchItem.expandActionView()
             searchView.setQuery(searchedQuery,false)
             searchView.isFocusable=true
-            searchData(searchedQuery)
+            //searchData(searchedQuery)
         }
 
         /*if(searchedQuery!=""){
@@ -245,10 +285,10 @@ class ProductListFragment : Fragment() {
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText != null) {
                     productViewModel.searchedQuery=newText
-                    println("The searched value is ${productViewModel.searchedQuery}")
                     if(!searchView.isIconified){
+                        println("The searched value is ${productViewModel.searchedQuery}")
                         searchData(newText)
-                    }
+                   }
                 }
                 return true
             }
@@ -292,9 +332,42 @@ class ProductListFragment : Fragment() {
                 }
             }
             adapter.setData(list)
+            currentProductList=list
+            adapter.setFavoriteButtonListener(object :FavoriteButtonListener{
+                override fun handle(position: Int) {
+                    val viewModel:ProductViewModel by activityViewModels()
+                    val product=list[position]
+                    if(product.favorite){
+                        GlobalScope.launch {
+                            val job=launch(Dispatchers.IO) {
+                                favoriteViewModel.deleteFromFavorites(product.productId)
+                                viewModel.removeFavorite(product.productId)
+                            }
+                            job.join()
+                            Snackbar.make(productRecyclerView,"Removed from WishList",Snackbar.LENGTH_LONG)
+                                .show()
+                        }
+                    }else{
+                        GlobalScope.launch {
+                            val job=launch(Dispatchers.IO) {
+                                if(product!=null){
+                                    val favoriteProduct=FavoriteProduct(product.productId,product.title,product.description,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,product.rating,product.stock,product.brand,product.category,product.thumbnail)
+                                    favoriteViewModel.addToFavorites(favoriteProduct)
+                                    viewModel.markAsFavorite(product.productId)
+                                }
+                            }
+                            job.join()
+                            Snackbar.make(productRecyclerView,"Added to WishList",Snackbar.LENGTH_LONG)
+                                .show()
+                        }
+                    }
+                }
+            })
             adapter.setOnItemClickListener(object : ItemClickListener{
                 override fun onItemClick(position: Int) {
                     parentFragmentManager.commit {
+                        currentProductList=list
+                        println("Clicked click listener's item click method")
                         hide(this@ProductListFragment)
                         productViewModel.selectedProduct.value= list[position]
                         add<ProductFragment>(R.id.category_fragment_container)
@@ -313,17 +386,24 @@ class ProductListFragment : Fragment() {
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if(!hidden){
+
             if(searchedQuery.isNotEmpty()){
-                activity?.invalidateOptionsMenu()
+                //activity?.invalidateOptionsMenu()
                 println("Setting value got $searchedQuery")
+            }else{
+                println("Current data is $currentProductList")
+                GlobalScope.launch {
+                    val job=launch(Dispatchers.IO) {
+                        productViewModel.getCategoryWiseProductList()
+                    }
+                    job.join()
+                    withContext(Dispatchers.Main){
+                        adapter.setList(currentProductList,productViewModel.categoryList.value!!)
+                    }
+                }
             }
             //val category=activity?.intent?.getStringExtra("category")
-            GlobalScope.launch {
-                val job=launch(Dispatchers.IO) {
-                    productViewModel.getCategoryWiseProductList()
-                }
-                job.join()
-            }
+
 
             //adapter.setData(productViewModel.getCategoryWiseProductList())
             /*if(searchedQuery.isNotEmpty()){

@@ -14,7 +14,7 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.shopping.enums.MODE
+import com.example.shopping.enums.FormMode
 import com.example.shopping.viewmodel.AddressViewModel
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import kotlinx.coroutines.Dispatchers
@@ -62,7 +62,7 @@ class SavedAddressFragment : Fragment() {
             }
 
             override fun editAddress(position: Int) {
-                addressViewModel.mode=MODE.EDIT
+                addressViewModel.formMode=FormMode.EDIT
                 addressViewModel.selectedAddress.value=addressViewModel.addressList.value?.get(position)
                 replaceFragment(AddDeliveryAddressFragment())
             }
@@ -98,7 +98,7 @@ class SavedAddressFragment : Fragment() {
 
         val addNewAddressBtn=view.findViewById<CardView>(R.id.add_new_address)
         addNewAddressBtn.setOnClickListener {
-            addressViewModel.mode=MODE.CREATE
+            addressViewModel.formMode=FormMode.CREATE
             replaceFragment(AddDeliveryAddressFragment())
         }
 

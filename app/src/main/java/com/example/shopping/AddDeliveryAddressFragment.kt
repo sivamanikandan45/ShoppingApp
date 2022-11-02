@@ -5,14 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
-import com.example.shopping.enums.MODE
+import com.example.shopping.enums.FormMode
 import com.example.shopping.model.Address
 import com.example.shopping.viewmodel.AddressViewModel
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -46,7 +44,7 @@ class AddDeliveryAddressFragment : Fragment() {
         val addressStreetInputLayout=view.findViewById<TextInputLayout>(R.id.addressline1)
         val areaInputLayout=view.findViewById<TextInputLayout>(R.id.addressline2)
 
-        if(addressViewModel.mode==MODE.EDIT){
+        if(addressViewModel.formMode==FormMode.EDIT){
             (activity as AppCompatActivity).supportActionBar?.title="Edit Delivery Address"
             val selectedAddress=addressViewModel.selectedAddress.value
             nameInputLayout.editText?.setText(selectedAddress?.name!!)
@@ -68,11 +66,11 @@ class AddDeliveryAddressFragment : Fragment() {
                 val city=cityInputLayout.editText?.text.toString()
                 val street=addressStreetInputLayout.editText?.text.toString()
                 val area=areaInputLayout.editText?.text.toString()
-                if(addressViewModel.mode==MODE.CREATE){
+                if(addressViewModel.formMode==FormMode.CREATE){
                     val address=Address(0,name,phone,pinCode,state,city,street, area)
                     saveAddress(address)
                 }
-                if(addressViewModel.mode==MODE.EDIT){
+                if(addressViewModel.formMode==FormMode.EDIT){
                     val id=addressViewModel.selectedAddress.value?.addressId!!
                     val address=Address(id,name,phone,pinCode,state,city,street, area)
                     updateAddress(address)

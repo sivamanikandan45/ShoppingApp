@@ -5,12 +5,22 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.lifecycle.ViewModelProvider
+import com.example.shopping.enums.CheckoutMode
+import com.example.shopping.viewmodel.CheckoutViewModel
+import com.example.shopping.viewmodel.CustomViewModel
 
 class CheckoutActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_checkout)
+        val viewModel= ViewModelProvider(this)[CheckoutViewModel::class.java]
+        if(intent.getStringExtra("checkoutMode")=="buy_now"){
+            viewModel.mode=CheckoutMode.BUY_NOW
+            viewModel.buyNowProductId=intent.getIntExtra("productId",1)
+            viewModel.buyNowProductQuantity=intent.getIntExtra("quantity",0)
+        }
         replaceFragment(SelectAddressFragment())
     }
 

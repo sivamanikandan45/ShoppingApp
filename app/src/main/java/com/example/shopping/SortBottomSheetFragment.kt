@@ -17,6 +17,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class SortBottomSheetFragment : BottomSheetDialogFragment() {
     private val sortViewModel:SortViewModel by activityViewModels()
+    private val productViewModel:ProductViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,7 +40,7 @@ class SortBottomSheetFragment : BottomSheetDialogFragment() {
         val priceHighToLowCheck=view.findViewById<ImageView>(R.id.price_high_check)
         val priceLowToHighCheck=view.findViewById<ImageView>(R.id.price_low_check)
 
-        when(sortViewModel.selectedSort){
+        when(productViewModel.selectedSort){
             Sort.NONE->{
                 alphabetCheck.visibility=View.GONE
                 ratingCheck.visibility=View.GONE
@@ -73,7 +74,7 @@ class SortBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         alphabetSort.setOnClickListener {
-            sortViewModel.selectedSort=Sort.ALPHA
+            productViewModel.selectedSort=Sort.ALPHA
 
             alphabetCheck.visibility=View.VISIBLE
             ratingCheck.visibility=View.GONE
@@ -86,7 +87,7 @@ class SortBottomSheetFragment : BottomSheetDialogFragment() {
 
         ratingSort.setOnClickListener {
 
-            sortViewModel.selectedSort=Sort.RATING
+            productViewModel.selectedSort=Sort.RATING
 
             alphabetCheck.visibility=View.GONE
             ratingCheck.visibility=View.VISIBLE
@@ -98,7 +99,7 @@ class SortBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         priceHighToLowSort.setOnClickListener {
-            sortViewModel.selectedSort=Sort.PRICE_HIGH_TO_LOW
+            productViewModel.selectedSort=Sort.PRICE_HIGH_TO_LOW
 
             alphabetCheck.visibility=View.GONE
             ratingCheck.visibility=View.GONE
@@ -111,7 +112,7 @@ class SortBottomSheetFragment : BottomSheetDialogFragment() {
 
         priceLowToHighSort.setOnClickListener {
 
-            sortViewModel.selectedSort=Sort.PRICE_LOW_TO_HIGH
+            productViewModel.selectedSort=Sort.PRICE_LOW_TO_HIGH
 
             alphabetCheck.visibility=View.GONE
             ratingCheck.visibility=View.GONE

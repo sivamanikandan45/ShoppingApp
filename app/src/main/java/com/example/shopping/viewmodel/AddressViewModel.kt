@@ -5,10 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.shopping.database.AppDB
-import com.example.shopping.enums.CategoryType
-import com.example.shopping.enums.MODE
+import com.example.shopping.enums.FormMode
 import com.example.shopping.model.Address
-import com.example.shopping.model.Product
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -17,7 +15,7 @@ class AddressViewModel(application: Application): AndroidViewModel(application){
 
     var addressList= MutableLiveData<List<Address>>()
 
-    var mode:MODE = MODE.CREATE
+    var formMode:FormMode = FormMode.CREATE
     val selectedAddress=MutableLiveData<Address>()
 
     init{

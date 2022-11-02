@@ -1,5 +1,5 @@
 package com.example.shopping.enums
 
-enum class MODE {
+enum class FormMode {
     CREATE,EDIT
 }

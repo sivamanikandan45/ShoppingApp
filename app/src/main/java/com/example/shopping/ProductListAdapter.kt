@@ -35,7 +35,17 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
         diffResult.dispatchUpdatesTo(this)
     }
 
+    fun setList(oldList:List<Product>,newList:List<Product>){
+        val diffUtil= ProductDiffUtil(oldList,newList)
+        println("The old list is $oldList")
+        println("The new list is $newList")
+        val diffResult= DiffUtil.calculateDiff(diffUtil,false)
+        this.list=newList
+        diffResult.dispatchUpdatesTo(this)
+    }
+
     fun setOnItemClickListener(listener: ItemClickListener){
+        println("Called and set")
         this.listener=listener
     }
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.shopping.enums.CategoryType
 import com.example.shopping.database.AppDB
+import com.example.shopping.enums.Sort
 import com.example.shopping.model.CarouselImage
 import com.example.shopping.model.FavoriteProduct
 import com.example.shopping.model.Product
@@ -28,6 +29,8 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
 
     var selectedProduct=MutableLiveData<Product>()
     var searchedQuery:String=""
+    var selectedSort: Sort = Sort.NONE
+
     //var productStack=Stack<Product>()
     /*fun push(product:Product){
         productStack.push(product)
@@ -173,6 +176,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                         val watchList = getCategoryFromDB("mens-watches")
                         list = shirtList + shoesList + watchList
                         categoryList.postValue(list)
+                        sortList()
                     }
                     job.join()
                 }
@@ -185,6 +189,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                         val jewelleryList = getCategoryFromDB("womens-jewellery")
                         list = dressList + watchList + shoesList + bagsList + jewelleryList
                         categoryList.postValue(list)
+                        sortList()
                     }
                     job.join()
                 }
@@ -192,6 +197,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                     val job=launch {
                         list=getCategoryFromDB("laptops")
                         categoryList.postValue(list)
+                        sortList()
                     }
                     job.join()
                 }
@@ -202,6 +208,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                         val homeDecorList=getCategoryFromDB("home-decoration")
                         list=furnitureList+homeDecorList
                         categoryList.postValue(list)
+                        sortList()
                     }
                     job.join()
                 }
@@ -209,6 +216,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                     val job=launch {
                         list=getCategoryFromDB("sunglasses")
                         categoryList.postValue(list)
+                        sortList()
                     }
                     job.join()
                 }
@@ -216,6 +224,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                     val job=launch {
                         list=getCategoryFromDB("groceries")
                         categoryList.postValue(list)
+                        sortList()
                     }
                     job.join()
                 }
@@ -225,6 +234,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                         val perfumeList=getCategoryFromDB("fragrances")
                         list=skincareList+perfumeList
                         categoryList.postValue(list)
+                        sortList()
                     }
                     job.join()
                 }
@@ -236,6 +246,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                         val lightingList=getCategoryFromDB("lighting")
                         list=dressList+automotiveList+motorcycleList+lightingList
                         categoryList.postValue(list)
+                        sortList()
                     }
                     //categoryList.postValue(list)
                     job.join()
@@ -379,6 +390,26 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
                 selectedProduct.postValue(product)
             }
             job.join()
+        }
+    }
+
+    fun sortList(){
+        when(selectedSort){
+            Sort.NONE->{
+
+            }
+            Sort.ALPHA->{
+                sortByAlphabet()
+            }
+            Sort.RATING->{
+                sortByARating()
+            }
+            Sort.PRICE_HIGH_TO_LOW->{
+                sortByPriceHghToLow()
+            }
+            Sort.PRICE_LOW_TO_HIGH->{
+                sortByPriceLowToHigh()
+            }
         }
     }
 

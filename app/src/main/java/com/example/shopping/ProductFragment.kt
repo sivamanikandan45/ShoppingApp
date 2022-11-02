@@ -1,16 +1,13 @@
 package com.example.shopping
 
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,8 +17,6 @@ import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.FavoriteViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.RecentlyViewedViewModel
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -71,6 +66,11 @@ class ProductFragment : Fragment() {
         val productViewModel:ProductViewModel by activityViewModels()
         val cartViewModel:CartViewModel by activityViewModels()
 
+        val buyNowButton=view.findViewById<Button>(R.id.buy_now_button)
+        val quantityTextView:TextView=view.findViewById(R.id.cart_qty)
+
+
+
         /*cartViewModel.noOfItem.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             val badgeDrawable=(activity as AppCompatActivity).supportActionBar.men
             badgeDrawable.isVisible=true
@@ -90,6 +90,15 @@ class ProductFragment : Fragment() {
         println("cart is ${cartViewModel.cartItems.value}")
         val product=productViewModel.selectedProduct.value
         println("Selected Product is $product")
+
+        buyNowButton.setOnClickListener {
+            val intent=Intent(requireContext(),CheckoutActivity::class.java)
+            intent.putExtra("checkoutMode","buy_now")
+            intent.putExtra("productId",product?.productId)
+            intent.putExtra("quantity",quantityTextView.text.toString().toInt())
+            startActivity(intent)
+        }
+
         if(product!=null){
             val recentlyViewed=RecentlyViewed(product.productId,product.title,product.description,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,product.rating,product.stock,product.brand,product.category,product.thumbnail)
             GlobalScope.launch {
@@ -172,7 +181,7 @@ class ProductFragment : Fragment() {
 
         val increaseButton: ImageButton=view.findViewById(R.id.increase_qty_btn)
         val decreaseButton: ImageButton=view.findViewById(R.id.decrease_qty_btn)
-        val quantityTextView:TextView=view.findViewById(R.id.cart_qty)
+        //val quantityTextView:TextView=view.findViewById(R.id.cart_qty)
         increaseButton.setOnClickListener {
             var quantity=quantityTextView.text.toString().toInt()
             if(quantity<10){
