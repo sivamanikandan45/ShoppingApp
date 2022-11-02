@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import com.google.android.material.textfield.TextInputLayout
 
@@ -46,6 +47,7 @@ class CardPaymentFragment : Fragment() {
                 parentFragmentManager.commit {
                     addToBackStack(null)
                     replace(R.id.checkout_fragment_container, OrderPlacedFragment())
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 }
             }
         }

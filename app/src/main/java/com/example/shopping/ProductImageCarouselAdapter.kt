@@ -14,8 +14,19 @@ import java.net.URL
 
 class ProductImageCarouselAdapter(private val list:List<String>) : RecyclerView.Adapter<ProductImageCarouselAdapter.ViewHolder>(){
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view){
+    private lateinit var listener: ItemClickListener
+
+    inner class ViewHolder(view: View): RecyclerView.ViewHolder(view){
+        init {
+            view.setOnClickListener {
+                listener.onItemClick(adapterPosition)
+            }
+        }
         val imageView: ShapeableImageView =view.findViewById(R.id.slider_image)
+    }
+
+    fun setOnItemClickListener(listener: ItemClickListener){
+        this.listener=listener
     }
 
     override fun onCreateViewHolder(

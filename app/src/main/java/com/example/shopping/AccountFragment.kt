@@ -34,7 +34,7 @@ class AccountFragment : Fragment() {
         val myOrdersBtn=view.findViewById<ConstraintLayout>(R.id.my_orders)
 
         wishlistButton.setOnClickListener {
-            //favoriteViewModel.calledFrom="Account"
+            favoriteViewModel.calledFrom="Account"
             goToSelectedPage("wishlist")
         }
 

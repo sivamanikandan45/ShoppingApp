@@ -1,7 +1,6 @@
 package com.example.shopping
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +8,7 @@ import android.widget.Button
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.commit
-import androidx.fragment.app.findFragment
+import androidx.fragment.app.*
 import com.example.shopping.viewmodel.CheckoutViewModel
 
 class PaymentFragment : Fragment() {
@@ -77,6 +74,7 @@ class PaymentFragment : Fragment() {
         parentFragmentManager.commit {
             addToBackStack(null)
             replace(R.id.checkout_fragment_container, fragment)
+            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
     }
 

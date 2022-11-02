@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
@@ -69,6 +70,7 @@ class SelectAddressFragment : Fragment() {
             parentFragmentManager.commit{
                 addToBackStack(null)
                 replace(R.id.checkout_fragment_container,OrderSummaryFragment())
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             }
         }
 
@@ -87,6 +89,7 @@ class SelectAddressFragment : Fragment() {
             parentFragmentManager.commit{
                 addToBackStack(null)
                 replace(R.id.checkout_fragment_container,AddDeliveryAddressFragment())
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             }
         }
 

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -102,6 +103,7 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
             parentFragmentManager.commit{
                 addToBackStack(null)
                 replace(R.id.checkout_fragment_container,PaymentFragment())
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             }
         }
 

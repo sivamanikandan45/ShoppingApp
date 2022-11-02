@@ -35,6 +35,7 @@
         <entry key="app/src/main/res/layout/activity_category.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_checkout.xml" value="0.20380434782608695" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.22056159420289856" />
+        <entry key="app/src/main/res/layout/activity_product_image.xml" value="0.3125" />
         <entry key="app/src/main/res/layout/activity_search_result.xml" value="0.16210739614994935" />
         <entry key="app/src/main/res/layout/activity_searchable.xml" value="0.25815217391304346" />
         <entry key="app/src/main/res/layout/auto_scrollable_carousel_item.xml" value="0.15476190476190477" />

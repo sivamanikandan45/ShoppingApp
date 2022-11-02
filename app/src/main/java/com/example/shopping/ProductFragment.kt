@@ -111,6 +111,15 @@ class ProductFragment : Fragment() {
                 val autoScrollableCarousel=view.findViewById<ViewPager2>(R.id.product_image_carousel)
                 //val images= listOf(R.drawable.image1,R.drawable.image2,R.drawable.image3)
                 val autoScrollableCarouselAdapter=ProductImageCarouselAdapter(list)
+                autoScrollableCarouselAdapter.setOnItemClickListener(object :ItemClickListener{
+                    override fun onItemClick(position: Int) {
+                        val intent=Intent(requireContext(),ProductImageActivity::class.java)
+                        intent.putExtra("productId",product?.productId)
+                        intent.putExtra("currentPosition",position)
+                        startActivity(intent)
+                    }
+
+                })
                 println("value set")
                 autoScrollableCarousel.adapter = autoScrollableCarouselAdapter
                 val timerTask: TimerTask = object : TimerTask() {

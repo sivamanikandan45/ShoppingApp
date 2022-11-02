@@ -10,5 +10,5 @@
         android:src="@drawable/ic_launcher_background"
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
-        app:shapeAppearanceOverlay="@style/curvedCorner"/>
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

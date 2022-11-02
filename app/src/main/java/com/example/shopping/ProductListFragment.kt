@@ -9,10 +9,12 @@ import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.shopping.enums.Sort
 import com.example.shopping.model.FavoriteProduct
 import com.example.shopping.model.Product
 import com.example.shopping.viewmodel.FavoriteViewModel
 import com.example.shopping.viewmodel.ProductViewModel
+import com.example.shopping.viewmodel.SortViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -22,6 +24,7 @@ import kotlinx.coroutines.launch
 class ProductListFragment : Fragment() {
     private val productViewModel:ProductViewModel by activityViewModels()
     private val favoriteViewModel:FavoriteViewModel by activityViewModels()
+    private val sortViewModel:SortViewModel by activityViewModels()
     private lateinit var adapter:ProductListAdapter
     private lateinit var productRecyclerView: RecyclerView
     private lateinit var manager: GridLayoutManager
@@ -34,7 +37,7 @@ class ProductListFragment : Fragment() {
         sortItem=menu.findItem(R.id.sort)
         searchItem.setOnActionExpandListener(object :MenuItem.OnActionExpandListener{
             override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
-                println("On search callled")
+                println("On search called")
                 sortItem.isVisible=false
                 return true
             }
@@ -109,7 +112,6 @@ class ProductListFragment : Fragment() {
                     addToBackStack(null)
                     setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 
-
                     /*productViewModel.selectedProduct.value= productViewModel.categoryList.value?.get(position)
                     replace(R.id.category_fragment_container,ProductFragment() )
                     addToBackStack(null)*/
@@ -118,20 +120,22 @@ class ProductListFragment : Fragment() {
         })
         adapter.setData(productViewModel.getCategoryWiseProductList())
         manager = if (activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            GridLayoutManager(context,2)
+            GridLayoutManager(requireContext(),2)
         } else {
-            //mRecycler.setLayoutManager(GridLayoutManager(mContext, 4))
-            GridLayoutManager(context,4)
+            GridLayoutManager(requireContext(),4)
         }
        // manager=GridLayoutManager(context,2)
         productRecyclerView.setHasFixedSize(true)
         productRecyclerView.adapter=adapter
         productRecyclerView.layoutManager=manager
+
+        sortBySelectedOption()
         /*productRecyclerView.setItemViewCacheSize(10);
         productRecyclerView.isDrawingCacheEnabled = true;*/
 
         productViewModel.categoryList.observe(viewLifecycleOwner, Observer {
             adapter.setData(it)
+            //sortBySelectedOption()
         })
 
         /*productViewModel.productList.observe(viewLifecycleOwner, Observer {
@@ -139,6 +143,26 @@ class ProductListFragment : Fragment() {
             adapter.notifyDataSetChanged()
         })*/
 
+    }
+
+    private fun sortBySelectedOption() {
+        when (sortViewModel.selectedSort) {
+            Sort.NONE -> {
+
+            }
+            Sort.ALPHA -> {
+                productViewModel.sortByAlphabet()
+            }
+            Sort.RATING -> {
+                productViewModel.sortByARating()
+            }
+            Sort.PRICE_HIGH_TO_LOW -> {
+                productViewModel.sortByPriceHghToLow()
+            }
+            Sort.PRICE_LOW_TO_HIGH -> {
+                productViewModel.sortByPriceLowToHigh()
+            }
+        }
     }
 
 
@@ -222,7 +246,9 @@ class ProductListFragment : Fragment() {
                 if (newText != null) {
                     productViewModel.searchedQuery=newText
                     println("The searched value is ${productViewModel.searchedQuery}")
-                    searchData(newText)
+                    if(!searchView.isIconified){
+                        searchData(newText)
+                    }
                 }
                 return true
             }
@@ -259,25 +285,30 @@ class ProductListFragment : Fragment() {
 
     private fun searchData(newText: String?) {
         val list= mutableListOf<Product>()
-        for(product in productViewModel.categoryList.value!!){
-            if(product.title.lowercase().contains(newText!!.lowercase())){
-                list.add(product)
-            }
-        }
-        adapter.setData(list)
-        /*adapter.setOnItemClickListener(object : ItemClickListener{
-            override fun onItemClick(position: Int) {
-                parentFragmentManager.commit {
-                    hide(this@ProductListFragment)
-                    productViewModel.selectedProduct.value= list[position]
-                    add<ProductFragment>(R.id.category_fragment_container)
-                    addToBackStack(null)
+        if(newText?.isNotEmpty() == true){
+            for(product in productViewModel.categoryList.value!!){
+                if(product.title.lowercase().contains(newText!!.lowercase())){
+                    list.add(product)
                 }
             }
-        })*/
+            adapter.setData(list)
+            adapter.setOnItemClickListener(object : ItemClickListener{
+                override fun onItemClick(position: Int) {
+                    parentFragmentManager.commit {
+                        hide(this@ProductListFragment)
+                        productViewModel.selectedProduct.value= list[position]
+                        add<ProductFragment>(R.id.category_fragment_container)
+                        addToBackStack(null)
+                    }
+                }
+            })
+            productRecyclerView.adapter=adapter
+        }
         //productRecyclerView.adapter=adapter
         //adapter.notifyDataSetChanged()
     }
+
+
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
@@ -286,6 +317,14 @@ class ProductListFragment : Fragment() {
                 activity?.invalidateOptionsMenu()
                 println("Setting value got $searchedQuery")
             }
+            //val category=activity?.intent?.getStringExtra("category")
+            GlobalScope.launch {
+                val job=launch(Dispatchers.IO) {
+                    productViewModel.getCategoryWiseProductList()
+                }
+                job.join()
+            }
+
             //adapter.setData(productViewModel.getCategoryWiseProductList())
             /*if(searchedQuery.isNotEmpty()){
                 val searchView=searchItem.actionView as SearchView

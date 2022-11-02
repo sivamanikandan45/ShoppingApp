@@ -2,15 +2,12 @@ package com.example.shopping
 
 import android.content.res.Configuration
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.add
-import androidx.fragment.app.commit
+import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,10 +40,19 @@ class WishlistFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_wishlist, container, false)
     }
 
+    override fun onStart() {
+        super.onStart()
+        if(favoriteViewModel.calledFrom=="Main"){
+            (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        }else if(favoriteViewModel.calledFrom=="Account"){
+            (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Wishlist"
-
+        //(activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         if(favoriteViewModel.calledFrom=="Main"){
             (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         }else if(favoriteViewModel.calledFrom=="Account"){
@@ -69,7 +75,13 @@ class WishlistFragment : Fragment() {
                         //replace(R.id.fragment_container,ProductFragment())
                         hide(this@WishlistFragment)
                         productViewModel.selectedProduct.value=product
-                        add<ProductFragment>(R.id.fragment_container)
+                        if(favoriteViewModel.calledFrom=="Main"){
+                            add<ProductFragment>(R.id.fragment_container)
+                        }else if(favoriteViewModel.calledFrom=="Account"){
+                            add<ProductFragment>(R.id.account_fragment_container)
+                        }
+                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+
                     }
                 }
             }
