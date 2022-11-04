@@ -59,11 +59,14 @@
 
     <TextView
         android:id="@+id/cart_item_offer"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="10% OFF"
         android:layout_marginStart="8dp"
+        android:text="10% OFF"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginEnd="16dp"
         android:textColor="#4c9a2a"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cart_item_product_price"
         app:layout_constraintTop_toTopOf="@+id/cart_item_product_old_price" />
 

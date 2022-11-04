@@ -1,6 +1,5 @@
 package com.example.shopping
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Paint
@@ -28,8 +27,8 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
 
     fun setData(list: List<SelectedProduct>){
         //this.list=list
-        val oldlist=this.list
-        val diffUtil=CartDiffUtil(oldlist,list)
+        val oldList=this.list
+        val diffUtil=CartDiffUtil(oldList,list)
         val diffResult=DiffUtil.calculateDiff(diffUtil)
         this.list=list
         diffResult.dispatchUpdatesTo(this)
@@ -58,7 +57,7 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
 
             productPriceTextView.text="₹"+caad.toString()
             productBrandTextView.text=selectedProduct.productBrand
-            productOldPriceTextView.text="₹"+selectedProduct.olcPriceForSelectedQuantity.toString()
+            productOldPriceTextView.text="₹"+selectedProduct.oldPriceForSelectedQuantity.toString()
             productOldPriceTextView.showStrikeThrough(true)
             discountTextView.text=selectedProduct.discount.toString()+"% OFF"
             quantityTextView.text=selectedProduct.quantity.toString()

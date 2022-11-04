@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.viewmodel.AddressViewModel
 import com.example.shopping.viewmodel.OrderViewModel
+import com.google.android.material.divider.MaterialDividerItemDecoration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -69,6 +70,9 @@ class MyOrdersFragment : Fragment() {
         orderListManager= LinearLayoutManager(requireContext())
         orderListRecyclerView.adapter=orderAdapter
         orderListRecyclerView.layoutManager=orderListManager
+        val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
+        //divider?.dividerInsetStart=
+        orderListRecyclerView.addItemDecoration(divider!!)
 
         orderViewModel.orderList.observe(viewLifecycleOwner, Observer {
 

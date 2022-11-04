@@ -46,7 +46,7 @@ class SelectedProductListAdapter : RecyclerView.Adapter<SelectedProductListAdapt
 
             productPriceTextView.text="₹"+caad.toString()
             productBrandTextView.text=selectedProduct.productBrand
-            productOldPriceTextView.text="₹"+selectedProduct.olcPriceForSelectedQuantity.toString()
+            productOldPriceTextView.text="₹"+selectedProduct.oldPriceForSelectedQuantity.toString()
             productOldPriceTextView.showStrikeThrough(true)
             discountTextView.text=selectedProduct.discount.toString()+"% OFF"
             quantityTextView.text=selectedProduct.quantity.toString()

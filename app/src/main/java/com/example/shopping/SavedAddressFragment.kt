@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.enums.FormMode
 import com.example.shopping.viewmodel.AddressViewModel
 import com.google.android.material.divider.MaterialDividerItemDecoration
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -96,7 +97,7 @@ class SavedAddressFragment : Fragment() {
             }
         })
 
-        val addNewAddressBtn=view.findViewById<CardView>(R.id.add_new_address)
+        val addNewAddressBtn=view.findViewById<FloatingActionButton>(R.id.add_new_address)
         addNewAddressBtn.setOnClickListener {
             addressViewModel.formMode=FormMode.CREATE
             replaceFragment(AddDeliveryAddressFragment())

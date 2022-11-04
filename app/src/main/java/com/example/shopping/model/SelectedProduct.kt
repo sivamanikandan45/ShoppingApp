@@ -12,5 +12,5 @@ data class SelectedProduct (@PrimaryKey val productId:Int,
                             val discount:Double,
                             val pricePerProduct:Double,
                             val quantity:Int,
-                            val olcPriceForSelectedQuantity:Double,
+                            val oldPriceForSelectedQuantity:Double,
                             val priceForSelectedQuantity:Double)

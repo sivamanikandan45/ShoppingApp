@@ -40,13 +40,14 @@ class SelectAddressFragment : Fragment() {
 
         addressListRecyclerView=view.findViewById(R.id.address_list_recycler_view)
         selectAddressListAdapter= SelectAddressListAdapter()
-        /*addressListAdapter.setOnItemClickListener(object :ItemClickListener{
+        selectAddressListAdapter.setOnItemClickListener(object :ItemClickListener{
             override fun onItemClick(position: Int) {
-                addressListAdapter.selectedPosition=position
-                addressListAdapter.notifyDataSetChanged()
-                println("Item clicked at $position")
+                //selectAddressListAdapter.selectedPosition=position
+                selectAddressListAdapter.updateSelectedPosition(position)
+                checkoutViewModel.selectedAddressPosition=selectAddressListAdapter.selectedPosition
+                //println("Item clicked at $position")
             }
-        })*/
+        })
 
         selectAddressListAdapter.setData(addressViewModel.getAddressLists())
         println(addressViewModel.getAddressLists())
@@ -60,19 +61,22 @@ class SelectAddressFragment : Fragment() {
             if(it.isEmpty()){
                 deliverHereBtn.isEnabled=false
             }
-            selectAddressListAdapter.notifyDataSetChanged()
+            selectAddressListAdapter.updateSelectedPosition(checkoutViewModel.selectedAddressPosition)
+            //selectAddressListAdapter.notifyDataSetChanged()
         })
 
 
         deliverHereBtn.setOnClickListener {
             checkoutViewModel.selectedAddress.value=addressViewModel.addressList.value?.get(selectAddressListAdapter.selectedPosition)
             println("Selected address is ${checkoutViewModel.selectedAddress.value}")
+            checkoutViewModel.selectedAddressPosition=selectAddressListAdapter.selectedPosition
             parentFragmentManager.commit{
                 addToBackStack(null)
                 replace(R.id.checkout_fragment_container,OrderSummaryFragment())
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             }
         }
+
 
 
 

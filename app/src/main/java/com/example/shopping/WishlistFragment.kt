@@ -40,20 +40,23 @@ class WishlistFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_wishlist, container, false)
     }
 
-    override fun onStart() {
+    /*override fun onStart() {
         super.onStart()
         if(favoriteViewModel.calledFrom=="Main"){
             (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         }else if(favoriteViewModel.calledFrom=="Account"){
             (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
-    }
+    }*/
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Wishlist"
         //(activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         if(favoriteViewModel.calledFrom=="Main"){
+            /*(activity as AppCompatActivity).supportActionBar?.setHomeButtonEnabled(false); // disable the button
+            (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false); // remove the left caret
+            (activity as AppCompatActivity).supportActionBar?.setDisplayShowHomeEnabled(false);*/
             (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         }else if(favoriteViewModel.calledFrom=="Account"){
             (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -158,6 +161,17 @@ class WishlistFragment : Fragment() {
             //adapter.notifyDataSetChanged()
         })
 
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        if(!hidden){
+            if(favoriteViewModel.calledFrom=="Main"){
+                (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+            }else if(favoriteViewModel.calledFrom=="Account"){
+                (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            }
+        }
+        super.onHiddenChanged(hidden)
     }
 
     private fun undoDelete(product: FavoriteProduct?) {

@@ -1,5 +1,6 @@
 package com.example.shopping
 
+
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +15,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+
 class CategoryActivity : AppCompatActivity() {
     private lateinit var productViewModel:ProductViewModel
 //    val productViewModel= ViewModelProvider(this)[ProductViewModel::class.java]
@@ -24,12 +26,20 @@ class CategoryActivity : AppCompatActivity() {
 
         val fragName=intent.getStringExtra("fragment_name")
         println("I have got fragName $fragName")
+
+
     if(fragName=="product_list"){
+        //intent.putExtra("fragment_name","")
         val category=intent.getStringExtra("category")
         setCategory(category,productViewModel)
         supportActionBar?.title=category
-        replaceFragment(ProductListFragment())
+        //replaceFragment(ProductListFragment())
+        if(savedInstanceState==null){
+            replaceFragment(ProductListFragment())
+        }
+
     }else if(fragName=="product"){
+        //intent.putExtra("fragment_name","")
         val id=intent.getIntExtra("selected_product_id",0)
         GlobalScope.launch {
             val job=launch (Dispatchers.IO){
@@ -39,7 +49,10 @@ class CategoryActivity : AppCompatActivity() {
             withContext(Dispatchers.Main){
                 productViewModel.selectedProduct.observe(this@CategoryActivity, Observer {
                     println("The product $it")
-                    replaceFragment(ProductFragment())
+                    if(savedInstanceState==null){
+                        replaceFragment(ProductFragment())
+                    }
+                    //replaceFragment(ProductFragment())
                 })
             }
         }

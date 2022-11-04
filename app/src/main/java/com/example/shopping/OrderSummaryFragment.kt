@@ -1,16 +1,14 @@
 package com.example.shopping
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.commit
+import androidx.fragment.app.*
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.enums.CheckoutMode
@@ -31,6 +29,7 @@ class OrderSummaryFragment : Fragment() {
     private lateinit var adapter: SelectedProductListAdapter
     private val cartViewModel: CartViewModel by activityViewModels()
     private val productViewModel: ProductViewModel by activityViewModels()
+    private lateinit var list:List<SelectedProduct>
 
 private val checkoutViewModel:CheckoutViewModel by activityViewModels()
     override fun onCreateView(
@@ -72,27 +71,57 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
 
         GlobalScope.launch {
             val job=launch {
-                /*if(checkoutViewModel.mode==CheckoutMode.BUY_NOW){
+
+                if(checkoutViewModel.mode==CheckoutMode.BUY_NOW){
                     withContext(Dispatchers.Main){
-                        val selectedProduct=SelectedProduct(product)
+                        productViewModel.productList.observe(viewLifecycleOwner, Observer {
+                            for(product in it){
+                                if(product.productId==checkoutViewModel.buyNowProductId){
+                                    val count=checkoutViewModel.buyNowProductQuantity
+                                    val oldPriceForSelectedQty=count*product.originalPrice
+                                    val priceForSelectedQty=count*product.priceAfterDiscount
+                                    val selectedProduct=SelectedProduct(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,count,oldPriceForSelectedQty,priceForSelectedQty)
+                                    checkoutViewModel.buyNowProduct=selectedProduct
+                                    val list= listOf<SelectedProduct>(selectedProduct)
+                                    adapter.setData(list)
+
+
+                                    val decimalFormat = DecimalFormat("#.##")
+                                    decimalFormat.roundingMode = RoundingMode.UP
+                                    val priceAfterDiscountRounded= decimalFormat.format(selectedProduct.priceForSelectedQuantity).toDouble()
+                                    totalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
+                                    finalTotalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
+                                    totalAmountBeforeDiscount.text=selectedProduct.oldPriceForSelectedQuantity.toString()
+                                    var discountAmount=selectedProduct.oldPriceForSelectedQuantity-selectedProduct.priceForSelectedQuantity
+                                    val df = DecimalFormat("#.##")
+                                    df.roundingMode = RoundingMode.UP
+                                    discountAmount = decimalFormat.format(discountAmount).toDouble()
+                                    offerTextView.text="-₹"+discountAmount.toString()
+                                    savingInfo.text="You will save ₹$discountAmount on this order"
+                                }
+                            }
+
+
+                        })
                     }
-                }*/
-                adapter.setData(cartViewModel.getCartItems())
-                val priceAfterDiscount=cartViewModel.getCartAmountAfterDiscount()
-                val priceBeforeDiscount=cartViewModel.getCartAmountBeforeDiscount()
-                withContext(Dispatchers.Main){
-                    val decimalFormat = DecimalFormat("#.##")
-                    decimalFormat.roundingMode = RoundingMode.UP
-                    val priceAfterDiscountRounded= decimalFormat.format(priceAfterDiscount).toDouble()
-                    totalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
-                    finalTotalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
-                    totalAmountBeforeDiscount.text=priceBeforeDiscount.toString()
-                    var discountAmount=priceBeforeDiscount-priceAfterDiscount
-                    val df = DecimalFormat("#.##")
-                    df.roundingMode = RoundingMode.UP
-                    discountAmount = decimalFormat.format(discountAmount).toDouble()
-                    offerTextView.text="-₹"+discountAmount.toString()
-                    savingInfo.text="You will save ₹$discountAmount on this order"
+                }else if(checkoutViewModel.mode==CheckoutMode.OVERALL){
+                    adapter.setData(cartViewModel.getCartItems())
+                    val priceAfterDiscount=cartViewModel.getCartAmountAfterDiscount()
+                    val priceBeforeDiscount=cartViewModel.getCartAmountBeforeDiscount()
+                    withContext(Dispatchers.Main){
+                        val decimalFormat = DecimalFormat("#.##")
+                        decimalFormat.roundingMode = RoundingMode.UP
+                        val priceAfterDiscountRounded= decimalFormat.format(priceAfterDiscount).toDouble()
+                        totalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
+                        finalTotalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
+                        totalAmountBeforeDiscount.text=priceBeforeDiscount.toString()
+                        var discountAmount=priceBeforeDiscount-priceAfterDiscount
+                        val df = DecimalFormat("#.##")
+                        df.roundingMode = RoundingMode.UP
+                        discountAmount = decimalFormat.format(discountAmount).toDouble()
+                        offerTextView.text="-₹"+discountAmount.toString()
+                        savingInfo.text="You will save ₹$discountAmount on this order"
+                    }
                 }
             }
             job.join()
@@ -110,9 +139,15 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
         val continueButton=view.findViewById<Button>(R.id.continue_btn)
         continueButton.setOnClickListener {
             parentFragmentManager.commit{
+
+                hide(this@OrderSummaryFragment)
+                add<PaymentFragment>(R.id.checkout_fragment_container)
                 addToBackStack(null)
-                replace(R.id.checkout_fragment_container,PaymentFragment())
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+
+                /*addToBackStack(null)
+                replace(R.id.checkout_fragment_container,PaymentFragment())
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)*/
             }
         }
 

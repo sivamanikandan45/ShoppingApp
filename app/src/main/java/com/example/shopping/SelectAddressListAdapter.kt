@@ -10,7 +10,7 @@ import com.example.shopping.model.Address
 
 class SelectAddressListAdapter:RecyclerView.Adapter<SelectAddressListAdapter.ViewHolder>(){
     private lateinit var list:List<Address>
-   // private lateinit var listener: ItemClickListener
+   private lateinit var listener: ItemClickListener
     var selectedPosition=0
 
     /*fun setOnItemClickListener(listener: ItemClickListener){
@@ -21,8 +21,13 @@ class SelectAddressListAdapter:RecyclerView.Adapter<SelectAddressListAdapter.Vie
         this.list=list
     }
 
+    fun setOnItemClickListener(listener: ItemClickListener){
+        this.listener=listener
+    }
+
     fun updateSelectedPosition(position: Int){
         selectedPosition=position
+        //notifyItemChanged(position)
         notifyDataSetChanged()
     }
 
@@ -37,10 +42,10 @@ class SelectAddressListAdapter:RecyclerView.Adapter<SelectAddressListAdapter.Vie
             radioBtn=view.findViewById(R.id.radioButton)
             phnTextView=view.findViewById(R.id.phn_no)
             view.setOnClickListener {
-                //listener.onItemClick(adapterPosition)
+                listener.onItemClick(adapterPosition)
                 /*selectedPosition=adapterPosition
                 notifyDataSetChanged()*/
-                updateSelectedPosition(adapterPosition)
+                //updateSelectedPosition(adapterPosition) ----->// changed here
                 println("The selected Position is $selectedPosition")
             }
         }

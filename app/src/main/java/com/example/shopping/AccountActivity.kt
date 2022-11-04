@@ -20,10 +20,21 @@ class AccountActivity : AppCompatActivity() {
         setContentView(R.layout.activity_account)
         when(intent.getStringExtra("frag_name")){
             "wishlist"->{
-                favoriteViewModel.calledFrom="Account"
-                replaceFragment(WishlistFragment())}
-            "savedAddress"->replaceFragment(SavedAddressFragment())
-            "myOrders"->replaceFragment(MyOrdersFragment())
+                if(savedInstanceState==null){
+                    favoriteViewModel.calledFrom="Account"
+                    replaceFragment(WishlistFragment())
+                }
+                }
+            "savedAddress"->{
+                if(savedInstanceState==null){
+                    replaceFragment(SavedAddressFragment())
+                }
+                }
+            "myOrders"->{
+                if(savedInstanceState==null){
+                    replaceFragment(MyOrdersFragment())
+                }
+            }
         }
         //supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }

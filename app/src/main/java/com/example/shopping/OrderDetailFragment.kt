@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +36,7 @@ class OrderDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         println(orderViewModel.selectedOrder.value)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val orderId=view.findViewById<TextView>(R.id.order_details_id)
         val orderedDate=view.findViewById<TextView>(R.id.order_date_detail)
         val billAmount=view.findViewById<TextView>(R.id.bill_amount)
@@ -62,7 +64,7 @@ class OrderDetailFragment : Fragment() {
             noOfItem.text="${selectedOrder.itemCount} Item"
             expectedDeliveryDate.text=selectedOrder.expectedDeliveryDate
             originalBillAmount.text="₹${selectedOrder.originalTotalPrice}"
-            discountAmount.text="₹${selectedOrder.discount}"
+            discountAmount.text="-₹${selectedOrder.discount}"
             totalBillAmount.text="₹${selectedOrder.totalAfterDiscount}"
             deliveryAddress.text="${selectedOrder.customerName},\n${selectedOrder.street}, ${selectedOrder.area}, ${selectedOrder.city}, ${selectedOrder.state} - ${selectedOrder.pinCode}\n${selectedOrder.customerPhone}"
 

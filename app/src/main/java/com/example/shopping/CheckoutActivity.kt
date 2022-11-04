@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import com.example.shopping.enums.CheckoutMode
@@ -21,7 +22,9 @@ class CheckoutActivity : AppCompatActivity() {
             viewModel.buyNowProductId=intent.getIntExtra("productId",1)
             viewModel.buyNowProductQuantity=intent.getIntExtra("quantity",0)
         }
-        replaceFragment(SelectAddressFragment())
+        if(savedInstanceState==null){
+            replaceFragment(SelectAddressFragment())
+        }
     }
 
     private fun replaceFragment(fragment: Fragment) {

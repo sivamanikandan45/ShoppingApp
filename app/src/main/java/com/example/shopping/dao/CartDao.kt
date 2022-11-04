@@ -21,7 +21,7 @@ interface CartDao {
     @Query("SELECT COUNT(*) FROM SelectedProduct")
     fun getCartItemCount():Int
 
-    @Query("SELECT SUM(olcPriceForSelectedQuantity) FROM SelectedProduct")
+    @Query("SELECT SUM(oldPriceForSelectedQuantity) FROM SelectedProduct")
     fun getCartAmountBeforeDiscount():Double
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
@@ -33,7 +33,7 @@ interface CartDao {
     @Query("UPDATE SelectedProduct SET priceForSelectedQuantity=:priceForSelectedQuantity where productId=:id")
     fun updatePriceForSelectedQuantity(id:Int,priceForSelectedQuantity:Double)
 
-    @Query("UPDATE SelectedProduct SET olcPriceForSelectedQuantity=:oldPriceForSelectedQuantity where productId=:id")
+    @Query("UPDATE SelectedProduct SET oldPriceForSelectedQuantity=:oldPriceForSelectedQuantity where productId=:id")
     fun updateOldPriceForSelectedQuantity(id:Int, oldPriceForSelectedQuantity:Double)
 
     @Query("Delete FROM SelectedProduct where 1=1")

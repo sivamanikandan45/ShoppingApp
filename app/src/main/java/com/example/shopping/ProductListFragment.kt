@@ -336,7 +336,7 @@ class ProductListFragment : Fragment() {
             adapter.setFavoriteButtonListener(object :FavoriteButtonListener{
                 override fun handle(position: Int) {
                     val viewModel:ProductViewModel by activityViewModels()
-                    val product=list[position]
+                    val product=adapter.list[position]
                     if(product.favorite){
                         GlobalScope.launch {
                             val job=launch(Dispatchers.IO) {
@@ -391,16 +391,21 @@ class ProductListFragment : Fragment() {
                 //activity?.invalidateOptionsMenu()
                 println("Setting value got $searchedQuery")
             }else{
-                println("Current data is $currentProductList")
-                GlobalScope.launch {
-                    val job=launch(Dispatchers.IO) {
-                        productViewModel.getCategoryWiseProductList()
+                try{
+                    println("Current data is $currentProductList")
+                    GlobalScope.launch {
+                        val job=launch(Dispatchers.IO) {
+                            productViewModel.getCategoryWiseProductList()
+                        }
+                        job.join()
+                        withContext(Dispatchers.Main){
+                            adapter.setList(currentProductList,productViewModel.categoryList.value!!)
+                        }
                     }
-                    job.join()
-                    withContext(Dispatchers.Main){
-                        adapter.setList(currentProductList,productViewModel.categoryList.value!!)
-                    }
+                }catch (exception:UninitializedPropertyAccessException){
+                    //activity?.onBackPressed()
                 }
+
             }
             //val category=activity?.intent?.getStringExtra("category")
 

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.example.shopping.enums.CheckoutMode
 import com.example.shopping.model.Order
 import com.example.shopping.model.OrderedProduct
 import com.example.shopping.viewmodel.AddressViewModel
@@ -40,7 +41,15 @@ class OrderPlacedFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Order Status"
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        /*when(checkoutViewModel.mode){
+            CheckoutMode.OVERALL->{placeOrder()}
+            CheckoutMode.BUY_NOW->{buyNow()}
+        }*/
         placeOrder()
+    }
+
+    private fun buyNow() {
+        TODO("Not yet implemented")
     }
 
     private fun placeOrder() {
@@ -48,21 +57,31 @@ class OrderPlacedFragment : Fragment() {
             val job=launch(Dispatchers.IO) {
                 val decimalFormat = DecimalFormat("#.##")
                 decimalFormat.roundingMode = RoundingMode.UP
-
                 val selectedAddressId=checkoutViewModel.selectedAddress.value?.addressId
-                val priceBeforeDiscount=cartViewModel.cartAmountBeforeDiscount.value
-                val priceAfterDiscount=cartViewModel.cartAmountAfterDiscount.value
-                var discountAmount= priceBeforeDiscount!! - priceAfterDiscount!!
-                discountAmount = decimalFormat.format(discountAmount).toDouble()
                 val formatter = SimpleDateFormat("dd/MM/yyyy")
                 val calendar: Calendar = Calendar.getInstance()
                 calendar.time = Date() // Using today's date
                 calendar.add(Calendar.DATE, 2) // Adding 2 days
                 val deliveryDate = formatter.format(calendar.getTime())
-
                 val date = Date()
                 val ordDate = formatter.format(date)
-                val itemCount=cartViewModel.cartItems.value?.size
+                var priceBeforeDiscount: Double? =null
+                var priceAfterDiscount: Double? =null
+                //var discountAmount:Double?=null
+                var itemCount:Int?=1
+                if(checkoutViewModel.mode==CheckoutMode.OVERALL){
+                    priceBeforeDiscount=cartViewModel.cartAmountBeforeDiscount.value
+                    priceAfterDiscount=cartViewModel.cartAmountAfterDiscount.value
+                    itemCount=cartViewModel.cartItems.value?.size
+                }else if(checkoutViewModel.mode==CheckoutMode.BUY_NOW){
+                    val selectedProduct=checkoutViewModel.buyNowProduct
+                    priceBeforeDiscount=selectedProduct?.oldPriceForSelectedQuantity
+                    priceAfterDiscount=selectedProduct?.priceForSelectedQuantity
+                }
+
+                var discountAmount = priceBeforeDiscount!! - priceAfterDiscount!!
+                discountAmount = decimalFormat.format(discountAmount).toDouble()
+
                 val address= selectedAddressId?.let { addressViewModel.getAddress(it) }
                 var order: Order? =null
                 if(address!=null) {
@@ -92,14 +111,24 @@ class OrderPlacedFragment : Fragment() {
                     println("Row iD is $rowId")
                     val id=orderViewModel.getIdUsingRowId(rowId)
                     println("Id of the $id")
-
-                    for(i in 0 until cartViewModel.cartItems.value?.size!!){
-                        val prod= cartViewModel.cartItems.value!![i]
-                        val orderedProduct=OrderedProduct(0,id,prod.productId,prod.productName,prod.productBrand,prod.olcPriceForSelectedQuantity,prod.priceForSelectedQuantity,prod.discount,prod.quantity,prod.imageUrl)
-                        orderViewModel.addOrderedProduct(orderedProduct)
+                    if(checkoutViewModel.mode==CheckoutMode.OVERALL){
+                        for(i in 0 until cartViewModel.cartItems.value?.size!!){
+                            val prod= cartViewModel.cartItems.value!![i]
+                            val orderedProduct=OrderedProduct(0,id,prod.productId,prod.productName,prod.productBrand,prod.oldPriceForSelectedQuantity,prod.priceForSelectedQuantity,prod.discount,prod.quantity,prod.imageUrl)
+                            orderViewModel.addOrderedProduct(orderedProduct)
+                        }
+                        cartViewModel.clearCartItems()
+                    }else if(checkoutViewModel.mode==CheckoutMode.BUY_NOW){
+                        val prod=checkoutViewModel.buyNowProduct
+                        if(prod!=null){
+                            val orderedProduct=OrderedProduct(0,id,prod.productId,prod.productName,prod.productBrand,prod.oldPriceForSelectedQuantity,prod.priceForSelectedQuantity,prod.discount,prod.quantity,prod.imageUrl)
+                            orderViewModel.addOrderedProduct(orderedProduct)
+                        }
+                        checkoutViewModel.buyNowProductId=0
+                        checkoutViewModel.buyNowProductQuantity=0
+                        checkoutViewModel.buyNowProduct=null
                     }
 
-                    cartViewModel.clearCartItems()
                 }
                 delay(1000)
             }

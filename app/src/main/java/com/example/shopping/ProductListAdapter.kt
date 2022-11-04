@@ -20,7 +20,7 @@ import java.net.URL
 
 class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
     //private lateinit var list:List<Product>
-    private var list= listOf<Product>()
+    var list= listOf<Product>()
     private lateinit var listener: ItemClickListener
 
     private lateinit var favoriteButtonListener:FavoriteButtonListener

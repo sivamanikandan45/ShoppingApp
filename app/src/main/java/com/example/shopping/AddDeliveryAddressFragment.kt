@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,9 +9,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.example.shopping.enums.FormMode
 import com.example.shopping.model.Address
 import com.example.shopping.viewmodel.AddressViewModel
+import com.example.shopping.viewmodel.DeliveryAddressViewModel
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -19,6 +22,14 @@ import kotlinx.coroutines.withContext
 
 class AddDeliveryAddressFragment : Fragment() {
     private val addressViewModel:AddressViewModel by activityViewModels()
+    private val deliveryAddressViewModel:DeliveryAddressViewModel by viewModels()
+    private lateinit var nameInputLayout: TextInputLayout
+    private lateinit var phoneInputLayout: TextInputLayout
+    private lateinit var pinCodeInputLayout: TextInputLayout
+    private lateinit var stateInputLayout: TextInputLayout
+    private lateinit var cityInputLayout: TextInputLayout
+    private lateinit var addressStreetInputLayout: TextInputLayout
+    private lateinit var areaInputLayout: TextInputLayout
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,16 +44,18 @@ class AddDeliveryAddressFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        println("View created again")
+        println("Fetched ${deliveryAddressViewModel.city} ${deliveryAddressViewModel.pinCode}")
         (activity as AppCompatActivity).supportActionBar?.title="Add Delivery Address"
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val nameInputLayout=view.findViewById<TextInputLayout>(R.id.fullname)
-        val phoneInputLayout=view.findViewById<TextInputLayout>(R.id.phn)
-        val pinCodeInputLayout=view.findViewById<TextInputLayout>(R.id.pincode)
-        val stateInputLayout=view.findViewById<TextInputLayout>(R.id.state)
-        val cityInputLayout=view.findViewById<TextInputLayout>(R.id.city)
-        val addressStreetInputLayout=view.findViewById<TextInputLayout>(R.id.addressline1)
-        val areaInputLayout=view.findViewById<TextInputLayout>(R.id.addressline2)
+        nameInputLayout=view.findViewById<TextInputLayout>(R.id.fullname)
+        phoneInputLayout=view.findViewById<TextInputLayout>(R.id.phn)
+        pinCodeInputLayout=view.findViewById<TextInputLayout>(R.id.pincode)
+        stateInputLayout=view.findViewById<TextInputLayout>(R.id.state)
+        cityInputLayout=view.findViewById<TextInputLayout>(R.id.city)
+        addressStreetInputLayout=view.findViewById<TextInputLayout>(R.id.addressline1)
+        areaInputLayout=view.findViewById<TextInputLayout>(R.id.addressline2)
 
         if(addressViewModel.formMode==FormMode.EDIT){
             (activity as AppCompatActivity).supportActionBar?.title="Edit Delivery Address"
@@ -54,6 +67,29 @@ class AddDeliveryAddressFragment : Fragment() {
             cityInputLayout.editText?.setText(selectedAddress?.city)
             addressStreetInputLayout.editText?.setText(selectedAddress?.street)
             areaInputLayout.editText?.setText(selectedAddress?.area)
+        }
+
+        if(deliveryAddressViewModel.name!=""){
+            println("Activated")
+            nameInputLayout.editText?.setText(deliveryAddressViewModel.name)
+        }
+        if(deliveryAddressViewModel.phone!=""){
+            phoneInputLayout.editText?.setText(deliveryAddressViewModel.phone)
+        }
+        if(deliveryAddressViewModel.pinCode!=null){
+            deliveryAddressViewModel.pinCode?.let { pinCodeInputLayout.editText?.setText(it.toString()) }
+        }
+        if(deliveryAddressViewModel.state!=""){
+            stateInputLayout.editText?.setText(deliveryAddressViewModel.state)
+        }
+        if(deliveryAddressViewModel.city!=""){
+            cityInputLayout.editText?.setText(deliveryAddressViewModel.city)
+        }
+        if(deliveryAddressViewModel.street!=""){
+            addressStreetInputLayout.editText?.setText(deliveryAddressViewModel.street)
+        }
+        if(deliveryAddressViewModel.area!=""){
+            areaInputLayout.editText?.setText(deliveryAddressViewModel.area)
         }
 
         val saveAddressButton=view.findViewById<Button>(R.id.save_address)
@@ -198,6 +234,25 @@ class AddDeliveryAddressFragment : Fragment() {
             }
         }
         return returnValue
+    }
+
+    override fun onDestroy() {
+        println("Destroy called")
+        deliveryAddressViewModel.apply {
+            name=nameInputLayout.editText?.text.toString()
+            phone=phoneInputLayout.editText?.text.toString()
+            pinCode = if(pinCodeInputLayout.editText?.text.toString()!=""){
+                pinCodeInputLayout.editText?.text.toString().toInt()
+            }else{
+                null
+            }
+            state=stateInputLayout.editText?.text.toString()
+            city=cityInputLayout.editText?.text.toString()
+            street=addressStreetInputLayout.editText?.text.toString()
+            area=areaInputLayout.editText?.text.toString()
+        }
+        println("Saving ${deliveryAddressViewModel.city} ${deliveryAddressViewModel.pinCode}")
+        super.onDestroy()
     }
 
 }

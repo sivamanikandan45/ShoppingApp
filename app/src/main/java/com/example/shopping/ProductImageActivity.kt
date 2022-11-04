@@ -25,7 +25,7 @@ class ProductImageActivity : AppCompatActivity() {
         setContentView(R.layout.activity_product_image)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val viewModel= ViewModelProvider(this)[ProductViewModel::class.java]
-        val colorDrawable = ColorDrawable(Color.parseColor("#212121"))
+        val colorDrawable = ColorDrawable(Color.parseColor("#000000"))
         supportActionBar?.setBackgroundDrawable(colorDrawable)
 
         if (Build.VERSION.SDK_INT >= 21) {
@@ -33,8 +33,8 @@ class ProductImageActivity : AppCompatActivity() {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             //window.setStatusBarColor(this.resources.getColor(R.color.colorPrimaryDark))
-            window.statusBarColor=Color.parseColor("#212121")
-            window.navigationBarColor=Color.parseColor("#212121")
+            window.statusBarColor=Color.parseColor("#000000")
+            window.navigationBarColor=Color.parseColor("#000000")
         }
 
         var list: MutableList<String> = mutableListOf<String>()
