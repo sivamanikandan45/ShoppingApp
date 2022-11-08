@@ -1,8 +1,7 @@
 package com.example.shopping
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Paint
+import android.graphics.*
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +18,9 @@ import java.math.RoundingMode
 import java.net.URL
 import java.text.DecimalFormat
 
+
 class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
+    //var bitmapValue:Bitmap?=null
     //private lateinit var list: List<SelectedProduct>
     private var list= listOf<SelectedProduct>()
     private lateinit var listener: QuantityButtonListener
@@ -32,6 +33,49 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
         val diffResult=DiffUtil.calculateDiff(diffUtil)
         this.list=list
         diffResult.dispatchUpdatesTo(this)
+    }
+
+    private fun mergeMultiple(parts: Array<Bitmap>): Bitmap? {
+        val result =
+            Bitmap.createBitmap(parts[0].width * 2, parts[0].height * 2, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(result)
+        val paint = Paint()
+        for (i in parts.indices) {
+            canvas.drawBitmap(parts[i], parts[i].width * (i % 2).toFloat(), parts[i].height * (i / 2).toFloat(), paint)
+        }
+        return result
+    }
+
+    private fun mergeThemAll(orderImagesList: List<Bitmap>?): Bitmap? {
+        var result: Bitmap? = null
+        if (orderImagesList != null && orderImagesList.isNotEmpty()) {
+            // if two images > increase the width only
+            result = if (orderImagesList.size == 2) Bitmap.createBitmap(
+                orderImagesList[0].width * 2,
+                orderImagesList[0].height,
+                Bitmap.Config.ARGB_8888
+            ) else if (orderImagesList.size > 2) Bitmap.createBitmap(
+                orderImagesList[0].width * 2, orderImagesList[0].height * 2, Bitmap.Config.ARGB_8888
+            ) else  // don't increase anything
+                Bitmap.createBitmap(
+                    orderImagesList[0].width,
+                    orderImagesList[0].height,
+                    Bitmap.Config.ARGB_8888
+                )
+            val canvas = Canvas(result)
+            val paint = Paint()
+            for (i in orderImagesList.indices) {
+                canvas.drawBitmap(
+                    orderImagesList[i],
+                    orderImagesList[i].width * (i % 2).toFloat(),
+                    orderImagesList[i].height * (i / 2).toFloat(),
+                    paint
+                )
+            }
+        } else {
+            Log.e("MergeError", "Couldn't merge bitmaps")
+        }
+        return result
     }
 
     fun setOnQuantityClickListener(listener: QuantityButtonListener){
@@ -92,6 +136,8 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
                     withContext(Dispatchers.Main){
                         if(loadingPosition==adapterPosition){
                             if(list[adapterPosition].productId==selectedProduct.productId){
+                                /*val bitMapArray= listOf(bitmapValue!!,bitmapValue!!,bitmapValue!!)
+                                val res=mergeThemAll(bitMapArray)*/
                                 productImageView.setImageBitmap(bitmapValue)
                             }
                         }

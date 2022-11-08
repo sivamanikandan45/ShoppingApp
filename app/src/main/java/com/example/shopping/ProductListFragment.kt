@@ -109,6 +109,12 @@ class ProductListFragment : Fragment() {
         }
         adapter.setFavoriteButtonListener(object : FavoriteButtonListener {
             override fun handle(position: Int) {
+                /*if(product?.favorite==true){
+                    favoriteButton.setImageResource(R.drawable.heart_red)
+                }else{
+                    favoriteButton.setImageResource(R.drawable.border_heart)
+                }*/
+
                 val viewModel: ProductViewModel by activityViewModels()
                 val product = viewModel.categoryList.value?.get(position)
                 if (product?.favorite == true) {

@@ -65,6 +65,7 @@ class ProductFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val productViewModel:ProductViewModel by activityViewModels()
         val cartViewModel:CartViewModel by activityViewModels()
+        /*(activity as AppCompatActivity)?.supportActionBar?.hide()*/
 
         val buyNowButton=view.findViewById<Button>(R.id.buy_now_button)
         val quantityTextView:TextView=view.findViewById(R.id.cart_qty)

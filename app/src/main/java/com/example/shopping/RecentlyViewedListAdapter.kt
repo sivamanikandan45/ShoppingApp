@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -37,12 +38,14 @@ class RecentlyViewedListAdapter:RecyclerView.Adapter<RecentlyViewedListAdapter.V
         val productRatingBar: RatingBar
         val productRatedValue: TextView
         var loadingPosition=-1
+        var progressBar:ProgressBar
         init {
             imageView=view.findViewById<ShapeableImageView>(R.id.similar_product_imageView)
             productName=view.findViewById<TextView>(R.id.similar_product_name)
             productPrice=view.findViewById<TextView>(R.id.similar_product_price)
             productRatingBar=view.findViewById<RatingBar>(R.id.similar_product_rating_bar)
             productRatedValue=view.findViewById<TextView>(R.id.similar_product_rated_value)
+            progressBar=view.findViewById(R.id.progress)
             view.setOnClickListener{
                 listener.onItemClick(adapterPosition)
             }
@@ -56,6 +59,7 @@ class RecentlyViewedListAdapter:RecyclerView.Adapter<RecentlyViewedListAdapter.V
             productRatingBar.rating=product.rating.toFloat()
             productRatedValue.text=product.rating
             var bitmapValue: Bitmap?=null
+            progressBar.visibility=View.VISIBLE
             GlobalScope.launch {
                 val job=launch(Dispatchers.IO) {
                     val imageUrl = URL(product.thumbnail)
@@ -66,6 +70,7 @@ class RecentlyViewedListAdapter:RecyclerView.Adapter<RecentlyViewedListAdapter.V
                                 println("The value of list and current item is ${list[adapterPosition].productId} ${product.productId}")
                                 println("The val of loading pos and adpaterpos is $loadingPosition $adapterPosition")
                                 imageView.setImageBitmap(bitmapValue)
+                                progressBar.visibility=View.GONE
                             }
                         }
                     }
@@ -77,6 +82,7 @@ class RecentlyViewedListAdapter:RecyclerView.Adapter<RecentlyViewedListAdapter.V
                 imageSettingCoroutine.join()*/
             }
             imageView.setImageBitmap(bitmapValue)
+            progressBar.visibility=View.VISIBLE
         }
 
     }

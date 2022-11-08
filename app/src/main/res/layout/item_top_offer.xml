@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="8dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="16dp"
     android:layout_height="wrap_content">
     <androidx.cardview.widget.CardView
         android:layout_width="160dp"
@@ -22,6 +22,16 @@
                 android:scaleType="fitXY"
                 app:shapeAppearanceOverlay="@style/curvedCorner"
                 android:src="@drawable/ic_launcher_background"
+                app:layout_constraintTop_toTopOf="parent" />
+            <ProgressBar
+                android:id="@+id/progress"
+                style="@style/Widget.AppCompat.ProgressBar"
+                android:indeterminateTint="@color/blue_600"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/product_card_imageview"
+                app:layout_constraintEnd_toEndOf="@+id/product_card_imageview"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <!--<ImageView
@@ -54,7 +64,7 @@
                 android:lines="2"
                 android:maxLines="2"
                 android:text="@string/title_product_name"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -90,7 +100,7 @@
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/open_sans"
                 android:text="@string/title_price"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"

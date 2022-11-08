@@ -70,9 +70,9 @@ class MyOrdersFragment : Fragment() {
         orderListManager= LinearLayoutManager(requireContext())
         orderListRecyclerView.adapter=orderAdapter
         orderListRecyclerView.layoutManager=orderListManager
-        val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
+        /*val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
         //divider?.dividerInsetStart=
-        orderListRecyclerView.addItemDecoration(divider!!)
+        orderListRecyclerView.addItemDecoration(divider!!)*/
 
         orderViewModel.orderList.observe(viewLifecycleOwner, Observer {
 

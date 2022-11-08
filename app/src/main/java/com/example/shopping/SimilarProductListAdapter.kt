@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -37,12 +38,14 @@ class SimilarProductListAdapter:RecyclerView.Adapter<SimilarProductListAdapter.V
         val productRatingBar:RatingBar
         val productRatedValue:TextView
         var loadingPosition=-1
+        val progressBar:ProgressBar
         init {
             imageView=view.findViewById<ShapeableImageView>(R.id.similar_product_imageView)
             productName=view.findViewById<TextView>(R.id.similar_product_name)
             productPrice=view.findViewById<TextView>(R.id.similar_product_price)
             productRatingBar=view.findViewById<RatingBar>(R.id.similar_product_rating_bar)
             productRatedValue=view.findViewById<TextView>(R.id.similar_product_rated_value)
+            progressBar=view.findViewById(R.id.progress)
             view.setOnClickListener{
                 listener.onItemClick(adapterPosition)
             }
@@ -64,6 +67,7 @@ class SimilarProductListAdapter:RecyclerView.Adapter<SimilarProductListAdapter.V
                         if(loadingPosition==adapterPosition){
                             if(list[adapterPosition].productId==product.productId){
                                 imageView.setImageBitmap(bitmapValue)
+                                progressBar.visibility=View.GONE
                             }
                         }
                     }
@@ -76,6 +80,7 @@ class SimilarProductListAdapter:RecyclerView.Adapter<SimilarProductListAdapter.V
                 imageSettingCoroutine.join()*/
             }
             imageView.setImageBitmap(bitmapValue)
+            progressBar.visibility=View.VISIBLE
         }
 
     }

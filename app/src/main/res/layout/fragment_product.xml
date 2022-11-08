@@ -50,7 +50,7 @@
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/open_sans"
                 android:text="@string/title_product_name"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/product_cost"
@@ -121,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/title_price"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/product_rating_bar"
                 app:layout_constraintTop_toBottomOf="@+id/product_rating_bar" />
@@ -153,18 +153,17 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="You may also like"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/separator2" />
 
-            <View
+            <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/separator1"
                 android:layout_width="match_parent"
-                android:layout_height="4dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:background="#e8eaed"
                 app:layout_constraintTop_toBottomOf="@id/product_description" />
 
             <TextView
@@ -175,7 +174,7 @@
                 android:layout_marginTop="8dp"
                 android:drawablePadding="16dp"
                 android:text="FREE Delivery"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 app:drawableStartCompat="@drawable/ic_outline_local_shipping_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/separator1" />
@@ -188,17 +187,16 @@
                 android:layout_marginTop="8dp"
                 android:drawablePadding="16dp"
                 android:text="Cash On Delivery Available"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 app:drawableStartCompat="@drawable/ic_baseline_money_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/free_delivery" />
 
-            <View
+            <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/separator2"
                 android:layout_width="match_parent"
-                android:layout_height="4dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:background="#e8eaed"
                 app:layout_constraintTop_toBottomOf="@id/expected_delivery" />
 
 
@@ -206,8 +204,7 @@
                 android:id="@+id/similar_product_recyler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="32dp"
                 android:clipToPadding="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -285,8 +282,8 @@
                 android:layout_marginEnd="8dp"
                 android:ems="2"
                 android:text="1"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textAlignment="center"
-                android:textColor="@color/black"
                 app:layout_constraintEnd_toStartOf="@+id/increase_qty_btn"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/decrease_qty_btn"
@@ -312,6 +309,7 @@
     </ScrollView>
 
     <LinearLayout
+        android:elevation="8dp"
         android:id="@+id/button_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

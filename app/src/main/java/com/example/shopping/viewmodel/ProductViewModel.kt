@@ -342,14 +342,14 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
         val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
         dao.markAsFavorite(productId)
         getALlProducts()
-        getCategoryWiseProductList()
+        //getCategoryWiseProductList()
     }
 
     fun removeFavorite(productId: Int){
         val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
         dao.removeFavorite(productId)
         getALlProducts()
-        getCategoryWiseProductList()
+        //getCategoryWiseProductList()
     }
 
     fun getTopOfferList(){

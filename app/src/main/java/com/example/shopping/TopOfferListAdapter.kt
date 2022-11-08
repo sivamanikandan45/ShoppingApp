@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -59,6 +60,7 @@ class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>()
         val productNewPriceTextView: TextView
         val offer: TextView
         var loadingPosition=-1
+        val progressBar:ProgressBar
 
         //val imageButton: ImageView
 
@@ -75,6 +77,7 @@ class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>()
             ratedValue=view.findViewById(R.id.product_card_rated_value)
             productNewPriceTextView=view.findViewById(R.id.product_card_offer_price)
             offer=view.findViewById(R.id.product_discount)
+            progressBar=view.findViewById(R.id.progress)
             //imageButton=view.findViewById(R.id.favorite_button)
             //checkBox=view.findViewById(R.id.heart_checkbox)
 
@@ -107,6 +110,7 @@ class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>()
                         if(loadingPosition==adapterPosition){
                             if(list[adapterPosition].productId==product.productId){
                                 imageView.setImageBitmap(bitmapValue)
+                                progressBar.visibility=View.GONE
                             }
                         }
                     }
@@ -125,6 +129,7 @@ class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>()
             }*/
 
             imageView.setImageBitmap(bitmapValue)
+            progressBar.visibility=View.VISIBLE
             productOldPriceTextView.text="₹"+product.originalPrice.toString()
             //productBrandTextView.text=product.brand
             productRatingBar.rating=product.rating.toFloat()

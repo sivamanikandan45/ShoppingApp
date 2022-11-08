@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.Order
+import com.google.android.material.imageview.ShapeableImageView
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
@@ -28,6 +29,7 @@ class OrderAdapter:RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
         val itemCountTextView:TextView
         val orderDateTextView:TextView
         val billAmountTextView:TextView
+        val imageView:ShapeableImageView
         //val addressTextView:TextView
 
         init {
@@ -35,6 +37,7 @@ class OrderAdapter:RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
             itemCountTextView=view.findViewById(R.id.order_item_count)
             orderDateTextView=view.findViewById(R.id.order_date)
             billAmountTextView=view.findViewById(R.id.order_bill_amount)
+            imageView=view.findViewById(R.id.shapeableImageView)
 //            addressTextView=view.findViewById(R.id.address)
             view.setOnClickListener {
                 listener.onItemClick(adapterPosition)

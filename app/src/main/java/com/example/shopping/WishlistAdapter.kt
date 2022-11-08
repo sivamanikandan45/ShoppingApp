@@ -6,10 +6,7 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.PopupMenu
-import android.widget.TextView
+import android.widget.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.FavoriteProduct
@@ -63,6 +60,7 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
         val menu:ImageButton
         val addToCartBtn:Button
         var loadingPosition=-1
+        val progressBar:ProgressBar
 
         init {
             imageView=view.findViewById<ShapeableImageView>(R.id.favorite_imageview)
@@ -72,6 +70,7 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
             discount=view.findViewById<TextView>(R.id.favorite_product_discount)
             menu=view.findViewById(R.id.wishlist_item_menu)
             addToCartBtn=view.findViewById(R.id.favorite_add_to_cart_btn)
+            progressBar=view.findViewById(R.id.progress)
 
             view.setOnClickListener {
                 listener.onItemClick(adapterPosition)
@@ -125,6 +124,7 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
                         if(loadingPosition==adapterPosition){
                             if(list[adapterPosition].productId==product.productId){
                                 imageView.setImageBitmap(bitmapValue)
+                                progressBar.visibility=View.GONE
                             }
                         }
                     }
@@ -137,6 +137,7 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
                 imageSettingCoroutine.join()*/
             }
             imageView.setImageBitmap(bitmapValue)
+            progressBar.visibility=View.VISIBLE
         }
 
     }

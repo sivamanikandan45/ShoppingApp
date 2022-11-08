@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:padding="8dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="16dp"
     android:layout_height="wrap_content">
 
     <com.google.android.material.imageview.ShapeableImageView
@@ -15,6 +16,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/curvedCorner" />
 
+    <ProgressBar
+        android:id="@+id/progress"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminateTint="@color/blue_600"
+        app:layout_constraintBottom_toBottomOf="@+id/similar_product_imageView"
+        app:layout_constraintEnd_toEndOf="@+id/similar_product_imageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/similar_product_price"
         android:layout_width="wrap_content"
@@ -22,7 +34,8 @@
         android:layout_marginTop="8dp"
         android:fontFamily="@font/open_sans"
         android:text="@string/title_price"
-        android:textColor="@color/black"
+        android:layout_marginStart="8dp"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,6 +46,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:ellipsize="end"
         android:lines="2"
         android:maxLines="2"
@@ -50,6 +65,8 @@
         android:layout_height="wrap_content"
         android:progressTint="#FFCD3C"
         android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/similar_product_name"

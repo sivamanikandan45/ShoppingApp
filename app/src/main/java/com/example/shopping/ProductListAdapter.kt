@@ -72,6 +72,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
         val offer:TextView
 
         val imageButton:ImageView
+        val progressBar:ProgressBar
 
         //val checkBox:CheckBox
 
@@ -87,17 +88,28 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
             productNewPriceTextView=view.findViewById(R.id.product_card_offer_price)
             offer=view.findViewById(R.id.product_discount)
             imageButton=view.findViewById(R.id.favorite_button)
+            progressBar=view.findViewById(R.id.progress)
             //checkBox=view.findViewById(R.id.heart_checkbox)
 
             /*checkBox.setOnCheckedChangeListener { compoundButton, b ->
                 favoriteButtonListener.handle(adapterPosition)
             }*/
 
-
-
-
             imageButton.setOnClickListener {
-                favoriteButtonListener.handle(adapterPosition)
+                val product=list[adapterPosition]
+                if(product.favorite){
+                    imageButton.setImageResource(R.drawable.border_heart)
+                }else{
+                    imageButton.setImageResource(R.drawable.heart_red)
+                }
+
+                GlobalScope.launch {
+                    val job=launch {
+                        favoriteButtonListener.handle(adapterPosition)
+                    }
+                    job.join()
+                    list[adapterPosition].favorite=!list[adapterPosition].favorite
+                }
             }
 
             view.setOnClickListener{
@@ -108,6 +120,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
         fun bind(product: Product) {
             var bitmapValue:Bitmap?=null
             imageView.setImageBitmap(bitmapValue)
+            progressBar.visibility=View.VISIBLE
             //var imageUrl:Uri?=null
             productNameTextView.text=product.title//.capitalize()//product.brand+" "+
             //Picasso.get().load(product.thumbnail).into(imageView);
@@ -119,6 +132,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
                         if(loadingPosition==adapterPosition){
                             if(list[adapterPosition].productId==product.productId){
                                 imageView.setImageBitmap(bitmapValue)
+                                progressBar.visibility=View.GONE
                             }
                         }
                     }

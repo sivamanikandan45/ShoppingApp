@@ -1,17 +1,23 @@
 package com.example.shopping
 
 import android.content.Intent
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.*
-import androidx.fragment.app.Fragment
+import android.util.DisplayMetrics
+import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.ViewCompat
+import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -27,6 +33,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import kotlin.math.roundToInt
 
 class CartFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -138,6 +145,8 @@ class CartFragment : Fragment() {
         manager= LinearLayoutManager(context)
 
         val itemTOuchHelperCallBack = object :ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT){
+            val icon = ContextCompat.getDrawable(requireContext(), R.drawable.add_24);
+            val background = ColorDrawable(Color.RED);
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -156,11 +165,69 @@ class CartFragment : Fragment() {
                         removeItemFromCart(product)
                     }
                     .setNegativeButton("CANCEL"){_,_ ->
-                        adapter.notifyDataSetChanged()
+                        //adapter.notifyItemChanged(position)
                     }
                     .show()
-                adapter.notifyDataSetChanged()
+                adapter.notifyItemChanged(position)
             }
+
+            /*override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                val itemView = viewHolder.itemView
+                val backgroundCornerOffset = 20
+                val displayMetrics: DisplayMetrics = resources.displayMetrics
+                val height = (displayMetrics.heightPixels / displayMetrics.density).toInt().dp
+                val width = (displayMetrics.widthPixels / displayMetrics.density).toInt().dp
+                val iconMargin = (itemView.height - icon!!.intrinsicHeight) / 2
+                val iconTop = itemView.top + (itemView.height - icon!!.intrinsicHeight) / 2
+                val iconBottom = iconTop + icon!!.intrinsicHeight
+
+                if (dX < 0){
+                    val iconLeft = itemView.right - iconMargin - icon.intrinsicWidth
+                    val iconRight = itemView.right - iconMargin
+                    background.setBounds(
+                        itemView.left, itemView.top,
+                        itemView.left + dX.toInt() + backgroundCornerOffset,
+                        itemView.bottom
+                    )
+                    icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+                }else { // view is unSwiped
+                    background.setBounds(0, 0, 0, 0);
+                    icon.setBounds(0,0,0,0)
+                }
+                background.draw(c);
+                icon.draw(c);
+                *//*when{
+                     -> {
+                        background.setBounds(
+                            itemView.left, itemView.top,
+                            itemView.left + dX.toInt() + backgroundCornerOffset,
+                            itemView.bottom
+                        )
+                    }
+                }*//*
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
+            private val Int.dp
+                get() = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    toFloat(), resources.displayMetrics
+                ).roundToInt()*/
 
         }
 
@@ -176,14 +243,14 @@ class CartFragment : Fragment() {
                     val decimalFormat = DecimalFormat("#.##")
                     decimalFormat.roundingMode = RoundingMode.UP
                     val priceAfterDiscountRounded= decimalFormat.format(priceAfterDiscount).toDouble()
-                    totalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
-                    finalTotalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
+                    totalAmountTextView.text="₹$priceAfterDiscountRounded"
+                    finalTotalAmountTextView.text="₹$priceAfterDiscountRounded"
                     totalAmountBeforeDiscount.text=priceBeforeDiscount.toString()
                     var discountAmount=priceBeforeDiscount-priceAfterDiscount
                     /*val df = DecimalFormat("#.##")
                     df.roundingMode = RoundingMode.UP*/
                     discountAmount = decimalFormat.format(discountAmount).toDouble()
-                    offerTextView.text="-₹"+discountAmount.toString()
+                    offerTextView.text="-₹$discountAmount"
                     savingInfo.text="You will save ₹$discountAmount on this order"
                 }
             }

@@ -1,16 +1,13 @@
 package com.example.shopping.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.example.shopping.model.FavoriteProduct
 import com.example.shopping.model.Product
 
 @Dao
 interface FavoriteDao {
 
-    @Insert
+    @Insert(onConflict =OnConflictStrategy.REPLACE)
     fun addToFavorite(favoriteProduct: FavoriteProduct)
 
     @Query("DELETE FROM FavoriteProduct where productId=:productId")

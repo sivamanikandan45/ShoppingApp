@@ -24,6 +24,17 @@
                 android:src="@drawable/ic_launcher_background"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ProgressBar
+                android:id="@+id/progress"
+                style="@style/Widget.AppCompat.ProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminateTint="@color/blue_600"
+                app:layout_constraintBottom_toBottomOf="@+id/favorite_imageview"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <!--<CheckBox
                 android:id="@+id/heart_checkbox"
                 android:layout_width="wrap_content"
@@ -42,6 +53,7 @@
                 android:src="@drawable/ic_outline_more_vert_24"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/favorite_productName"
                 android:layout_width="0dp"
@@ -52,7 +64,7 @@
                 android:ellipsize="end"
                 android:lines="1"
                 android:text="@string/title_product_name"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -87,12 +99,12 @@
                 android:id="@+id/favorite_offer_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:fontFamily="@font/open_sans"
                 android:text="@string/title_price"
-                android:textColor="@color/black"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:layout_marginTop="8dp"
                 app:layout_constraintStart_toStartOf="@+id/favorite_product_price"
                 app:layout_constraintTop_toBottomOf="@+id/favorite_product_price" />
 

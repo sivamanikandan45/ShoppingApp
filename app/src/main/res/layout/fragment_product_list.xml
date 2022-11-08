@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ProductListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -11,9 +12,25 @@
         android:id="@+id/product_list_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <View
+        app:layout_constraintTop_toBottomOf="@+id/product_list_recyclerView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"/>
     <!--<TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:text="product list frag inside the category activity"/>-->
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+<!--<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ProductListFragment">
+
+
+
+</androidx.core.widget.NestedScrollView>-->

@@ -21,7 +21,6 @@
             android:src="@drawable/cart_emp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cart is Empty"
-            android:textColor="@color/black"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="24sp"
             android:layout_marginTop="16dp"
             android:textStyle="bold"
@@ -102,9 +101,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Price Details"
             android:layout_marginTop="16dp"
-            android:textColor="@color/black"
+            android:text="Price Details"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -116,7 +115,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Price"
-            android:textColor="@color/black"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="@+id/textView"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -127,7 +126,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Discount"
-            android:textColor="@color/black"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="@+id/textView2"
             app:layout_constraintTop_toBottomOf="@+id/textView2" />
@@ -136,10 +135,10 @@
             android:id="@+id/delivery_charges"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Delivery Charges"
-            android:textColor="@color/black"
-            android:textSize="14sp"
             android:layout_marginTop="8dp"
+            android:text="Delivery Charges"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="14sp"
             app:layout_constraintStart_toStartOf="@+id/textView3"
             app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
@@ -156,11 +155,11 @@
             android:id="@+id/total_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="Total Amount"
-            android:textColor="@color/black"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="@+id/delivery_charges"
             app:layout_constraintTop_toBottomOf="@+id/materialDivider" />
 
@@ -189,9 +188,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:text="@string/title_price"
+            android:textColor="?android:attr/textColorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView2"
-            android:textColor="@color/black"/>
+            app:layout_constraintTop_toTopOf="@+id/textView2" />
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/materialDivider2"
@@ -206,11 +205,11 @@
             android:id="@+id/total_amount_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
             android:text="@string/title_price"
-            android:textColor="@color/black"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/total_amount" />
 
@@ -232,7 +231,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:text="@string/title_price"
-            android:textColor="@color/black"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
