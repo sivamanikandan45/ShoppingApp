@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -181,28 +182,25 @@ class ProductFragment : Fragment() {
         val similarProductRecyclerView=view.findViewById<RecyclerView>(R.id.similar_product_recyler)
 
         val increaseButton: ImageButton=view.findViewById(R.id.increase_qty_btn)
+        val increaseTouchRegion:ConstraintLayout=view.findViewById(R.id.increaseButtonLayout)
         val decreaseButton: ImageButton=view.findViewById(R.id.decrease_qty_btn)
+        val decreaseTouchRegion:ConstraintLayout=view.findViewById(R.id.decreaseButtonLayout)
+
         //val quantityTextView:TextView=view.findViewById(R.id.cart_qty)
         increaseButton.setOnClickListener {
-            var quantity=quantityTextView.text.toString().toInt()
-            if(quantity<10){
-                quantity++
-                quantityTextView.text=quantity.toString()
-                //listener.onIncreaseClicked(adapterPosition)
-            }else{
-                Toast.makeText(it.context,"You can add only 10 items from a particular Product", Toast.LENGTH_SHORT).show()
-            }
+            increaseCount(quantityTextView, it)
+        }
+
+        increaseTouchRegion.setOnClickListener {
+            increaseCount(quantityTextView,it)
         }
 
         decreaseButton.setOnClickListener{
-            var quantity=quantityTextView.text.toString().toInt()
-            if(quantity>1){
-                quantity--
-                quantityTextView.text=quantity.toString()
-                //listener.onDecreaseClicked(adapterPosition)
-            }else if(quantity==1){
-                Toast.makeText(it.context,"Atleast 1 item should be selected", Toast.LENGTH_SHORT).show()
-            }
+            decreaseCount(quantityTextView, it)
+        }
+
+        decreaseTouchRegion.setOnClickListener {
+            decreaseCount(quantityTextView, it)
         }
 
         lifecycleScope.launch {
@@ -275,6 +273,33 @@ class ProductFragment : Fragment() {
 
         //(activity as AppCompatActivity).supportActionBar?.title=product.title
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun decreaseCount(quantityTextView: TextView, it: View) {
+        var quantity = quantityTextView.text.toString().toInt()
+        if (quantity > 1) {
+            quantity--
+            quantityTextView.text = quantity.toString()
+            //listener.onDecreaseClicked(adapterPosition)
+        } else if (quantity == 1) {
+            Toast.makeText(it.context, "Atleast 1 item should be selected", Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+    private fun increaseCount(quantityTextView: TextView, it: View) {
+        var quantity = quantityTextView.text.toString().toInt()
+        if (quantity < 10) {
+            quantity++
+            quantityTextView.text = quantity.toString()
+            //listener.onIncreaseClicked(adapterPosition)
+        } else {
+            Toast.makeText(
+                it.context,
+                "You can add only 10 items from a particular Product",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     private fun removeFromFavorite(product: Product?) {

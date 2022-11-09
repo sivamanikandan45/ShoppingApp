@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.FavoriteProduct
@@ -58,6 +59,7 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
         val oldProductPrice:TextView
         val discount: TextView
         val menu:ImageButton
+        val menuParent:ConstraintLayout
         val addToCartBtn:Button
         var loadingPosition=-1
         val progressBar:ProgressBar
@@ -69,6 +71,7 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
             oldProductPrice=view.findViewById<TextView>(R.id.favorite_product_price)
             discount=view.findViewById<TextView>(R.id.favorite_product_discount)
             menu=view.findViewById(R.id.wishlist_item_menu)
+            menuParent=view.findViewById(R.id.wishlist_item_parent)
             addToCartBtn=view.findViewById(R.id.favorite_add_to_cart_btn)
             progressBar=view.findViewById(R.id.progress)
 
@@ -81,22 +84,11 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
             }
 
             menu.setOnClickListener {
-                val popupMenu=PopupMenu(menu.context,menu)
-                popupMenu.inflate(R.menu.wishlist_menu)
-                popupMenu.setOnMenuItemClickListener {
-                    when(it.itemId){
-                        R.id.remove_action_wishlist->{
-                            println("Clicked item: $adapterPosition")
-                            wishListListener.removeItem(adapterPosition)
-                            true
-                        }
-                        else->{
-                            println(adapterPosition)
-                            false
-                        }
-                    }
-                }
-                popupMenu.show()
+                displayPopUpMenu()
+            }
+
+            menuParent.setOnClickListener {
+                displayPopUpMenu()
             }
 
 
@@ -140,7 +132,27 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
             progressBar.visibility=View.VISIBLE
         }
 
+        private fun displayPopUpMenu() {
+            val popupMenu = PopupMenu(menu.context, menu)
+            popupMenu.inflate(R.menu.wishlist_menu)
+            popupMenu.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.remove_action_wishlist -> {
+                        println("Clicked item: $adapterPosition")
+                        wishListListener.removeItem(adapterPosition)
+                        true
+                    }
+                    else -> {
+                        println(adapterPosition)
+                        false
+                    }
+                }
+            }
+            popupMenu.show()
+        }
     }
+
+
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

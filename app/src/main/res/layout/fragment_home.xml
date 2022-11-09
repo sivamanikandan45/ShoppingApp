@@ -73,6 +73,8 @@
             android:id="@+id/top_offer_recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingEnd="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/top_offer_label"
             tools:itemCount="5" />
@@ -92,6 +94,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recently_viewed_recycler"
             android:layout_width="match_parent"
+            android:clipToPadding="false"
+            android:paddingEnd="16dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
