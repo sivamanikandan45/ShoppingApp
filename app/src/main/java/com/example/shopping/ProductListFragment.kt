@@ -70,6 +70,7 @@ class ProductListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         productRecyclerView=view.findViewById<RecyclerView>(R.id.product_list_recyclerView)
         adapter=ProductListAdapter()
@@ -413,6 +414,7 @@ class ProductListFragment : Fragment() {
                 }
 
             }
+            (activity as AppCompatActivity)?.supportActionBar?.show()
             //val category=activity?.intent?.getStringExtra("category")
 
 

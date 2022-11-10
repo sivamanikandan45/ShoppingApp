@@ -1,11 +1,15 @@
 package com.example.shopping
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Paint
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -18,6 +22,8 @@ import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.FavoriteViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.RecentlyViewedViewModel
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -30,6 +36,7 @@ class ProductFragment : Fragment() {
     private val recentlyViewedViewModel:RecentlyViewedViewModel by activityViewModels()
     private val viewModel:ProductViewModel by activityViewModels()
     private val favoriteViewModel:FavoriteViewModel by activityViewModels()
+    val cartViewModel:CartViewModel by activityViewModels()
     private lateinit var cartItem: MenuItem
     //private lateinit var toolbar: Toolbar
 
@@ -38,7 +45,7 @@ class ProductFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //toolbar=activity.findViewById(R.id.toolbar)
-        setHasOptionsMenu(true)
+        //setHasOptionsMenu(true) --->Edited
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
@@ -62,32 +69,68 @@ class ProductFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_product, container, false)
     }
 
+    override fun onStart() {
+        var amount=0
+        GlobalScope.launch {
+            val job=launch{
+                amount=cartViewModel.getCartItemCount()
+            }
+            job.join()
+            println("Cart count is $amount")
+        }
+        super.onStart()
+    }
+
+    @SuppressLint("UnsafeOptInUsageError")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val productViewModel:ProductViewModel by activityViewModels()
-        val cartViewModel:CartViewModel by activityViewModels()
-        /*(activity as AppCompatActivity)?.supportActionBar?.hide()*/
+
+        (activity as AppCompatActivity)?.supportActionBar?.hide()
+        val toolbar=view.findViewById<Toolbar>(R.id.toolbar)
+        toolbar.inflateMenu(R.menu.product_fragment_menu)
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+        toolbar.setNavigationOnClickListener { view ->
+            activity?.onBackPressed()
+        }
+
+
+
+        toolbar.setOnMenuItemClickListener {
+            when(it.itemId){
+                R.id.cart_menu->{
+                    val intent= Intent(requireContext(),MainActivity::class.java)
+                    intent.putExtra("fragment","cart")
+                    //intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK+Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    true
+                }
+                else -> {
+                    false
+                }
+            }
+        }
 
         val buyNowButton=view.findViewById<Button>(R.id.buy_now_button)
         val quantityTextView:TextView=view.findViewById(R.id.cart_qty)
 
 
 
-        /*cartViewModel.noOfItem.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            val badgeDrawable=(activity as AppCompatActivity).supportActionBar.men
-            badgeDrawable.isVisible=true
-            //badgeDrawable.number= cartViewModel.noOfItem.value!!
-            badgeDrawable.backgroundColor= Color.RED
-            badgeDrawable.badgeTextColor= Color.WHITE
-        })*/
+        cartViewModel.noOfItem.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            if(it==0){
+                val badgeDrawable=BadgeDrawable.create(requireContext())
+                badgeDrawable.isVisible=false
+            }else{
+                val badge = BadgeDrawable.create(requireContext())
+                //badge.maxCharacterCount=3
+                //badge.badgeGravity=BadgeDrawable.TOP_START
+                badge.number= cartViewModel.noOfItem.value?:0
+                BadgeUtils.attachBadgeDrawable(badge, toolbar, R.id.cart_menu )
+            }
+        })
 
-        /*if(cartViewModel.noOfItem.value!=0){
-            val badgeDrawable=bottomNavigationView.getOrCreateBadge(R.id.cart)
-            badgeDrawable.isVisible=true
-            //badgeDrawable.number= cartViewModel.noOfItem.value!!
-            badgeDrawable.backgroundColor= Color.RED
-            badgeDrawable.badgeTextColor= Color.WHITE
-        }*/
+
 
         println("cart is ${cartViewModel.cartItems.value}")
         val product=productViewModel.selectedProduct.value
@@ -242,6 +285,7 @@ class ProductFragment : Fragment() {
 
         if(product!=null){
             productNameTextView.text=product.title
+//            (activity as AppCompatActivity)?.supportActionBar?.title=product.title
             productPriceTextView.text="₹"+product.priceAfterDiscount.toString()
             brandTextView.text=product.brand
             ratingBar.rating= product.rating?.toFloat()!!
@@ -270,8 +314,8 @@ class ProductFragment : Fragment() {
         }
 
 
-
-        //(activity as AppCompatActivity).supportActionBar?.title=product.title
+        toolbar.title=product?.title
+//        (activity as AppCompatActivity).supportActionBar?.title=product?.title
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 

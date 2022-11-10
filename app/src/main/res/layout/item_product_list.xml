@@ -19,14 +19,14 @@
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/product_card_imageview"
                 android:layout_width="match_parent"
-                android:layout_height="160dp"
+                android:layout_height="170dp"
                 android:scaleType="fitXY"
                 android:adjustViewBounds="true"
                 app:shapeAppearanceOverlay="@style/curvedCorner"
                 android:src="@drawable/ic_launcher_background"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ProgressBar
+            <!--<ProgressBar
                 android:id="@+id/progress"
                 style="@style/Widget.AppCompat.ProgressBar"
                 android:indeterminateTint="@color/blue_600"
@@ -35,7 +35,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/product_card_imageview"
                 app:layout_constraintEnd_toEndOf="@+id/product_card_imageview"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />-->
 
             <ImageView
                 android:id="@+id/favorite_button"

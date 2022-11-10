@@ -51,6 +51,7 @@ class WishlistFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity)?.supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.title="Wishlist"
         //(activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         if(favoriteViewModel.calledFrom=="Main"){
@@ -170,6 +171,7 @@ class WishlistFragment : Fragment() {
             }else if(favoriteViewModel.calledFrom=="Account"){
                 (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
             }
+            (activity as AppCompatActivity)?.supportActionBar?.show()
         }
         super.onHiddenChanged(hidden)
     }

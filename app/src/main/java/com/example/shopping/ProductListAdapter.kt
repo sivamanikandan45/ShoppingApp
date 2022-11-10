@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.Product
 import com.example.shopping.util.ProductDiffUtil
+import com.example.shopping.util.ProductImageMemoryCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -72,7 +73,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
         val offer:TextView
 
         val imageButton:ImageView
-        val progressBar:ProgressBar
+        //val progressBar:ProgressBar
 
         //val checkBox:CheckBox
 
@@ -88,7 +89,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
             productNewPriceTextView=view.findViewById(R.id.product_card_offer_price)
             offer=view.findViewById(R.id.product_discount)
             imageButton=view.findViewById(R.id.favorite_button)
-            progressBar=view.findViewById(R.id.progress)
+            //progressBar=view.findViewById(R.id.progress)
             //checkBox=view.findViewById(R.id.heart_checkbox)
 
             /*checkBox.setOnCheckedChangeListener { compoundButton, b ->
@@ -120,39 +121,41 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
         fun bind(product: Product) {
             var bitmapValue:Bitmap?=null
             imageView.setImageBitmap(bitmapValue)
-            progressBar.visibility=View.VISIBLE
+            //progressBar.visibility=View.VISIBLE
             //var imageUrl:Uri?=null
             productNameTextView.text=product.title//.capitalize()//product.brand+" "+
             //Picasso.get().load(product.thumbnail).into(imageView);
-            GlobalScope.launch {
-                val job=launch(Dispatchers.IO) {
-                    val imageUrl = URL(product.thumbnail)
-                    bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
-                    withContext(Dispatchers.Main){
-                        if(loadingPosition==adapterPosition){
-                            if(list[adapterPosition].productId==product.productId){
-                                imageView.setImageBitmap(bitmapValue)
-                                progressBar.visibility=View.GONE
+            val bitmap: Bitmap? = ProductImageMemoryCache.getBitmapFromMemCache(product.productId.toString())?.also {
+                println("Fetched from cache at $adapterPosition")
+                imageView.setImageBitmap(it)
+                //progressBar.visibility=View.GONE
+            } ?:run{
+                GlobalScope.launch {
+                    val job=launch(Dispatchers.IO) {
+                        val imageUrl = URL(product.thumbnail)
+                        imageView.setImageResource(R.drawable.placeholder)
+                        bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        withContext(Dispatchers.Main){
+                            if(loadingPosition==adapterPosition){
+                                if(list[adapterPosition].productId==product.productId){
+                                    imageView.setImageBitmap(bitmapValue)
+                                    ProductImageMemoryCache.addBitmapToCache(product.productId.toString(),bitmapValue!!)
+                                    //progressBar.visibility=View.GONE
+                                }
                             }
                         }
                     }
-                    //bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
-                    //imageUrl = Uri.parse("Data you got from db");
-
+                    job.join()
                 }
-                job.join()
-                /*val imageSettingCoroutine=launch(Dispatchers.Main){
-                    imageView.setImageBitmap(bitmapValue)
-                    //imageView.setImageURI(imageUrl)
-                }
-                imageSettingCoroutine.join()*/
+                null
             }
+
 
             if(product.favorite){
                 imageButton.setImageResource(R.drawable.heart_red)
             }
 
-            imageView.setImageBitmap(bitmapValue)
+            //imageView.setImageBitmap(bitmapValue)
             productOldPriceTextView.text="₹"+product.originalPrice.toString()
             //productBrandTextView.text=product.brand
             productRatingBar.rating=product.rating.toFloat()
