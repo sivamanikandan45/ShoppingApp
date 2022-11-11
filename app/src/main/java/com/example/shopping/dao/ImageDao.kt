@@ -15,7 +15,7 @@ interface ImageDao {
    @Insert(onConflict = OnConflictStrategy.REPLACE)
    fun insertImage(imageObject:CarouselImage)
 
-   @Query("SELECT imageUrl FROM CarouselImage WHERE productId=:productId")
-   fun getImageURL(productId:Int):MutableList<String>
+   @Query("SELECT * FROM CarouselImage WHERE productId=:productId")
+   fun getImageURL(productId:Int):MutableList<CarouselImage>
 
 }

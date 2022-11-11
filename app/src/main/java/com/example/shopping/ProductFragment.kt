@@ -36,7 +36,7 @@ class ProductFragment : Fragment() {
     private val recentlyViewedViewModel:RecentlyViewedViewModel by activityViewModels()
     private val viewModel:ProductViewModel by activityViewModels()
     private val favoriteViewModel:FavoriteViewModel by activityViewModels()
-    val cartViewModel:CartViewModel by activityViewModels()
+    private val cartViewModel:CartViewModel by activityViewModels()
     private lateinit var cartItem: MenuItem
     //private lateinit var toolbar: Toolbar
 
@@ -154,7 +154,7 @@ class ProductFragment : Fragment() {
         }
         println("Selected product is $product")
 
-        var list: MutableList<String> = mutableListOf<String>()
+        var list: MutableList<CarouselImage> = mutableListOf<CarouselImage>()
         GlobalScope.launch {
             val job=launch (Dispatchers.IO){
                 list= product?.productId?.let { productViewModel.getImageUrlList(it) }!!
@@ -184,7 +184,7 @@ class ProductFragment : Fragment() {
                     }
                 }
                 val timer = Timer()
-                timer.schedule(timerTask, 1000, 3000)
+                timer.schedule(timerTask, 1500, 3000)
             }
         }
 

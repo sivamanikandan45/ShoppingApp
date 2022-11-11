@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.SelectedProduct
+import com.example.shopping.util.ProductImageMemoryCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -52,18 +53,25 @@ class SelectedProductListAdapter : RecyclerView.Adapter<SelectedProductListAdapt
             quantityTextView.text=selectedProduct.quantity.toString()
 
             var bitmapValue: Bitmap?=null
-            GlobalScope.launch {
-                val job=launch(Dispatchers.IO) {
-                    val imageUrl = URL(selectedProduct.imageUrl)
-                    bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+            val bitmap: Bitmap? = ProductImageMemoryCache.getBitmapFromMemCache(selectedProduct.productId.toString())?.also {
+                println("Fetched from cache at $adapterPosition")
+                productImageView.setImageBitmap(it)
+            } ?:run{
+                GlobalScope.launch {
+                    val job=launch(Dispatchers.IO) {
+                        val imageUrl = URL(selectedProduct.imageUrl)
+                        productImageView.setImageResource(R.drawable.placeholder)
+                        bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                    }
+                    job.join()
+                    val imageSettingCoroutine=launch(Dispatchers.Main){
+                        productImageView.setImageBitmap(bitmapValue)
+                        ProductImageMemoryCache.addBitmapToCache(selectedProduct.productId.toString(),bitmapValue!!)
+                    }
+                    imageSettingCoroutine.join()
                 }
-                job.join()
-                val imageSettingCoroutine=launch(Dispatchers.Main){
-                    productImageView.setImageBitmap(bitmapValue)
-                }
-                imageSettingCoroutine.join()
+                null
             }
-            productImageView.setImageBitmap(bitmapValue)
         }
 
         val productImageView: ImageView

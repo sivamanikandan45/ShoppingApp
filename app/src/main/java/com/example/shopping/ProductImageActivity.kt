@@ -11,6 +11,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
+import com.example.shopping.model.CarouselImage
 import com.example.shopping.viewmodel.ProductViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -37,7 +38,7 @@ class ProductImageActivity : AppCompatActivity() {
             window.navigationBarColor=Color.parseColor("#000000")
         }
 
-        var list: MutableList<String> = mutableListOf<String>()
+        var list: MutableList<CarouselImage> = mutableListOf<CarouselImage>()
         GlobalScope.launch {
             val job=launch (Dispatchers.IO){
                 println("Got the following values from intent")
@@ -47,6 +48,7 @@ class ProductImageActivity : AppCompatActivity() {
             }
             job.join()
             withContext(Dispatchers.Main){
+                val currentPos=intent.getIntExtra("currentPosition",0)
                 val carousel=findViewById<ViewPager2>(R.id.product_image_viewpager)
                 val carouselAdapter=ProductImageCarouselAdapter(list)
                 carouselAdapter.setOnItemClickListener(object :ItemClickListener{
@@ -55,8 +57,8 @@ class ProductImageActivity : AppCompatActivity() {
                     }
                 })
                 carousel.adapter = carouselAdapter
-                val currentPos=intent.getIntExtra("currentPosition",0)
-                carousel.currentItem = currentPos
+                carousel.setCurrentItem(currentPos,false)
+                //carousel.currentItem = currentPos
             }
         }
 

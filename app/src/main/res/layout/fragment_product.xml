@@ -157,7 +157,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="11% Off"
-                android:textColor="#4c9a2a"
+                android:textColor="@color/green"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/product_price"

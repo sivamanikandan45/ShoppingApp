@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.Product
 import com.example.shopping.model.RecentlyViewed
+import com.example.shopping.util.ProductImageMemoryCache
 import com.google.android.material.imageview.ShapeableImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -38,14 +39,14 @@ class SimilarProductListAdapter:RecyclerView.Adapter<SimilarProductListAdapter.V
         val productRatingBar:RatingBar
         val productRatedValue:TextView
         var loadingPosition=-1
-        val progressBar:ProgressBar
+        //val progressBar:ProgressBar
         init {
             imageView=view.findViewById<ShapeableImageView>(R.id.similar_product_imageView)
             productName=view.findViewById<TextView>(R.id.similar_product_name)
             productPrice=view.findViewById<TextView>(R.id.similar_product_price)
             productRatingBar=view.findViewById<RatingBar>(R.id.similar_product_rating_bar)
             productRatedValue=view.findViewById<TextView>(R.id.similar_product_rated_value)
-            progressBar=view.findViewById(R.id.progress)
+            //progressBar=view.findViewById(R.id.progress)
             view.setOnClickListener{
                 listener.onItemClick(adapterPosition)
             }
@@ -59,28 +60,30 @@ class SimilarProductListAdapter:RecyclerView.Adapter<SimilarProductListAdapter.V
             productRatingBar.rating=product.rating.toFloat()
             productRatedValue.text=product.rating
             var bitmapValue: Bitmap?=null
-            GlobalScope.launch {
-                val job=launch(Dispatchers.IO) {
-                    val imageUrl = URL(product.thumbnail)
-                    bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
-                    withContext(Dispatchers.Main){
-                        if(loadingPosition==adapterPosition){
-                            if(list[adapterPosition].productId==product.productId){
-                                imageView.setImageBitmap(bitmapValue)
-                                progressBar.visibility=View.GONE
+
+            val bitmap: Bitmap? = ProductImageMemoryCache.getBitmapFromMemCache(product.productId.toString())?.also {
+                println("Fetched from cache at $adapterPosition")
+                imageView.setImageBitmap(it)
+            }?:run{
+                GlobalScope.launch {
+                    val job=launch(Dispatchers.IO) {
+                        val imageUrl = URL(product.thumbnail)
+                        imageView.setImageResource(R.drawable.placeholder)
+                        bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        withContext(Dispatchers.Main){
+                            if(loadingPosition==adapterPosition){
+                                if(list[adapterPosition].productId==product.productId){
+                                    imageView.setImageBitmap(bitmapValue)
+                                    ProductImageMemoryCache.addBitmapToCache(product.productId.toString(),bitmapValue!!)
+                                }
                             }
                         }
                     }
-                   // bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                    job.join()
                 }
-                job.join()
-                /*val imageSettingCoroutine=launch(Dispatchers.Main){
-                    imageView.setImageBitmap(bitmapValue)
-                }
-                imageSettingCoroutine.join()*/
+                null
             }
-            imageView.setImageBitmap(bitmapValue)
-            progressBar.visibility=View.VISIBLE
+            //progressBar.visibility=View.VISIBLE
         }
 
     }

@@ -122,7 +122,6 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
             var bitmapValue:Bitmap?=null
             imageView.setImageBitmap(bitmapValue)
             //progressBar.visibility=View.VISIBLE
-            //var imageUrl:Uri?=null
             productNameTextView.text=product.title//.capitalize()//product.brand+" "+
             //Picasso.get().load(product.thumbnail).into(imageView);
             val bitmap: Bitmap? = ProductImageMemoryCache.getBitmapFromMemCache(product.productId.toString())?.also {

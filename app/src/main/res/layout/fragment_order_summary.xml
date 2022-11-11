@@ -171,9 +171,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="FREE Delivery"
-            android:textColor="#118c4f"
             android:layout_marginEnd="16dp"
+            android:text="FREE Delivery"
+            android:textColor="@color/green"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/delivery_charges" />
 
@@ -181,9 +181,9 @@
             android:id="@+id/summary_discount_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/title_price"
-            android:textColor="#118c4f"
             android:layout_marginEnd="16dp"
+            android:text="@string/title_price"
+            android:textColor="@color/green"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/textView3" />
 
@@ -222,10 +222,10 @@
             android:id="@+id/summary_saving_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="You will save $1020 on this order"
-            android:textColor="#118c4f"
-            android:textStyle="bold"
             android:layout_marginTop="8dp"
+            android:text="You will save $1020 on this order"
+            android:textColor="@color/green"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/total_amount"
             app:layout_constraintTop_toBottomOf="@+id/materialDivider2" />
 

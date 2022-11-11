@@ -145,7 +145,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
         dao.insertImage(carouselImage)
     }
 
-    fun getImageUrlList(productId:Int):MutableList<String>{
+    fun getImageUrlList(productId:Int):MutableList<CarouselImage>{
         val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getImageDao()
         val list=dao.getImageURL(productId)
         return list

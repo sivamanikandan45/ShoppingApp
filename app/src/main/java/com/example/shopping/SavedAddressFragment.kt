@@ -81,6 +81,7 @@ class SavedAddressFragment : Fragment() {
         addressListRecyclerView.adapter=savedAddressListAdapter
         addressListRecyclerView.layoutManager=addressListManager
         val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
+        divider?.isLastItemDecorated=false
         //divider?.dividerInsetStart=
         addressListRecyclerView.addItemDecoration(divider!!)
 

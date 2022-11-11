@@ -23,7 +23,7 @@
                 app:shapeAppearanceOverlay="@style/curvedCorner"
                 android:src="@drawable/ic_launcher_background"
                 app:layout_constraintTop_toTopOf="parent" />
-            <ProgressBar
+            <!--<ProgressBar
                 android:id="@+id/progress"
                 style="@style/Widget.AppCompat.ProgressBar"
                 android:indeterminateTint="@color/blue_600"
@@ -32,7 +32,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/product_card_imageview"
                 app:layout_constraintEnd_toEndOf="@+id/product_card_imageview"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />-->
 
             <!--<ImageView
                 android:id="@+id/favorite_button"
@@ -85,10 +85,10 @@
                 android:id="@+id/product_discount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="11% Off"
-                android:textColor="#4c9a2a"
-                android:textSize="12sp"
                 android:layout_marginStart="8dp"
+                android:text="11% Off"
+                android:textColor="@color/green"
+                android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@+id/product_price"
                 app:layout_constraintTop_toTopOf="@+id/product_price" />
 

@@ -6,17 +6,46 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.shopping.model.CarouselImage
+import com.example.shopping.util.CarouselImageMemoryCache
+import com.example.shopping.util.ProductImageMemoryCache
 import com.google.android.material.imageview.ShapeableImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.URL
 
-class ProductImageCarouselAdapter(private val list:List<String>) : RecyclerView.Adapter<ProductImageCarouselAdapter.ViewHolder>(){
+class ProductImageCarouselAdapter(private val list:List<CarouselImage>) : RecyclerView.Adapter<ProductImageCarouselAdapter.ViewHolder>(){
 
     private lateinit var listener: ItemClickListener
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view){
+        fun bind(image:CarouselImage) {
+            var bitmapValue: Bitmap?=null
+            val bitmap: Bitmap? = CarouselImageMemoryCache.getBitmapFromMemCache(image.imageId.toString())?.also {
+                println("Fetched from cache at  carousel cache$adapterPosition")
+                imageView.setImageBitmap(it)
+            } ?:run{
+                GlobalScope.launch {
+                    val job=launch(Dispatchers.IO) {
+                        val imageUrl = URL(image.imageUrl)
+                        withContext(Dispatchers.Main){
+                            imageView.setImageBitmap(bitmapValue)
+                            //imageView.setImageResource(R.drawable.placeholder)
+                        }
+                        bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        withContext(Dispatchers.Main){
+                            imageView.setImageBitmap(bitmapValue)
+                            CarouselImageMemoryCache.addBitmapToCache(image.imageId.toString(),bitmapValue!!)
+                        }
+                    }
+                    job.join()
+                }
+                null
+            }
+        }
+
         init {
             view.setOnClickListener {
                 listener.onItemClick(adapterPosition)
@@ -39,19 +68,8 @@ class ProductImageCarouselAdapter(private val list:List<String>) : RecyclerView.
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         //holder.imageView.setImageResource(list[position])
-        var bitmapValue: Bitmap?=null
-        GlobalScope.launch {
-            val job=launch(Dispatchers.IO) {
-                val imageUrl = URL(list[position])
-                bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
-            }
-            job.join()
-            val imageSettingCoroutine=launch(Dispatchers.Main){
-                holder.imageView.setImageBitmap(bitmapValue)
-            }
-            imageSettingCoroutine.join()
-        }
-        holder.imageView.setImageBitmap(bitmapValue)
+        holder.bind(list[position])
+        //holder.imageView.setImageBitmap(bitmapValue)
         //Picasso.get().load(list[position]).into(holder.imageView);
     }
 

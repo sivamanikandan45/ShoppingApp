@@ -51,8 +51,12 @@ class CartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.title="Cart"
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            show()
+            title="Cart"
+            setDisplayHomeAsUpEnabled(false)
+        }/*title="Cart"
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)*/
 
         /*val bottomSheet=view.findViewById<FrameLayout>(R.id.bottom_sheet)
         val behavior=BottomSheetBehavior.from(bottomSheet).apply {
@@ -145,8 +149,8 @@ class CartFragment : Fragment() {
         manager= LinearLayoutManager(context)
 
         val itemTOuchHelperCallBack = object :ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT){
-            val icon = ContextCompat.getDrawable(requireContext(), R.drawable.add_24);
-            val background = ColorDrawable(Color.RED);
+            val icon = ContextCompat.getDrawable(requireContext(), R.drawable.add_24)
+            val background = ColorDrawable(Color.RED)
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -180,6 +184,7 @@ class CartFragment : Fragment() {
                 actionState: Int,
                 isCurrentlyActive: Boolean
             ) {
+                val background = ColorDrawable(Color.RED)
                 val itemView = viewHolder.itemView
                 val backgroundCornerOffset = 20
                 val displayMetrics: DisplayMetrics = resources.displayMetrics

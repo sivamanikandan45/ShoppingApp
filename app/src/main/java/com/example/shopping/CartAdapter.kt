@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.SelectedProduct
 import com.example.shopping.util.CartDiffUtil
+import com.example.shopping.util.ProductImageMemoryCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -107,50 +109,73 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
             quantityTextView.text=selectedProduct.quantity.toString()
 
             increaseButton.setOnClickListener {
-                var quantity=quantityTextView.text.toString().toInt()
-                if(quantity<10){
-                    quantity++
-                    quantityTextView.text=quantity.toString()
-                    listener.onIncreaseClicked(adapterPosition)
-                }else{
-                    Toast.makeText(it.context,"You can add only 10 items from a particular Product", Toast.LENGTH_SHORT).show()
-                }
+                increaseQuantity(it)
+            }
+
+            increaseTouchTarget.setOnClickListener {
+                increaseQuantity(it)
             }
 
             decreaseButton.setOnClickListener{
-                var quantity=quantityTextView.text.toString().toInt()
-                if(quantity>1){
-                    quantity--
-                    quantityTextView.text=quantity.toString()
-                    listener.onDecreaseClicked(adapterPosition)
-                }else if(quantity==1){
-                    Toast.makeText(it.context,"Swipe Item to remove from the Cart", Toast.LENGTH_SHORT).show()
-                }
+                decreaseQuantity(it)
+            }
+
+            decreaseTouchTarget.setOnClickListener {
+                decreaseQuantity(it)
             }
 
             var bitmapValue: Bitmap?=null
-            GlobalScope.launch {
-                val job=launch(Dispatchers.IO) {
-                    val imageUrl = URL(selectedProduct.imageUrl)
-                    bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
-                    withContext(Dispatchers.Main){
-                        if(loadingPosition==adapterPosition){
-                            if(list[adapterPosition].productId==selectedProduct.productId){
-                                /*val bitMapArray= listOf(bitmapValue!!,bitmapValue!!,bitmapValue!!)
-                                val res=mergeThemAll(bitMapArray)*/
-                                productImageView.setImageBitmap(bitmapValue)
+            val bitmap: Bitmap? = ProductImageMemoryCache.getBitmapFromMemCache(selectedProduct.productId.toString())?.also {
+                println("Fetched from cache at $adapterPosition")
+                productImageView.setImageBitmap(it)
+            } ?:run{
+                GlobalScope.launch {
+                    val job=launch(Dispatchers.IO) {
+                        val imageUrl = URL(selectedProduct.imageUrl)
+                        productImageView.setImageResource(R.drawable.placeholder)
+                        bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        withContext(Dispatchers.Main){
+                            if(loadingPosition==adapterPosition){
+                                if(list[adapterPosition].productId==selectedProduct.productId){
+                                    /*val bitMapArray= listOf(bitmapValue!!,bitmapValue!!,bitmapValue!!)
+                                    val res=mergeThemAll(bitMapArray)*/
+                                    productImageView.setImageBitmap(bitmapValue)
+                                    ProductImageMemoryCache.addBitmapToCache(selectedProduct.productId.toString(),bitmapValue!!)
+                                }
                             }
                         }
                     }
-                    //bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                    job.join()
                 }
-                job.join()
-                /*val imageSettingCoroutine=launch(Dispatchers.Main){
-                    productImageView.setImageBitmap(bitmapValue)
-                }
-                imageSettingCoroutine.join()*/
+                null
             }
-            productImageView.setImageBitmap(bitmapValue)
+        }
+
+        private fun decreaseQuantity(it: View) {
+            var quantity = quantityTextView.text.toString().toInt()
+            if (quantity > 1) {
+                quantity--
+                quantityTextView.text = quantity.toString()
+                listener.onDecreaseClicked(adapterPosition)
+            } else if (quantity == 1) {
+                Toast.makeText(it.context, "Swipe Item to remove from the Cart", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+
+        private fun increaseQuantity(it: View) {
+            var quantity = quantityTextView.text.toString().toInt()
+            if (quantity < 10) {
+                quantity++
+                quantityTextView.text = quantity.toString()
+                listener.onIncreaseClicked(adapterPosition)
+            } else {
+                Toast.makeText(
+                    it.context,
+                    "You can add only 10 items from a particular Product",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         val productImageView:ImageView
@@ -160,7 +185,9 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
         val productOldPriceTextView:TextView
         val discountTextView:TextView
         val increaseButton:ImageButton
+        val increaseTouchTarget:ConstraintLayout
         val decreaseButton:ImageButton
+        val decreaseTouchTarget:ConstraintLayout
         val quantityTextView:TextView
         var loadingPosition=-1
 
@@ -172,7 +199,9 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
             productOldPriceTextView=view.findViewById(R.id.cart_item_product_old_price)
             discountTextView=view.findViewById(R.id.cart_item_offer)
             increaseButton=view.findViewById(R.id.increase_qty_btn)
+            increaseTouchTarget=view.findViewById(R.id.increaseButtonLayout)
             decreaseButton=view.findViewById(R.id.decrease_qty_btn)
+            decreaseTouchTarget=view.findViewById(R.id.decreaseButtonLayout)
             quantityTextView=view.findViewById(R.id.cart_qty)
 
         }
