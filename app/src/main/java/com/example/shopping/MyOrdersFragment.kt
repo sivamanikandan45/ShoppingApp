@@ -13,9 +13,7 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.shopping.viewmodel.AddressViewModel
 import com.example.shopping.viewmodel.OrderViewModel
-import com.google.android.material.divider.MaterialDividerItemDecoration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -23,6 +21,7 @@ import kotlinx.coroutines.launch
 class MyOrdersFragment : Fragment() {
 
     private val orderViewModel: OrderViewModel by activityViewModels()
+    //private val productViewModel:ProductViewModel by activityViewModels()
     private lateinit var orderListRecyclerView: RecyclerView
     private lateinit var orderListManager: LinearLayoutManager
     private lateinit var orderAdapter: OrderAdapter
@@ -55,10 +54,16 @@ class MyOrdersFragment : Fragment() {
 
         orderListRecyclerView=view.findViewById(R.id.orders_recycler_view)
         orderAdapter= OrderAdapter()
+        //orderAdapter.
         orderAdapter.setOnItemClickListener(object :ItemClickListener{
             override fun onItemClick(position: Int) {
                 orderViewModel.selectedOrder.value=orderViewModel.orderList.value?.get(position)
                 replaceFragment(OrderDetailFragment())
+            }
+        })
+        orderAdapter.getImageList(object :ImageLoader{
+            override suspend fun loadImage(orderId: Int): List<String> {
+                return orderViewModel.getOrderedProductImages(orderId)
             }
         })
         val list=orderViewModel.getOrderList()

@@ -130,7 +130,8 @@ class WishlistFragment : Fragment() {
 
         GlobalScope.launch {
             val job=launch (Dispatchers.IO){
-                adapter.setData(favoriteViewModel.getWishlistItems())
+                favoriteViewModel.getWishlistItems()
+                //adapter.setData(favoriteViewModel.getWishlistItems())
             }
             job.join()
         }

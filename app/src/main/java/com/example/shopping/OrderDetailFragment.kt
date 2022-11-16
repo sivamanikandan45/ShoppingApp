@@ -14,6 +14,7 @@ import com.example.shopping.model.Address
 import com.example.shopping.model.OrderedProduct
 import com.example.shopping.viewmodel.AddressViewModel
 import com.example.shopping.viewmodel.OrderViewModel
+import com.google.android.material.divider.MaterialDividerItemDecoration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -76,6 +77,9 @@ class OrderDetailFragment : Fragment() {
                         adapter.setData(orderedProducts)
                         recyclerView.adapter=adapter
                         recyclerView.layoutManager=manager
+                        /*val divider = context?.let { MaterialDividerItemDecoration(it,LinearLayoutManager.VERTICAL or LinearLayoutManager.HORIZONTAL) }
+                        divider?.isLastItemDecorated = false
+                        divider?.let { recyclerView.addItemDecoration(it) }*/
                         /*if(address!=null){
                             deliveryAddress.text="${address.name},\n${address.street}, ${address.area}, ${address.city}, ${address.state} - ${address.pinCode}\n${address.phone}"
                         }else{

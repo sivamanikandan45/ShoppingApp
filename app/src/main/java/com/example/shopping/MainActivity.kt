@@ -103,6 +103,11 @@ class MainActivity : AppCompatActivity() {
                 viewModel.fragmentId=R.id.cart*/
                 viewModel.fragmentName.value="Cart"
             }
+            if(frag=="account"){
+                println("Got account")
+                viewModel.fragmentId=R.id.account
+                viewModel.fragmentName.value="Account"
+            }
         }
 
         viewModel.fragmentName.observe(this, Observer {
@@ -112,6 +117,10 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("fragment","")
                 /*replaceFragment(CartFragment())
                 viewModel.fragmentId=R.id.cart*/
+            }else if(it.equals("Account")){
+                bottomNavigationView.selectedItemId=R.id.account
+                viewModel.fragmentName.value=""
+                intent.putExtra("fragment","")
             }
         })
 

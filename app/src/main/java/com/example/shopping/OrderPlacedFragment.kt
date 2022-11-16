@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -45,6 +46,15 @@ class OrderPlacedFragment : Fragment() {
             CheckoutMode.OVERALL->{placeOrder()}
             CheckoutMode.BUY_NOW->{buyNow()}
         }*/
+        val redirect=view.findViewById<TextView>(R.id.redirect)
+        when(checkoutViewModel.mode){
+            CheckoutMode.BUY_NOW->{
+                redirect.text="Redirecting to Orders...."
+            }
+            else->{
+                redirect.text="Redirecting to Cart...."
+            }
+        }
         placeOrder()
     }
 
@@ -135,7 +145,12 @@ class OrderPlacedFragment : Fragment() {
             job.join()
             withContext(Dispatchers.Main){
                 val intent=Intent(requireContext(),MainActivity::class.java)
-                intent.putExtra("fragment","cart")
+                if(checkoutViewModel.mode==CheckoutMode.BUY_NOW){
+                    intent.putExtra("fragment","account")
+                }
+                else if(checkoutViewModel.mode==CheckoutMode.OVERALL){
+                    intent.putExtra("fragment","cart")
+                }
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)
             }

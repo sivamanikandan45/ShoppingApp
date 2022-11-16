@@ -408,20 +408,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
-            android:layout_weight="1"
-            android:id="@+id/buy_now_button"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            app:layout_constraintTop_toBottomOf="@+id/similar_product_recyler"
-            android:text="Buy now"
-            android:layout_marginEnd="1dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            />
-
-        <Button
             android:layout_weight="1"
             android:id="@+id/add_to_cart_button"
             android:insetTop="0dp"
@@ -432,6 +419,20 @@
             android:text="add to cart"
             app:layout_constraintBottom_toBottomOf="parent"
             />
+
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/buy_now_button"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toBottomOf="@+id/similar_product_recyler"
+            android:text="Buy now"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+
 
 
     </LinearLayout>

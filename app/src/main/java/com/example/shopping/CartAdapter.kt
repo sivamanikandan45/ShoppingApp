@@ -168,6 +168,13 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
             if (quantity < 10) {
                 quantity++
                 quantityTextView.text = quantity.toString()
+                /*productPriceTextView.text=(quantity*list[adapterPosition].pricePerProduct).toString()
+                productOldPriceTextView.text=(quantity*list[adapterPosition].oldPricePerProduct).toString()
+                list[adapterPosition].apply {
+                    this.quantity=quantity
+                    pricePerProduct=quantity*list[adapterPosition].pricePerProduct
+                    oldPricePerProduct=quantity*list[adapterPosition].oldPricePerProduct
+                }*/
                 listener.onIncreaseClicked(adapterPosition)
             } else {
                 Toast.makeText(

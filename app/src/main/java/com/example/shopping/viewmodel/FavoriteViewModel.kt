@@ -47,7 +47,7 @@ class FavoriteViewModel(application: Application):AndroidViewModel(application) 
         getFavoriteListFromDB()
     }
 
-    fun getWishlistItems():List<FavoriteProduct>{
+    suspend fun getWishlistItems():List<FavoriteProduct>{
         val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getFavoriteDao()
         val list=dao.getFavoriteProductList()
         favoriteItems.postValue(list)

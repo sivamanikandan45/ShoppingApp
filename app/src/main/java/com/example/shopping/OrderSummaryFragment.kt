@@ -139,7 +139,7 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
         val continueButton=view.findViewById<Button>(R.id.continue_btn)
         continueButton.setOnClickListener {
             parentFragmentManager.commit{
-
+                checkoutViewModel.billAmount=cartViewModel.cartAmountAfterDiscount.value!!
                 hide(this@OrderSummaryFragment)
                 add<PaymentFragment>(R.id.checkout_fragment_container)
                 addToBackStack(null)
@@ -158,5 +158,15 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
             activity?.onBackPressed()
         }
 
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if(!hidden){
+            (activity as AppCompatActivity).supportActionBar?.apply {
+                title="Order Summary"
+                setDisplayHomeAsUpEnabled(true)
+            }
+        }
     }
 }

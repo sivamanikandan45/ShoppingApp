@@ -15,11 +15,11 @@ object ProductImageMemoryCache {
         }
     }
 
-    val maxMemory = (Runtime.getRuntime().maxMemory() / 1024).toInt()
+    private val maxMemory = (Runtime.getRuntime().maxMemory() / 1024).toInt()
 
     val cacheSize = maxMemory / 7
 
-    val memoryCache = object : LruCache<String, Bitmap>(cacheSize) {
+    private val memoryCache = object : LruCache<String, Bitmap>(cacheSize) {
         override fun sizeOf(key: String, bitmap: Bitmap): Int {
             return bitmap.byteCount / 1024
         }

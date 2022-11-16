@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.*
 import com.example.shopping.viewmodel.CheckoutViewModel
@@ -28,6 +29,8 @@ class PaymentFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val paymentOptionRadioGroup=view.findViewById<RadioGroup>(R.id.payment_options)
         val placeOrderBtn=view.findViewById<Button>(R.id.place_order_btn)
+        val amountTextView=view.findViewById<TextView>(R.id.amount)
+        amountTextView.text="₹${checkoutViewModel.billAmount}"
         val payButton=view.findViewById<Button>(R.id.pay)
         paymentOptionRadioGroup.setOnCheckedChangeListener { radioGroup, checkedId ->
             payButton.isEnabled=true

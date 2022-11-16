@@ -7,6 +7,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.Order
 import com.google.android.material.imageview.ShapeableImageView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
@@ -14,6 +17,7 @@ class OrderAdapter:RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
 
     private lateinit var list:List<Order>
     private lateinit var listener: ItemClickListener
+    private lateinit var loader: ImageLoader
 
     fun setData(list:List<Order>){
         this.list=list
@@ -21,6 +25,10 @@ class OrderAdapter:RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
 
     fun setOnItemClickListener(listener: ItemClickListener){
         this.listener=listener
+    }
+
+    fun getImageList(loader: ImageLoader){
+        this.loader=loader
     }
 
 
@@ -52,6 +60,13 @@ class OrderAdapter:RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
             itemCountTextView.text="${order.itemCount} Item"
             orderDateTextView.text="Ordered on ${order.orderedDate}"
             billAmountTextView.text="₹$caad"
+            GlobalScope.launch {
+                val job=launch (Dispatchers.IO){
+                    val list=loader.loadImage(list[adapterPosition].orderId)
+                    println("Got $list")
+                }
+                job.join()
+            }
             //addressTextView.text=order
         }
 

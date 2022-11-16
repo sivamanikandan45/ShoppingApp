@@ -296,7 +296,7 @@ class ProductFragment : Fragment() {
             discount.text=product.discountPercentage.toString()+"% Off"
 
             val addToCartBtn=view.findViewById<Button>(R.id.add_to_cart_button)
-            addToCartBtn.setOnClickListener {
+            addToCartBtn.setOnClickListener { it ->
                 GlobalScope.launch {
                     val job=launch (Dispatchers.IO){
                         val count=quantityTextView.text.toString().toInt()
@@ -309,7 +309,13 @@ class ProductFragment : Fragment() {
                 }
                 //val coord=view.findViewById<CoordinatorLayout>(R.id.button_layout)
                 Snackbar.make(it,"Added to the Cart",Snackbar.LENGTH_LONG)
-                    .show()
+                    .setAction("GO TO CART") {
+                        val intent= Intent(requireContext(),MainActivity::class.java)
+                        intent.putExtra("fragment","cart")
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                    }.show()
+
             }
         }
 

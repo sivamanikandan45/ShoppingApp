@@ -75,5 +75,11 @@ class OrderViewModel(application: Application): AndroidViewModel(application){
         return list
     }
 
+    fun getOrderedProductImages(orderId:Int):List<String>{
+        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getOrderedProductDao()
+        val list=dao.getOrderedProductImages(orderId)
+        return list
+    }
+
 
 }

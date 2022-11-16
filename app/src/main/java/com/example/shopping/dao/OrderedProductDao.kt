@@ -12,4 +12,7 @@ interface OrderedProductDao {
 
     @Query("Select * FROM OrderedProduct where orderId=:orderId")
     fun getOrderedProduct(orderId:Int):List<OrderedProduct>
+
+    @Query("SELECT thumbnail from OrderedProduct where orderId=:orderId")
+    fun getOrderedProductImages(orderId: Int):List<String>
 }

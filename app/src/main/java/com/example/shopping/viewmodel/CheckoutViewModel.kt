@@ -15,6 +15,7 @@ class CheckoutViewModel:ViewModel(){
     val selectedAddress=MutableLiveData<Address>()
     var selectedAddressPosition:Int=0
     var paymentMode:String=""
+    var billAmount=0.0
     var mode:CheckoutMode=CheckoutMode.OVERALL
     var buyNowProductId:Int=0
     var buyNowProductQuantity=0
