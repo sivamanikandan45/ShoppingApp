@@ -15,7 +15,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         app:shapeAppearanceOverlay="@style/curvedCorner"
-        android:src="@drawable/ic_launcher_background"
+        android:src="@drawable/placeholder"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -66,7 +66,7 @@
         android:text="10% OFF"
         app:layout_constraintHorizontal_bias="0.0"
         android:layout_marginEnd="16dp"
-        android:textColor="#4c9a2a"
+        android:textColor="@color/green"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cart_item_product_price"
         app:layout_constraintTop_toTopOf="@+id/cart_item_product_old_price" />
@@ -78,11 +78,15 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:text="@string/title_brand"
+        android:textColor="@color/gray"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/cart_item_product_name"
         app:layout_constraintTop_toBottomOf="@+id/cart_item_product_name" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:id="@+id/increaseButtonLayout"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -92,6 +96,7 @@
         app:layout_constraintTop_toBottomOf="@+id/cart_item_product_old_price">
 
         <ImageButton
+            android:foreground="?android:attr/selectableItemBackground"
             android:id="@+id/increase_qty_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -125,6 +130,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/decreaseButtonLayout"
         android:layout_width="48dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:layout_height="48dp"
         android:layout_marginStart="8dp"
         app:layout_constraintEnd_toStartOf="@+id/cart_qty"
@@ -135,6 +143,7 @@
         app:layout_constraintTop_toBottomOf="@+id/cart_item_product_old_price">
 
         <ImageButton
+            android:foreground="?android:attr/selectableItemBackground"
             android:id="@+id/decrease_qty_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

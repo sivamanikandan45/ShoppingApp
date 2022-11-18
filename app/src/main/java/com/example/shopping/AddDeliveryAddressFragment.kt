@@ -168,6 +168,10 @@ class AddDeliveryAddressFragment : Fragment() {
                 phone.isErrorEnabled =true
                 phone.error ="Please Enter your Phone Number"
                 returnValue=returnValue and false
+            }else if(phone.editText?.text.toString().length<10){
+                phone.isErrorEnabled =true
+                phone.error ="Please Enter Valid Phone Number"
+                returnValue=returnValue and false
             }else{
                 phone.error =null
                 phone.isErrorEnabled =false
@@ -179,7 +183,12 @@ class AddDeliveryAddressFragment : Fragment() {
                 pinCode.isErrorEnabled =true
                 pinCode.error ="Please Enter your Pin code"
                 returnValue=returnValue and false
-            }else if(pinCode.editText?.text.toString().length<6){
+            }else if(pinCode.editText?.text.toString().startsWith("0")){
+                pinCode.isErrorEnabled =true
+                pinCode.error ="Pincode should not start with 0"
+                returnValue=returnValue and false
+            }
+            else if(pinCode.editText?.text.toString().length<6){
                 pinCode.isErrorEnabled =true
                 pinCode.error ="Invalid Pincode"
                 returnValue=returnValue and false
@@ -217,9 +226,15 @@ class AddDeliveryAddressFragment : Fragment() {
                 addressStreet.isErrorEnabled =true
                 addressStreet.error ="Please Enter your Address"
                 returnValue=returnValue and false
-            }else{
+            }else if(!addressStreet.editText?.text.toString().contains(",")){
+                addressStreet.isErrorEnabled =true
+                addressStreet.error ="Please Provide more details"
+                returnValue=returnValue and false
+            }
+            else{
                 addressStreet.error =null
                 addressStreet.isErrorEnabled =false
+                addressStreet.helperText=null
             }
         }
 

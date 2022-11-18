@@ -81,12 +81,12 @@ class ProductFragment : Fragment() {
         super.onStart()
     }
 
-    @SuppressLint("UnsafeOptInUsageError")
+    @SuppressLint("UnsafeOptInUsageError", "RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val productViewModel:ProductViewModel by activityViewModels()
-
-        (activity as AppCompatActivity)?.supportActionBar?.hide()
+        (activity as AppCompatActivity).supportActionBar?.setShowHideAnimationEnabled(false)
+        (activity as AppCompatActivity).supportActionBar?.hide()
         val toolbar=view.findViewById<Toolbar>(R.id.toolbar)
         toolbar.inflateMenu(R.menu.product_fragment_menu)
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
@@ -145,7 +145,8 @@ class ProductFragment : Fragment() {
         }
 
         if(product!=null){
-            val recentlyViewed=RecentlyViewed(product.productId,product.title,product.description,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,product.rating,product.stock,product.brand,product.category,product.thumbnail)
+            println("added to Recently viewed")
+            val recentlyViewed=RecentlyViewed(product.productId,product.title,product.description,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,product.rating,product.stock,product.brand,product.category,product.thumbnail,product.favorite)
             GlobalScope.launch {
                 val job = launch(Dispatchers.IO) { recentlyViewedViewModel.addToRecentlyViewed(recentlyViewed) }
                 job.join()
@@ -356,6 +357,7 @@ class ProductFragment : Fragment() {
         GlobalScope.launch {
             val job=launch(Dispatchers.IO) {
                 favoriteViewModel.deleteFromFavorites(product?.productId)
+                product?.productId?.let { recentlyViewedViewModel.updateFavoriteStatus(false, it) }
                 product?.productId?.let { viewModel.removeFavorite(it) }
             }
             job.join()
@@ -380,6 +382,7 @@ class ProductFragment : Fragment() {
                         product.thumbnail
                     )
                     favoriteViewModel.addToFavorites(favoriteProduct)
+                    recentlyViewedViewModel.updateFavoriteStatus(true,product.productId)
                     viewModel.markAsFavorite(product.productId)
                 }
             }

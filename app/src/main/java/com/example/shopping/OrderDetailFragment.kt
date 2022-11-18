@@ -10,15 +10,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.shopping.model.Address
 import com.example.shopping.model.OrderedProduct
 import com.example.shopping.viewmodel.AddressViewModel
 import com.example.shopping.viewmodel.OrderViewModel
-import com.google.android.material.divider.MaterialDividerItemDecoration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 class OrderDetailFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -37,7 +37,10 @@ class OrderDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         println(orderViewModel.selectedOrder.value)
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            title="My Orders"
+            setDisplayHomeAsUpEnabled(true)
+        }
         val orderId=view.findViewById<TextView>(R.id.order_details_id)
         val orderedDate=view.findViewById<TextView>(R.id.order_date_detail)
         val billAmount=view.findViewById<TextView>(R.id.bill_amount)
@@ -60,13 +63,19 @@ class OrderDetailFragment : Fragment() {
         if(selectedOrder!=null){
             orderId.text="#${selectedOrder.orderId}"
             orderedDate.text=selectedOrder.orderedDate
-            billAmount.text="₹${selectedOrder.totalAfterDiscount}"
+
+            val decimalFormat = DecimalFormat("#.##")
+            decimalFormat.roundingMode = RoundingMode.UP
+            val amountAfterDiscountRounded = decimalFormat.format(selectedOrder.totalAfterDiscount).toDouble()
+            val withSymbol="₹$amountAfterDiscountRounded"
+            billAmount.text=withSymbol
+
             modeOfPayment.text=selectedOrder.paymentMode
             noOfItem.text="${selectedOrder.itemCount} Item"
             expectedDeliveryDate.text=selectedOrder.expectedDeliveryDate
             originalBillAmount.text="₹${selectedOrder.originalTotalPrice}"
             discountAmount.text="-₹${selectedOrder.discount}"
-            totalBillAmount.text="₹${selectedOrder.totalAfterDiscount}"
+            totalBillAmount.text=withSymbol
             deliveryAddress.text="${selectedOrder.customerName},\n${selectedOrder.street}, ${selectedOrder.area}, ${selectedOrder.city}, ${selectedOrder.state} - ${selectedOrder.pinCode}\n${selectedOrder.customerPhone}"
 
             GlobalScope.launch {

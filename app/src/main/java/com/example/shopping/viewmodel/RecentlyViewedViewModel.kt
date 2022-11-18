@@ -60,4 +60,10 @@ class RecentlyViewedViewModel(application: Application):AndroidViewModel(applica
        return list
     }
 
+    fun updateFavoriteStatus(status:Boolean,productID: Int){
+        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getRecentlyViewedDao()
+        dao.updateFavoriteStatusOfRecentlyViewed(status,productID)
+        getRecentlyViewedFromDB()
+    }
+
 }

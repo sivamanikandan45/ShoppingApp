@@ -68,7 +68,10 @@ class SimilarProductListAdapter:RecyclerView.Adapter<SimilarProductListAdapter.V
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
                         val imageUrl = URL(product.thumbnail)
-                        imageView.setImageResource(R.drawable.placeholder)
+                        withContext(Dispatchers.Main) {
+                            imageView.setImageResource(R.drawable.placeholder)
+                        }
+                        //imageView.setImageResource(R.drawable.placeholder)
                         bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                         withContext(Dispatchers.Main){
                             if(loadingPosition==adapterPosition){

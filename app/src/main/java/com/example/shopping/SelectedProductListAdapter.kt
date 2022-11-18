@@ -14,6 +14,7 @@ import com.example.shopping.util.ProductImageMemoryCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.RoundingMode
 import java.net.URL
 import java.text.DecimalFormat
@@ -60,7 +61,10 @@ class SelectedProductListAdapter : RecyclerView.Adapter<SelectedProductListAdapt
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
                         val imageUrl = URL(selectedProduct.imageUrl)
-                        productImageView.setImageResource(R.drawable.placeholder)
+                        withContext(Dispatchers.Main) {
+                            productImageView.setImageResource(R.drawable.placeholder)
+                        }
+                        //productImageView.setImageResource(R.drawable.placeholder)
                         bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                     }
                     job.join()

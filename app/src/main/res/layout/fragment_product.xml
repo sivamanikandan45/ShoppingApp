@@ -58,6 +58,9 @@
                 tools:layout_editor_absoluteX="16dp" />
 
             <ImageView
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
                 android:id="@+id/favorite_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -89,6 +92,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="@string/title_brand"
+                android:textColor="@color/gray"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/product_name"
                 app:layout_constraintTop_toBottomOf="@id/product_image_carousel" />
@@ -99,6 +103,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:textColor="@color/gray"
                 android:justificationMode="inter_word"
                 android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -136,6 +141,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="4.8"
+                android:textColor="@color/gray"
                 app:layout_constraintBottom_toBottomOf="@+id/product_rating_bar"
                 app:layout_constraintStart_toEndOf="@id/product_rating_bar"
                 app:layout_constraintTop_toTopOf="@id/product_rating_bar" />
@@ -229,7 +235,7 @@
                 android:id="@+id/similar_product_recyler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
+                android:layout_marginBottom="116dp"
                 android:clipToPadding="false"
                 android:paddingEnd="16dp"
                 tools:itemCount="5"
@@ -290,6 +296,9 @@
                 app:layout_constraintTop_toBottomOf="@+id/product_description" />-->
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
                 android:id="@+id/increaseButtonLayout"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -300,6 +309,7 @@
 
                 <ImageButton
                     android:id="@+id/increase_qty_btn"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/qty_btn"
@@ -330,6 +340,9 @@
                 android:id="@+id/decreaseButtonLayout"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
                 app:layout_constraintBottom_toBottomOf="@+id/increaseButtonLayout"
                 app:layout_constraintEnd_toStartOf="@+id/cart_qty"
                 app:layout_constraintHorizontal_bias="1"
@@ -339,6 +352,7 @@
                 app:layout_constraintVertical_bias="0.441">
 
                 <ImageButton
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:id="@+id/decrease_qty_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -408,6 +422,8 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
+            android:background="@color/white"
+            android:foreground="?android:attr/selectableItemBackground"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_weight="1"
             android:id="@+id/add_to_cart_button"
@@ -421,6 +437,8 @@
             />
 
         <Button
+            android:background="@color/blue_600"
+            android:foreground="?android:attr/selectableItemBackground"
             android:layout_weight="1"
             android:id="@+id/buy_now_button"
             android:insetTop="0dp"

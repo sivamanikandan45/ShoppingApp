@@ -2,10 +2,12 @@ package com.example.shopping
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -38,6 +40,7 @@ class OrderPlacedFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_order_placed, container, false)
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Order Status"
@@ -56,6 +59,20 @@ class OrderPlacedFragment : Fragment() {
             }
         }
         placeOrder()
+
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true /* enabled by default */) {
+                override fun handleOnBackPressed() {
+                    Log.d("BACKBUTTON", "Back button clicks")
+                }
+            }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        /*requireActivity().onBackPressedDispatcher.addCallback(this){
+            return OnBackPressedCallback(){
+            }
+
+        }*/
     }
 
     private fun buyNow() {

@@ -91,6 +91,7 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
                                     val priceAfterDiscountRounded= decimalFormat.format(selectedProduct.priceForSelectedQuantity).toDouble()
                                     totalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
                                     finalTotalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
+                                    checkoutViewModel.billAmount=priceAfterDiscountRounded
                                     totalAmountBeforeDiscount.text=selectedProduct.oldPriceForSelectedQuantity.toString()
                                     var discountAmount=selectedProduct.oldPriceForSelectedQuantity-selectedProduct.priceForSelectedQuantity
                                     val df = DecimalFormat("#.##")
@@ -139,7 +140,12 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
         val continueButton=view.findViewById<Button>(R.id.continue_btn)
         continueButton.setOnClickListener {
             parentFragmentManager.commit{
-                checkoutViewModel.billAmount=cartViewModel.cartAmountAfterDiscount.value!!
+                if(checkoutViewModel.mode==CheckoutMode.OVERALL){
+                    checkoutViewModel.billAmount=cartViewModel.cartAmountAfterDiscount.value!!
+                }else if(checkoutViewModel.mode==CheckoutMode.BUY_NOW){
+                    //checkoutViewModel.billAmount=cartViewModel.cartAmountAfterDiscount.value!!
+                }
+
                 hide(this@OrderSummaryFragment)
                 add<PaymentFragment>(R.id.checkout_fragment_container)
                 addToBackStack(null)

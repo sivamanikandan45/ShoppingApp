@@ -15,6 +15,7 @@
             android:layout_height="wrap_content"
             android:text="Sort by"
             android:textSize="16sp"
+            android:textColor="@color/gray"
             android:layout_marginStart="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

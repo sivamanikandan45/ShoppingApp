@@ -27,8 +27,13 @@ class AccountFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.title="Account"
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            show()
+            title="Account"
+            setDisplayHomeAsUpEnabled(false)
+        }
+        /*(activity as AppCompatActivity).supportActionBar?.title="Account"
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)*/
         val savedAddressOption=view.findViewById<ConstraintLayout>(R.id.saved_address)
         val wishlistButton=view.findViewById<ConstraintLayout>(R.id.show_wishlist)
         val myOrdersBtn=view.findViewById<ConstraintLayout>(R.id.my_orders)

@@ -18,6 +18,7 @@ import com.example.shopping.model.SelectedProduct
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.FavoriteViewModel
 import com.example.shopping.viewmodel.ProductViewModel
+import com.example.shopping.viewmodel.RecentlyViewedViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -31,6 +32,7 @@ class WishlistFragment : Fragment() {
     private val favoriteViewModel: FavoriteViewModel by activityViewModels()
     private val productViewModel:ProductViewModel by activityViewModels()
     private val cartViewModel:CartViewModel by activityViewModels()
+    private val recentlyViewedViewModel:RecentlyViewedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -115,6 +117,8 @@ class WishlistFragment : Fragment() {
                         if(product!=null){
                             favoriteViewModel.deleteFromFavorites(product.productId)
                             productViewModel.removeFavorite(product.productId)
+                            println("Removing recently viewed item")
+                            recentlyViewedViewModel.updateFavoriteStatus(false,product.productId)
                         }
                     }
                     job.join()
@@ -183,6 +187,7 @@ class WishlistFragment : Fragment() {
                 if(product!=null){
                     favoriteViewModel.addToFavorites(product)
                     productViewModel.markAsFavorite(product.productId)
+                    recentlyViewedViewModel.updateFavoriteStatus(true,product.productId)
                 }
             }
             job.join()

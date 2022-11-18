@@ -19,4 +19,7 @@ interface RecentlyViewedDao {
 
     @Query("Delete FROM RecentlyViewed where 1=1")
     fun clearAll()
+
+    @Query("UPDATE RecentlyViewed SET isFavorite=:favorite WHERE productId=:productID")
+    fun updateFavoriteStatusOfRecentlyViewed(favorite:Boolean,productID: Int)
 }

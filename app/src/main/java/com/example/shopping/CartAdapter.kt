@@ -132,7 +132,10 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
                         val imageUrl = URL(selectedProduct.imageUrl)
-                        productImageView.setImageResource(R.drawable.placeholder)
+                        withContext(Dispatchers.Main) {
+                            productImageView.setImageResource(R.drawable.placeholder)
+                        }
+                        //productImageView.setImageResource(R.drawable.placeholder)
                         bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                         withContext(Dispatchers.Main){
                             if(loadingPosition==adapterPosition){

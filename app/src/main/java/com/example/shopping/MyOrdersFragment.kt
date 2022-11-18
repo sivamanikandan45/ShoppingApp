@@ -13,6 +13,7 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.shopping.model.OrderedProduct
 import com.example.shopping.viewmodel.OrderViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -61,9 +62,10 @@ class MyOrdersFragment : Fragment() {
                 replaceFragment(OrderDetailFragment())
             }
         })
-        orderAdapter.getImageList(object :ImageLoader{
-            override suspend fun loadImage(orderId: Int): List<String> {
-                return orderViewModel.getOrderedProductImages(orderId)
+        orderAdapter.getImageList(object :DataLoader{
+            override suspend fun loadData(orderId: Int): List<OrderedProduct> {
+                return orderViewModel.getOrderedProduct(orderId)
+                //return orderViewModel.getOrderedProductImages(orderId)
             }
         })
         val list=orderViewModel.getOrderList()

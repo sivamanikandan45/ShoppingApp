@@ -7,6 +7,8 @@
     android:layout_marginTop="8dp"
     android:layout_height="wrap_content">
     <androidx.cardview.widget.CardView
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="false"
         android:layout_width="match_parent"
         android:elevation="1dp"
         android:layout_height="wrap_content"
@@ -23,7 +25,7 @@
                 android:scaleType="fitXY"
                 android:adjustViewBounds="true"
                 app:shapeAppearanceOverlay="@style/curvedCorner"
-                android:src="@drawable/ic_launcher_background"
+                android:src="@drawable/placeholder"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <!--<ProgressBar
@@ -38,6 +40,9 @@
                 app:layout_constraintTop_toTopOf="parent" />-->
 
             <ImageView
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
                 android:id="@+id/favorite_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -78,6 +83,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/title_price"
+                android:textColor="@color/gray"
                 android:textSize="12sp"
                 android:layout_marginTop="8dp"
                 app:layout_constraintStart_toStartOf="@+id/productCard_ProductName"
@@ -127,6 +133,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="4.27"
+                android:textColor="@color/gray"
                 android:textSize="12sp"
                 android:layout_marginStart="8dp"
                 app:layout_constraintStart_toEndOf="@+id/product_card_rating_bar"

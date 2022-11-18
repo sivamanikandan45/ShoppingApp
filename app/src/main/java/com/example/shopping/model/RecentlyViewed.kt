@@ -14,4 +14,5 @@ data class RecentlyViewed(@PrimaryKey val productId:Int,
                           val stock:Int,
                           val brand:String,
                           val category:String,
-                          val thumbnail:String)
+                          val thumbnail:String,
+                          val isFavorite:Boolean)

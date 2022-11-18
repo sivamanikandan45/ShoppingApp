@@ -11,6 +11,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.*
 import com.example.shopping.viewmodel.CheckoutViewModel
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 class PaymentFragment : Fragment() {
     private val checkoutViewModel:CheckoutViewModel by activityViewModels()
@@ -30,7 +32,12 @@ class PaymentFragment : Fragment() {
         val paymentOptionRadioGroup=view.findViewById<RadioGroup>(R.id.payment_options)
         val placeOrderBtn=view.findViewById<Button>(R.id.place_order_btn)
         val amountTextView=view.findViewById<TextView>(R.id.amount)
-        amountTextView.text="₹${checkoutViewModel.billAmount}"
+        val decimalFormat = DecimalFormat("#.##")
+        decimalFormat.roundingMode = RoundingMode.UP
+        val amountAfterDiscountRounded = decimalFormat.format(checkoutViewModel.billAmount).toDouble()
+        val withSymbol="₹$amountAfterDiscountRounded"
+        amountTextView.text=withSymbol
+        //amountTextView.text="₹${checkoutViewModel.billAmount}"
         val payButton=view.findViewById<Button>(R.id.pay)
         paymentOptionRadioGroup.setOnCheckedChangeListener { radioGroup, checkedId ->
             payButton.isEnabled=true

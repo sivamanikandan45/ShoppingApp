@@ -6,12 +6,12 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.util.TypedValue
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -31,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.NullPointerException
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
@@ -39,6 +40,7 @@ class CartFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var manager:LinearLayoutManager
     private lateinit var adapter: CartAdapter
+    private var itemTouch:ItemTouchHelper?=null
     private val cartViewModel:CartViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -56,6 +58,15 @@ class CartFragment : Fragment() {
             title="Cart"
             setDisplayHomeAsUpEnabled(false)
         }
+
+        /*val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true ) {
+                override fun handleOnBackPressed() {
+                    parentFragmentManager.popBackStack()
+                }
+            }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)*/
         /*val bottomSheet=view.findViewById<FrameLayout>(R.id.bottom_sheet)
         val behavior=BottomSheetBehavior.from(bottomSheet).apply {
             peekHeight=200
@@ -171,7 +182,19 @@ class CartFragment : Fragment() {
                             //adapter.notifyItemChanged(position)
                         }
                         .show()
-                    adapter.notifyItemChanged(position)
+
+                    /*viewHolder.itemView
+                        .animate()
+                        .translationX(0f)
+                        .withEndAction {
+                            itemTouch?.attachToRecyclerView(null)
+                            itemTouch?.attachToRecyclerView(recyclerView)
+                        }
+                        .start()*/
+                    itemTouch?.attachToRecyclerView(null)
+                    itemTouch?.attachToRecyclerView(recyclerView)
+                    //adapter.notifyItemChanged(position)
+
                 }else if(direction==ItemTouchHelper.RIGHT){
                     adapter.notifyItemChanged(position)
                 }
@@ -188,6 +211,56 @@ class CartFragment : Fragment() {
                 //return super.getSwipeThreshold(viewHolder)
             }*/
 
+            /*override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+                return 0.7f
+            }*/
+
+            /*override fun getSwipeVelocityThreshold(defaultValue: Float): Float {
+                return 0.7f
+            }*/
+
+
+            override fun clearView(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) {
+                super.clearView(recyclerView, viewHolder)
+            }
+
+            /*override fun getSwipeEscapeVelocity(defaultValue: Float): Float {
+                return defaultValue*10
+            }*/
+
+            /*override fun onChildDrawOver(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder?,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                when(isCurrentlyActive){
+                    dX>0->{
+                        val itemView=viewHolder?.itemView
+                        val background = ColorDrawable(Color.parseColor("#b00020"))
+                        if(itemView!=null){
+                            background.setBounds(itemView.left,itemView.top,itemView.right,itemView.bottom)
+                            background.draw(c)
+                        }
+                        super.onChildDrawOver(
+                            c,
+                            recyclerView,
+                            viewHolder,
+                            dX,
+                            dY,
+                            actionState,
+                            isCurrentlyActive
+                        )
+                    }
+                }
+
+            }*/
 
             override fun onChildDraw(
                 c: Canvas,
@@ -239,6 +312,7 @@ class CartFragment : Fragment() {
                     background.setBounds(0, 0, 0, 0);
                 }*/
             }
+
 
             /*override fun onChildDraw(
                 c: Canvas,
@@ -301,8 +375,9 @@ class CartFragment : Fragment() {
 
         }
 
-        val itemTouch=ItemTouchHelper(itemTOuchHelperCallBack)
-        itemTouch.attachToRecyclerView(recyclerView)
+        itemTouch=ItemTouchHelper(itemTOuchHelperCallBack)
+        //itemTouch.attachToRecyclerView(null)
+        itemTouch?.attachToRecyclerView(recyclerView)
 
         GlobalScope.launch {
             val job=launch {

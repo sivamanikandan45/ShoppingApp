@@ -21,6 +21,7 @@ import com.example.shopping.model.Product
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.RecentlyViewedViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -147,7 +148,6 @@ class HomeFragment : Fragment() {
         /*GlobalScope.launch {
             val job=launch{
                 println(productViewModel.getTopOfferFromDB())
-
             }
             job.join()
         }*/
@@ -158,8 +158,9 @@ class HomeFragment : Fragment() {
                     productViewModel.selectedProduct.value= productViewModel.topOfferList.value?.get(position)
                     add<ProductFragment>(R.id.fragment_container)
                     addToBackStack(null)*/
-
-                    addToBackStack(null)
+                    /*val btm=requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
+                    btm.visibility=View.GONE*/
+                    addToBackStack("fragment")
                     productViewModel.selectedProduct.value= productViewModel.topOfferList.value?.get(position)
                     replace(R.id.fragment_container,ProductFragment() )
                     setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -192,7 +193,7 @@ class HomeFragment : Fragment() {
                     addToBackStack(null)
                     val selectedProduct=recentlyViewedViewModel.recentlyViewedProductList.value?.get(position)
                     if(selectedProduct!=null){
-                        val product=Product(selectedProduct.productId,selectedProduct.title,selectedProduct.description,selectedProduct.originalPrice,selectedProduct.discountPercentage,selectedProduct.priceAfterDiscount,selectedProduct.rating,selectedProduct.stock,selectedProduct.brand,selectedProduct.category,selectedProduct.thumbnail,true)
+                        val product=Product(selectedProduct.productId,selectedProduct.title,selectedProduct.description,selectedProduct.originalPrice,selectedProduct.discountPercentage,selectedProduct.priceAfterDiscount,selectedProduct.rating,selectedProduct.stock,selectedProduct.brand,selectedProduct.category,selectedProduct.thumbnail,selectedProduct.isFavorite)
                         productViewModel.selectedProduct.value=product
                         replace(R.id.fragment_container,ProductFragment())
                         setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
