@@ -168,7 +168,7 @@ class AddDeliveryAddressFragment : Fragment() {
                 phone.isErrorEnabled =true
                 phone.error ="Please Enter your Phone Number"
                 returnValue=returnValue and false
-            }else if(phone.editText?.text.toString().length<10){
+            }else if(phone.editText?.text.toString().length!=10){
                 phone.isErrorEnabled =true
                 phone.error ="Please Enter Valid Phone Number"
                 returnValue=returnValue and false

@@ -11,6 +11,8 @@
         <entry key="app/src/main/res/drawable/border_heart.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/bottom_sheet_background.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/cart_selector.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/dot_default.xml" value="0.2145" />
+        <entry key="app/src/main/res/drawable/dot_selected.xml" value="0.2145" />
         <entry key="app/src/main/res/drawable/heart_red.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/heart_seletor.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/home_selector.xml" value="0.1" />
@@ -42,7 +44,7 @@
         <entry key="app/src/main/res/layout/activity_searchable.xml" value="0.25815217391304346" />
         <entry key="app/src/main/res/layout/auto_scrollable_carousel_item.xml" value="0.15476190476190477" />
         <entry key="app/src/main/res/layout/fragment_account.xml" value="0.3292888823009673" />
-        <entry key="app/src/main/res/layout/fragment_add_delivery_address.xml" value="0.28548736572265626" />
+        <entry key="app/src/main/res/layout/fragment_add_delivery_address.xml" value="0.24295774647887325" />
         <entry key="app/src/main/res/layout/fragment_address.xml" value="0.20380434782608695" />
         <entry key="app/src/main/res/layout/fragment_card_payment.xml" value="0.4509250143299932" />
         <entry key="app/src/main/res/layout/fragment_cart.xml" value="0.34488065743152" />

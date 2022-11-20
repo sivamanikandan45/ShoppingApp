@@ -6,11 +6,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.Group
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.fragment.app.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,15 +24,14 @@ import com.example.shopping.model.Product
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.RecentlyViewedViewModel
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.collections.ArrayList
 
 class HomeFragment : Fragment() {
     private val cartViewModel:CartViewModel by activityViewModels()
+    private lateinit var container:LinearLayout
     private lateinit var topOfferListAdapter:TopOfferListAdapter
     private lateinit var topOfferLayoutManager: LinearLayoutManager
     private lateinit var topOfferRecyclerView: RecyclerView
@@ -77,8 +79,46 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun setCurrentIndicator(position: Int) {
+        val childCount=container.childCount
+        for(i in 0 until childCount){
+            val imageView= container[i] as ImageView
+            if(i==position){
+                imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_selected))
+            }else{
+                imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_default))
+            }
+        }
+    }
+
+    private fun setUpIndicators(size:Int) {
+        val indicators= arrayOfNulls<ImageView>(size)
+        val layoutParams=
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        layoutParams.setMargins(8,0,8,0)
+        for(i in indicators.indices){
+            indicators[i]= ImageView(requireContext())
+            indicators[i].apply {
+                this?.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_default))
+                this?.layoutParams=layoutParams
+            }
+            container.addView(indicators[i])
+        }
+
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        /*val layout=view.findViewById<ConstraintLayout>(R.id.empty_page)
+        val check=view.findViewById<NestedScrollView>(R.id.scroll_home)
+        if(CheckInternet.isNetwork(requireContext())&& CheckInternet.isConnectedNetwork(requireContext())){
+            println("Internet is available")
+            layout.visibility=View.GONE
+            check.visibility=View.VISIBLE
+        }else{
+            layout.visibility=View.VISIBLE
+            check.visibility=View.GONE
+        }*/
         (activity as AppCompatActivity)?.supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         (activity as AppCompatActivity).supportActionBar?.title="Shopping"
@@ -86,8 +126,11 @@ class HomeFragment : Fragment() {
         val productViewModel:ProductViewModel by activityViewModels()
 
         val autoScrollableCarousel=view.findViewById<ViewPager2>(R.id.autoScrollingViewPager)
+        container=view.findViewById(R.id.dots_container)
         images= listOf(R.drawable.poster1,R.drawable.poster2,R.drawable.poster3)
         val autoScrollableCarouselAdapter=AutoScrollableCarouselAdapter(images)
+        setUpIndicators(images.size)
+        setCurrentIndicator(0)
         autoScrollableCarouselAdapter.setOnItemClickListener(object :ItemClickListener{
             override fun onItemClick(position: Int) {
                 showCategoryListForCarouselImage(position)
@@ -95,6 +138,12 @@ class HomeFragment : Fragment() {
         })
 
         autoScrollableCarousel.adapter = autoScrollableCarouselAdapter
+       autoScrollableCarousel.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                setCurrentIndicator(position)
+            }
+        })
         val timerTask: TimerTask = object : TimerTask() {
             override fun run() {
                 autoScrollableCarousel.post {
@@ -144,7 +193,7 @@ class HomeFragment : Fragment() {
         })
 
         topOfferRecyclerView=view.findViewById(R.id.top_offer_recycler)
-        topOfferListAdapter=TopOfferListAdapter()
+        topOfferListAdapter=TopOfferListAdapter(requireContext())
         /*GlobalScope.launch {
             val job=launch{
                 println(productViewModel.getTopOfferFromDB())
@@ -186,7 +235,7 @@ class HomeFragment : Fragment() {
         topOfferRecyclerView.layoutManager=topOfferLayoutManager
 
         recentlyViewedRecyclerView=view.findViewById(R.id.recently_viewed_recycler)
-        recentlyViewedAdapter=RecentlyViewedListAdapter()
+        recentlyViewedAdapter=RecentlyViewedListAdapter(requireContext())
         recentlyViewedAdapter.setOnItemClickListener(object :ItemClickListener{
             override fun onItemClick(position: Int) {
                 parentFragmentManager.commit {

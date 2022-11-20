@@ -11,6 +11,8 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -37,9 +39,37 @@ class ProductFragment : Fragment() {
     private val viewModel:ProductViewModel by activityViewModels()
     private val favoriteViewModel:FavoriteViewModel by activityViewModels()
     private val cartViewModel:CartViewModel by activityViewModels()
+    private lateinit var container:LinearLayout
     private lateinit var cartItem: MenuItem
     //private lateinit var toolbar: Toolbar
 
+    private fun setCurrentIndicator(position: Int) {
+        val childCount=container.childCount
+        for(i in 0 until childCount){
+            val imageView= container[i] as ImageView
+            if(i==position){
+                imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_selected))
+            }else{
+                imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_default))
+            }
+        }
+    }
+
+    private fun setUpIndicators(size:Int) {
+        val indicators= arrayOfNulls<ImageView>(size)
+        val layoutParams=
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        layoutParams.setMargins(8,0,8,0)
+        for(i in indicators.indices){
+            indicators[i]= ImageView(requireContext())
+            indicators[i].apply {
+                this?.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_default))
+                this?.layoutParams=layoutParams
+            }
+            container.addView(indicators[i])
+        }
+
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -164,8 +194,11 @@ class ProductFragment : Fragment() {
             job.join()
             withContext(Dispatchers.Main){
                 val autoScrollableCarousel=view.findViewById<ViewPager2>(R.id.product_image_carousel)
+                container=view.findViewById(R.id.dots_container)
                 //val images= listOf(R.drawable.image1,R.drawable.image2,R.drawable.image3)
                 val autoScrollableCarouselAdapter=ProductImageCarouselAdapter(list)
+                setUpIndicators(list.size)
+                setCurrentIndicator(0)
                 autoScrollableCarouselAdapter.setOnItemClickListener(object :ItemClickListener{
                     override fun onItemClick(position: Int) {
                         val intent=Intent(requireContext(),ProductImageActivity::class.java)
@@ -177,6 +210,12 @@ class ProductFragment : Fragment() {
                 })
                 println("value set")
                 autoScrollableCarousel.adapter = autoScrollableCarouselAdapter
+                autoScrollableCarousel.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
+                    override fun onPageSelected(position: Int) {
+                        super.onPageSelected(position)
+                        setCurrentIndicator(position)
+                    }
+                })
                 val timerTask: TimerTask = object : TimerTask() {
                     override fun run() {
                         autoScrollableCarousel.post {
@@ -185,7 +224,7 @@ class ProductFragment : Fragment() {
                     }
                 }
                 val timer = Timer()
-                timer.schedule(timerTask, 1500, 3000)
+                timer.schedule(timerTask, 3000, 3000)
             }
         }
 
@@ -251,7 +290,7 @@ class ProductFragment : Fragment() {
             val job=launch(Dispatchers.IO){
                 val list= product?.category?.let { productViewModel.getCategoryFromDB(it) }
                 withContext(Dispatchers.Main){
-                    val adapter=SimilarProductListAdapter()
+                    val adapter=SimilarProductListAdapter(requireContext())
                     list?.remove(product)
                     adapter.setData(list!!)
                     adapter.setOnItemClickListener(object : ItemClickListener{

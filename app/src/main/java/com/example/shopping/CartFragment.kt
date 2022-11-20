@@ -1,17 +1,12 @@
 package com.example.shopping
 
 import android.content.Intent
-import android.graphics.Canvas
-import android.graphics.Color
+import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.util.Log
-import android.util.TypedValue
 import android.view.*
 import android.widget.Button
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -19,11 +14,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.SelectedProduct
+import com.example.shopping.util.SwipeToDeleteCallback
 import com.example.shopping.viewmodel.CartViewModel
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
@@ -31,10 +28,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.NullPointerException
 import java.math.RoundingMode
 import java.text.DecimalFormat
-import kotlin.math.roundToInt
 
 class CartFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -157,9 +152,34 @@ class CartFragment : Fragment() {
         })
         manager= LinearLayoutManager(context)
 
-        val itemTOuchHelperCallBack = object :ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT){
+        val callback=object :SwipeToDeleteCallback(requireContext()){
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position=viewHolder.adapterPosition
+                val product=cartViewModel.cartItems.value?.get(position)
+                if(direction==ItemTouchHelper.LEFT) {
+                    AlertDialog.Builder(requireActivity())
+                        .setTitle("Remove Item")
+                        .setMessage("Are you sure you want to remove this item?")
+                        .setPositiveButton("REMOVE") { _, _ ->
+                            removeItemFromCart(product)
+                        }
+                        .setNegativeButton("CANCEL") { _, _ ->
+                            //adapter.notifyItemChanged(position)
+                        }
+                        .show()
+                    adapter.notifyItemChanged(position)
+                }
+            }
+
+        }
+
+        val itemTouchHelperCallBack = object :ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT){
             val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_delete_24)
-            val background = ColorDrawable(Color.RED)
+            val background = ColorDrawable()
+            val clearPaint = Paint()
+            init {
+                clearPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+            }
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -191,76 +211,16 @@ class CartFragment : Fragment() {
                             itemTouch?.attachToRecyclerView(recyclerView)
                         }
                         .start()*/
-                    itemTouch?.attachToRecyclerView(null)
-                    itemTouch?.attachToRecyclerView(recyclerView)
-                    //adapter.notifyItemChanged(position)
+                    /*itemTouch?.attachToRecyclerView(null)
+                    itemTouch?.attachToRecyclerView(recyclerView)*/
+                    adapter.notifyItemChanged(position)
 
                 }else if(direction==ItemTouchHelper.RIGHT){
-                    adapter.notifyItemChanged(position)
+                    itemTouch?.attachToRecyclerView(null)
+                    itemTouch?.attachToRecyclerView(recyclerView)
                 }
 
             }
-
-            /*override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
-                val dx=viewHolder.itemView.translationX
-                if(dx<0){
-                    return 0.5f
-                }else{
-                    return 0.1f
-                }
-                //return super.getSwipeThreshold(viewHolder)
-            }*/
-
-            /*override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
-                return 0.7f
-            }*/
-
-            /*override fun getSwipeVelocityThreshold(defaultValue: Float): Float {
-                return 0.7f
-            }*/
-
-
-            override fun clearView(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ) {
-                super.clearView(recyclerView, viewHolder)
-            }
-
-            /*override fun getSwipeEscapeVelocity(defaultValue: Float): Float {
-                return defaultValue*10
-            }*/
-
-            /*override fun onChildDrawOver(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder?,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                when(isCurrentlyActive){
-                    dX>0->{
-                        val itemView=viewHolder?.itemView
-                        val background = ColorDrawable(Color.parseColor("#b00020"))
-                        if(itemView!=null){
-                            background.setBounds(itemView.left,itemView.top,itemView.right,itemView.bottom)
-                            background.draw(c)
-                        }
-                        super.onChildDrawOver(
-                            c,
-                            recyclerView,
-                            viewHolder,
-                            dX,
-                            dY,
-                            actionState,
-                            isCurrentlyActive
-                        )
-                    }
-                }
-
-            }*/
 
             override fun onChildDraw(
                 c: Canvas,
@@ -275,107 +235,45 @@ class CartFragment : Fragment() {
                 val iconMargin = (itemView.height - icon!!.intrinsicHeight) / 2
                 val iconTop = itemView.top + (itemView.height - icon!!.intrinsicHeight) / 2
                 val iconBottom = iconTop + icon!!.intrinsicHeight
-
-                if(actionState==ItemTouchHelper.ACTION_STATE_SWIPE&&isCurrentlyActive){
+                val isCancelled = dX == 0f && !isCurrentlyActive
+                if(isCancelled){
+                    clearCanvas(c, itemView.right + dX, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    return
+                }//else if(actionState==ItemTouchHelper.ACTION_STATE_SWIPE&&isCurrentlyActive){
                     when{
                         dX<0->{
-                            val background = ColorDrawable(Color.parseColor("#b00020"))
-                            background.setBounds(itemView.left,itemView.top,itemView.right,itemView.bottom)
+                            background.color=Color.parseColor("#b00020")
+                            background.setBounds(itemView.right+dX.toInt(),itemView.top,itemView.right,itemView.bottom)
                             background.draw(c)
-
                             val iconLeft = itemView.right - iconMargin - icon.intrinsicWidth
                             val iconRight = itemView.right - iconMargin
-                            /*background.setBounds(
-                                itemView.left, itemView.top,
-                                itemView.left + dX.toInt(),
-                                itemView.bottom
-                            )*/
                             icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
                             icon.draw(c)
-
                             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-                            /*c.save()
-                            c.clipRect(itemView.right+dX.toInt(),itemView.top,itemView.right,itemView.bottom)
-                            c.restore()*/
                         }
                         dX>0->{
-                            val newDx=dX/10
-//                          Color.parseColor("#939393")
-                            val background = ColorDrawable(Color.LTGRAY)
+                            val newDx=dX/20
+                            background.color=Color.LTGRAY
                             background.setBounds(itemView.left,itemView.top, newDx.toInt(),itemView.bottom)
                             background.draw(c)
                             super.onChildDraw(c, recyclerView, viewHolder, newDx, dY, actionState, isCurrentlyActive)
                         }
                     }
-                }
-                /*else if(actionState==ItemTouchHelper.ANIMATION_TYPE_SWIPE_CANCEL){
-                    background.setBounds(0, 0, 0, 0);
-                }*/
+                //}
             }
 
-
-            /*override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                val background = ColorDrawable(Color.RED)
-                val itemView = viewHolder.itemView
-                val backgroundCornerOffset = 20
-                val displayMetrics: DisplayMetrics = resources.displayMetrics
-                val height = (displayMetrics.heightPixels / displayMetrics.density).toInt().dp
-                val width = (displayMetrics.widthPixels / displayMetrics.density).toInt().dp
-                val iconMargin = (itemView.height - icon!!.intrinsicHeight) / 2
-                val iconTop = itemView.top + (itemView.height - icon!!.intrinsicHeight) / 2
-                val iconBottom = iconTop + icon!!.intrinsicHeight
-
-                if (dX < 0){
-                    val iconLeft = itemView.right - iconMargin - icon.intrinsicWidth
-                    val iconRight = itemView.right - iconMargin
-                    background.setBounds(
-                        itemView.left, itemView.top,
-                        itemView.left + dX.toInt() + backgroundCornerOffset,
-                        itemView.bottom
-                    )
-                    icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
-                }else { // view is unSwiped
-                    background.setBounds(0, 0, 0, 0);
-                    icon.setBounds(0,0,0,0)
-                }
-                background.draw(c);
-                icon.draw(c);
-                *//*when{
-                     -> {
-                        background.setBounds(
-                            itemView.left, itemView.top,
-                            itemView.left + dX.toInt() + backgroundCornerOffset,
-                            itemView.bottom
-                        )
-                    }
-                }*//*
-                super.onChildDraw(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
+            private fun clearCanvas(c: Canvas, left: Float, top: Float, right: Float, bottom: Float) {
+                c.drawRect(left, top, right, bottom, clearPaint)
             }
-            private val Int.dp
-                get() = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    toFloat(), resources.displayMetrics
-                ).roundToInt()*/
+
+            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+                return 0.7f
+            }
 
         }
 
-        itemTouch=ItemTouchHelper(itemTOuchHelperCallBack)
+        itemTouch=ItemTouchHelper(itemTouchHelperCallBack)
         //itemTouch.attachToRecyclerView(null)
         itemTouch?.attachToRecyclerView(recyclerView)
 

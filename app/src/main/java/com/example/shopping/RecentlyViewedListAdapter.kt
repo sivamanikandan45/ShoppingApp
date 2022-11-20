@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.Product
 import com.example.shopping.model.RecentlyViewed
+import com.example.shopping.util.CheckInternet
 import com.example.shopping.util.ProductImageMemoryCache
 import com.google.android.material.imageview.ShapeableImageView
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URL
 
-class RecentlyViewedListAdapter:RecyclerView.Adapter<RecentlyViewedListAdapter.ViewHolder>(){
+class RecentlyViewedListAdapter(val context: Context):RecyclerView.Adapter<RecentlyViewedListAdapter.ViewHolder>(){
     private lateinit var list: List<RecentlyViewed>
     private lateinit var listener: ItemClickListener
 
@@ -68,20 +70,23 @@ class RecentlyViewedListAdapter:RecyclerView.Adapter<RecentlyViewedListAdapter.V
             }?:run{
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
-                        val imageUrl = URL(product.thumbnail)
-                        withContext(Dispatchers.Main) {
-                            imageView.setImageResource(R.drawable.placeholder)
-                        }
-                        bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
-                        withContext(Dispatchers.Main){
-                            if(loadingPosition==adapterPosition){
-                                if(list[adapterPosition].productId==product.productId){
-                                    imageView.setImageBitmap(bitmapValue)
-                                    ProductImageMemoryCache.addBitmapToCache(product.productId.toString(),bitmapValue!!)
-                                    //progressBar.visibility=View.GONE
+                        if(CheckInternet.isNetwork(context)&&CheckInternet.isConnectedNetwork(context)){
+                            val imageUrl = URL(product.thumbnail)
+                            withContext(Dispatchers.Main) {
+                                imageView.setImageResource(R.drawable.placeholder)
+                            }
+                            bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                            withContext(Dispatchers.Main){
+                                if(loadingPosition==adapterPosition){
+                                    if(list[adapterPosition].productId==product.productId){
+                                        imageView.setImageBitmap(bitmapValue)
+                                        ProductImageMemoryCache.addBitmapToCache(product.productId.toString(),bitmapValue!!)
+                                        //progressBar.visibility=View.GONE
+                                    }
                                 }
                             }
                         }
+
                     }
                     job.join()
                 }

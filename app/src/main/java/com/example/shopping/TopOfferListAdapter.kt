@@ -1,8 +1,10 @@
 package com.example.shopping
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Paint
+import android.net.ConnectivityManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,8 +12,11 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.Product
+import com.example.shopping.util.CheckInternet
 import com.example.shopping.util.ProductImageMemoryCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -19,7 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URL
 
-class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>() {
+class TopOfferListAdapter(val context: Context):RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>() {
     //private lateinit var list:ArrayList<Product>
     private var list= ArrayList<Product>()
     private lateinit var listener: ItemClickListener
@@ -110,18 +115,25 @@ class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>()
             } ?:run{
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
-                        val imageUrl = URL(product.thumbnail)
-                        withContext(Dispatchers.Main) {
-                            imageView.setImageResource(R.drawable.placeholder)
-                        }
-                        //imageView.setImageResource(R.drawable.placeholder)
-                        bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
-                        withContext(Dispatchers.Main){
-                            if(loadingPosition==adapterPosition){
-                                if(list[adapterPosition].productId==product.productId){
-                                    imageView.setImageBitmap(bitmapValue)
-                                    ProductImageMemoryCache.addBitmapToCache(product.productId.toString(),bitmapValue!!)
+                        if(CheckInternet.isNetwork(context)&&CheckInternet.isConnectedNetwork(context)){
+                            println("Network is available")
+                            val imageUrl = URL(product.thumbnail)
+                            withContext(Dispatchers.Main) {
+                                imageView.setImageResource(R.drawable.placeholder)
+                            }
+                            bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                            withContext(Dispatchers.Main){
+                                if(loadingPosition==adapterPosition){
+                                    if(list[adapterPosition].productId==product.productId){
+                                        imageView.setImageBitmap(bitmapValue)
+                                        ProductImageMemoryCache.addBitmapToCache(product.productId.toString(),bitmapValue!!)
+                                    }
                                 }
+                            }
+                        }else{
+                            println("Netwsork is not available")
+                            withContext(Dispatchers.Main) {
+                                imageView.setImageResource(R.drawable.placeholder)
                             }
                         }
                     }
