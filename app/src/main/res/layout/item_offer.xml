@@ -10,6 +10,6 @@
         android:src="@drawable/placeholder"
         android:foreground="?android:attr/selectableItemBackground"
         android:clickable="false"
-        android:scaleType="fitCenter"
+        android:scaleType="fitXY"
         app:shapeAppearanceOverlay="@style/curvedCorner"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

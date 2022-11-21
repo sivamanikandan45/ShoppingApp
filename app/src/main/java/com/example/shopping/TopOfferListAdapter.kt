@@ -26,7 +26,7 @@ import java.io.IOException
 import java.net.ConnectException
 import java.net.URL
 
-class TopOfferListAdapter(val context: Context):RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>() {
+class TopOfferListAdapter:RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>() {
     //private lateinit var list:ArrayList<Product>
     private var list= ArrayList<Product>()
     private lateinit var listener: ItemClickListener

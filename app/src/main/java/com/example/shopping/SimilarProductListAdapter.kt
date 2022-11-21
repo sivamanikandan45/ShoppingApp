@@ -71,7 +71,7 @@ class SimilarProductListAdapter(val context: Context):RecyclerView.Adapter<Simil
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
                         println(Thread.currentThread().name)
-                        if(CheckInternet.isNetwork(context)||CheckInternet.isConnectedNetwork(context)){
+                        //if(CheckInternet.isNetwork(context)||CheckInternet.isConnectedNetwork(context)){
                             println("Network is available")
                             val imageUrl = URL(product.thumbnail)
                             withContext(Dispatchers.Main) {
@@ -94,7 +94,7 @@ class SimilarProductListAdapter(val context: Context):RecyclerView.Adapter<Simil
                                     }
                                 }
                             }
-                        }
+                        //}
                     }
                     job.join()
                 }

@@ -23,7 +23,7 @@ import java.io.IOException
 import java.net.ConnectException
 import java.net.URL
 
-class RecentlyViewedListAdapter(val context: Context):RecyclerView.Adapter<RecentlyViewedListAdapter.ViewHolder>(){
+class RecentlyViewedListAdapter():RecyclerView.Adapter<RecentlyViewedListAdapter.ViewHolder>(){
     private lateinit var list: List<RecentlyViewed>
     private lateinit var listener: ItemClickListener
 

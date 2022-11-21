@@ -3,15 +3,22 @@ package com.example.shopping
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.shopping.enums.Orientation
 import com.google.android.material.imageview.ShapeableImageView
 
 class AutoScrollableCarouselAdapter(private val list:List<Int>):RecyclerView.Adapter<AutoScrollableCarouselAdapter.ViewHolder>() {
 
     private lateinit var listener: ItemClickListener
+    private var orientation= Orientation.PORTRAIT
 
     fun setOnItemClickListener(listener: ItemClickListener){
         this.listener=listener
+    }
+
+    fun setOrientation(landscape: Orientation) {
+        this.orientation=landscape
     }
 
     inner class ViewHolder(view: View):RecyclerView.ViewHolder(view){
@@ -32,6 +39,9 @@ class AutoScrollableCarouselAdapter(private val list:List<Int>):RecyclerView.Ada
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        if (orientation==Orientation.LANDSCAPE){
+            holder.imageView.scaleType=ImageView.ScaleType.FIT_CENTER
+        }
         holder.imageView.setImageResource(list[position])
     }
 

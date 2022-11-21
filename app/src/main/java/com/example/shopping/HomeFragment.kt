@@ -3,6 +3,7 @@ package com.example.shopping
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import android.widget.Button
@@ -19,8 +20,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.example.shopping.enums.Orientation
 import com.example.shopping.model.Category
-import com.example.shopping.model.Product
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.RecentlyViewedViewModel
@@ -134,6 +135,9 @@ class HomeFragment : Fragment() {
         container=view.findViewById(R.id.dots_container)
         images= listOf(R.drawable.poster1,R.drawable.poster2,R.drawable.poster3)
         val autoScrollableCarouselAdapter=AutoScrollableCarouselAdapter(images)
+        if (activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            autoScrollableCarouselAdapter.setOrientation(Orientation.LANDSCAPE)
+        }
         setUpIndicators(images.size)
         setCurrentIndicator(0)
         autoScrollableCarouselAdapter.setOnItemClickListener(object :ItemClickListener{
@@ -198,7 +202,7 @@ class HomeFragment : Fragment() {
         })
 
         topOfferRecyclerView=view.findViewById(R.id.top_offer_recycler)
-        topOfferListAdapter=TopOfferListAdapter(requireContext())
+        topOfferListAdapter=TopOfferListAdapter()
         /*GlobalScope.launch {
             val job=launch{
                 println(productViewModel.getTopOfferFromDB())
@@ -238,7 +242,7 @@ class HomeFragment : Fragment() {
         topOfferRecyclerView.layoutManager=topOfferLayoutManager
 
         recentlyViewedRecyclerView=view.findViewById(R.id.recently_viewed_recycler)
-        recentlyViewedAdapter=RecentlyViewedListAdapter(requireContext())
+        recentlyViewedAdapter=RecentlyViewedListAdapter()
         recentlyViewedAdapter.setOnItemClickListener(object :ItemClickListener{
             override fun onItemClick(position: Int) {
                 val selectedProduct=recentlyViewedViewModel.recentlyViewedProductList.value?.get(position)

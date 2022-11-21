@@ -52,7 +52,7 @@ class SearchableActivity : AppCompatActivity() {
             GridLayoutManager(this,4)
         }
         //manager=GridLayoutManager(this,2)
-        adapter= TopOfferListAdapter(this)
+        adapter= TopOfferListAdapter()
         adapter.setViewType(1)
         recycle.layoutManager=manager
         recycle.adapter=adapter
