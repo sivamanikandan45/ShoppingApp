@@ -19,6 +19,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.ConnectException
 import java.net.URL
 
 class RecentlyViewedListAdapter(val context: Context):RecyclerView.Adapter<RecentlyViewedListAdapter.ViewHolder>(){
@@ -70,22 +72,28 @@ class RecentlyViewedListAdapter(val context: Context):RecyclerView.Adapter<Recen
             }?:run{
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
-                        if(CheckInternet.isNetwork(context)&&CheckInternet.isConnectedNetwork(context)){
+                        //if(CheckInternet.isNetwork(context)&&CheckInternet.isConnectedNetwork(context)){
                             val imageUrl = URL(product.thumbnail)
                             withContext(Dispatchers.Main) {
                                 imageView.setImageResource(R.drawable.placeholder)
                             }
-                            bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                            try{
+                                bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                            }catch (exception: IOException){
+                                println("Exception caught")
+                            }
+                            //bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                             withContext(Dispatchers.Main){
                                 if(loadingPosition==adapterPosition){
                                     if(list[adapterPosition].productId==product.productId){
-                                        imageView.setImageBitmap(bitmapValue)
-                                        ProductImageMemoryCache.addBitmapToCache(product.productId.toString(),bitmapValue!!)
-                                        //progressBar.visibility=View.GONE
+                                        if(bitmapValue!=null){
+                                            imageView.setImageBitmap(bitmapValue)
+                                            ProductImageMemoryCache.addBitmapToCache(product.productId.toString(),bitmapValue!!)
+                                        }
                                     }
                                 }
                             }
-                        }
+                        //}
 
                     }
                     job.join()

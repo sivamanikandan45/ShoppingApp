@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.math.RoundingMode
 import java.net.URL
 import java.text.DecimalFormat
@@ -135,15 +136,22 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
                         withContext(Dispatchers.Main) {
                             productImageView.setImageResource(R.drawable.placeholder)
                         }
+                        try{
+                            bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        }catch (exception: IOException){
+                            println("Exception caught")
+                        }
                         //productImageView.setImageResource(R.drawable.placeholder)
-                        bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        //bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                         withContext(Dispatchers.Main){
                             if(loadingPosition==adapterPosition){
                                 if(list[adapterPosition].productId==selectedProduct.productId){
                                     /*val bitMapArray= listOf(bitmapValue!!,bitmapValue!!,bitmapValue!!)
                                     val res=mergeThemAll(bitMapArray)*/
-                                    productImageView.setImageBitmap(bitmapValue)
-                                    ProductImageMemoryCache.addBitmapToCache(selectedProduct.productId.toString(),bitmapValue!!)
+                                    if(bitmapValue!=null){
+                                        productImageView.setImageBitmap(bitmapValue)
+                                        ProductImageMemoryCache.addBitmapToCache(selectedProduct.productId.toString(),bitmapValue!!)
+                                    }
                                 }
                             }
                         }

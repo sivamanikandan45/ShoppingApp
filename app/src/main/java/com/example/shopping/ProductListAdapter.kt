@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.net.URL
 
 
@@ -135,13 +136,20 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
                         withContext(Dispatchers.Main) {
                             imageView.setImageResource(R.drawable.placeholder)
                         }
+                        try{
+                            bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        }catch (exception: IOException){
+                            println("Exception caught")
+                        }
                         //imageView.setImageResource(R.drawable.placeholder)
-                        bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        //bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                         withContext(Dispatchers.Main){
                             if(loadingPosition==adapterPosition){
                                 if(list[adapterPosition].productId==product.productId){
-                                    imageView.setImageBitmap(bitmapValue)
-                                    ProductImageMemoryCache.addBitmapToCache(product.productId.toString(),bitmapValue!!)
+                                    if(bitmapValue!=null){
+                                        imageView.setImageBitmap(bitmapValue)
+                                        ProductImageMemoryCache.addBitmapToCache(product.productId.toString(),bitmapValue!!)
+                                    }
                                     //progressBar.visibility=View.GONE
                                 }
                             }

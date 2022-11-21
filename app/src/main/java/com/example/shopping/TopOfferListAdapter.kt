@@ -22,6 +22,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.ConnectException
 import java.net.URL
 
 class TopOfferListAdapter(val context: Context):RecyclerView.Adapter<TopOfferListAdapter.ViewHolder>() {
@@ -115,27 +117,34 @@ class TopOfferListAdapter(val context: Context):RecyclerView.Adapter<TopOfferLis
             } ?:run{
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
-                        if(CheckInternet.isNetwork(context)&&CheckInternet.isConnectedNetwork(context)){
+                        //if(CheckInternet.isNetwork(context)&&CheckInternet.isConnectedNetwork(context)){
                             println("Network is available")
                             val imageUrl = URL(product.thumbnail)
                             withContext(Dispatchers.Main) {
                                 imageView.setImageResource(R.drawable.placeholder)
                             }
-                            bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                            try{
+                                bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                            }catch (exception: IOException){
+                                println("Exception caught")
+                            }
                             withContext(Dispatchers.Main){
                                 if(loadingPosition==adapterPosition){
                                     if(list[adapterPosition].productId==product.productId){
-                                        imageView.setImageBitmap(bitmapValue)
-                                        ProductImageMemoryCache.addBitmapToCache(product.productId.toString(),bitmapValue!!)
+                                        if(bitmapValue!=null){
+                                            imageView.setImageBitmap(bitmapValue)
+                                            ProductImageMemoryCache.addBitmapToCache(product.productId.toString(),bitmapValue!!)
+                                        }
+
                                     }
                                 }
                             }
-                        }else{
-                            println("Netwsork is not available")
+                        /*}else{
+                            println("Network is not available")
                             withContext(Dispatchers.Main) {
                                 imageView.setImageResource(R.drawable.placeholder)
                             }
-                        }
+                        }*/
                     }
                     job.join()
                 }

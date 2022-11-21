@@ -10,12 +10,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
+import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.FavoriteViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class AccountFragment : Fragment() {
 
 
     private val favoriteViewModel:FavoriteViewModel by activityViewModels()
+    private val cartViewModel:CartViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,6 +28,17 @@ class AccountFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_account, container, false)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        GlobalScope.launch {
+            val job=launch (Dispatchers.IO){
+                val amount=cartViewModel.getCartItemCount()
+                //adapter.setData(favoriteViewModel.getWishlistItems())
+            }
+            job.join()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

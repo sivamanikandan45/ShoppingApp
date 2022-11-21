@@ -31,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.IllegalStateException
 import java.util.*
 
 class ProductFragment : Fragment() {
@@ -47,10 +48,14 @@ class ProductFragment : Fragment() {
         val childCount=container.childCount
         for(i in 0 until childCount){
             val imageView= container[i] as ImageView
-            if(i==position){
-                imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_selected))
-            }else{
-                imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_default))
+            try{
+                if(i==position){
+                    imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_selected))
+                }else{
+                    imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_default))
+                }
+            }catch (ex: IllegalStateException){
+
             }
         }
     }
@@ -117,6 +122,11 @@ class ProductFragment : Fragment() {
         val productViewModel:ProductViewModel by activityViewModels()
         (activity as AppCompatActivity).supportActionBar?.setShowHideAnimationEnabled(false)
         (activity as AppCompatActivity).supportActionBar?.hide()
+        val goToCartButton=view.findViewById<Button>(R.id.go_to_cart_button)
+        val addToCartBtn=view.findViewById<Button>(R.id.add_to_cart_button)
+
+
+
         val toolbar=view.findViewById<Toolbar>(R.id.toolbar)
         toolbar.inflateMenu(R.menu.product_fragment_menu)
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
@@ -129,11 +139,7 @@ class ProductFragment : Fragment() {
         toolbar.setOnMenuItemClickListener {
             when(it.itemId){
                 R.id.cart_menu->{
-                    val intent= Intent(requireContext(),MainActivity::class.java)
-                    intent.putExtra("fragment","cart")
-                    //intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK+Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
+                    gotoCart()
                     true
                 }
                 else -> {
@@ -165,6 +171,17 @@ class ProductFragment : Fragment() {
         println("cart is ${cartViewModel.cartItems.value}")
         val product=productViewModel.selectedProduct.value
         println("Selected Product is $product")
+
+        cartViewModel.cartItems.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            if(product?.let { cartViewModel.isProductInCart(it.productId) } == true){
+                addToCartBtn.visibility=View.GONE
+                goToCartButton.visibility=View.VISIBLE
+            }
+            else{
+                println("Product is not available")
+            }
+        })
+
 
         buyNowButton.setOnClickListener {
             val intent=Intent(requireContext(),CheckoutActivity::class.java)
@@ -335,7 +352,11 @@ class ProductFragment : Fragment() {
             oldPrice.showStrikeThrough(true)
             discount.text=product.discountPercentage.toString()+"% Off"
 
-            val addToCartBtn=view.findViewById<Button>(R.id.add_to_cart_button)
+
+            goToCartButton.setOnClickListener {
+                gotoCart()
+            }
+
             addToCartBtn.setOnClickListener { it ->
                 GlobalScope.launch {
                     val job=launch (Dispatchers.IO){
@@ -350,11 +371,10 @@ class ProductFragment : Fragment() {
                 //val coord=view.findViewById<CoordinatorLayout>(R.id.button_layout)
                 Snackbar.make(it,"Added to the Cart",Snackbar.LENGTH_LONG)
                     .setAction("GO TO CART") {
-                        val intent= Intent(requireContext(),MainActivity::class.java)
-                        intent.putExtra("fragment","cart")
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
+                        gotoCart()
                     }.show()
+                addToCartBtn.visibility=View.GONE
+                goToCartButton.visibility=View.VISIBLE
 
             }
         }
@@ -436,14 +456,17 @@ class ProductFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.cart_menu->{
-                val intent= Intent(requireContext(),MainActivity::class.java)
-                intent.putExtra("fragment","cart")
-                //intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK+Intent.FLAG_ACTIVITY_CLEAR_TOP
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent)
+                gotoCart()
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun gotoCart() {
+        val intent = Intent(requireContext(), MainActivity::class.java)
+        intent.putExtra("fragment", "cart")
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 
     private fun TextView.showStrikeThrough(show: Boolean) {

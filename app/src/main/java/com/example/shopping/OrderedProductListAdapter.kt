@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.math.RoundingMode
 import java.net.URL
 import java.text.DecimalFormat
@@ -57,13 +58,20 @@ class OrderedProductListAdapter :RecyclerView.Adapter<OrderedProductListAdapter.
                         withContext(Dispatchers.Main) {
                             productImageView.setImageResource(R.drawable.placeholder)
                         }
+                        try{
+                            bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        }catch (exception: IOException){
+                            println("Exception caught")
+                        }
                         //productImageView.setImageResource(R.drawable.placeholder)
-                        bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        //bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                     }
                     job.join()
                     val imageSettingCoroutine=launch(Dispatchers.Main){
-                        productImageView.setImageBitmap(bitmapValue)
-                        ProductImageMemoryCache.addBitmapToCache(orderedProduct.productId.toString(),bitmapValue!!)
+                        if(bitmapValue!=null){
+                            productImageView.setImageBitmap(bitmapValue)
+                            ProductImageMemoryCache.addBitmapToCache(orderedProduct.productId.toString(),bitmapValue!!)
+                        }
                     }
                     imageSettingCoroutine.join()
                 }

@@ -34,6 +34,7 @@
         <entry key="app/src/main/res/drawable/qty_btn.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/rounded_btn.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/wishlist_selector.xml" value="0.1" />
+        <entry key="app/src/main/res/layout-night/fragment_homr.xml" value="0.16160081053698075" />
         <entry key="app/src/main/res/layout/activity_account.xml" value="0.16210739614994935" />
         <entry key="app/src/main/res/layout/activity_account_option.xml" value="0.15476190476190477" />
         <entry key="app/src/main/res/layout/activity_category.xml" value="0.1" />
@@ -48,13 +49,13 @@
         <entry key="app/src/main/res/layout/fragment_address.xml" value="0.20380434782608695" />
         <entry key="app/src/main/res/layout/fragment_card_payment.xml" value="0.4509250143299932" />
         <entry key="app/src/main/res/layout/fragment_cart.xml" value="0.34488065743152" />
-        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.2596491228070175" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.31116790771484376" />
         <entry key="app/src/main/res/layout/fragment_my_orders.xml" value="0.3581649780273438" />
         <entry key="app/src/main/res/layout/fragment_order_detail.xml" value="0.32779176131538723" />
         <entry key="app/src/main/res/layout/fragment_order_placed.xml" value="0.20380434782608695" />
         <entry key="app/src/main/res/layout/fragment_order_summary.xml" value="0.3333333333333333" />
         <entry key="app/src/main/res/layout/fragment_payment.xml" value="0.215625" />
-        <entry key="app/src/main/res/layout/fragment_product.xml" value="0.5172375102288167" />
+        <entry key="app/src/main/res/layout/fragment_product.xml" value="0.3673835125448029" />
         <entry key="app/src/main/res/layout/fragment_product_list.xml" value="0.33833612443949074" />
         <entry key="app/src/main/res/layout/fragment_saved_address.xml" value="0.25815217391304346" />
         <entry key="app/src/main/res/layout/fragment_select_address.xml" value="0.3833301597917584" />

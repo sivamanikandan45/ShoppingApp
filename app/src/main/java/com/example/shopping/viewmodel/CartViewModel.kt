@@ -30,6 +30,15 @@ class CartViewModel(application: Application):AndroidViewModel(application) {
         }
     }
 
+    fun isProductInCart(productId: Int):Boolean{
+        for(product in cartItems.value!!){
+            if(product.productId==productId){
+                return true
+            }
+        }
+        return false
+    }
+
     fun getCartFromDB(){
         val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getCartDao()
         val list=dao.getCartItems()

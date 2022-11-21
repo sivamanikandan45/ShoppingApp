@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,18 +44,21 @@ class WishlistFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_wishlist, container, false)
     }
 
-    /*override fun onStart() {
+    override fun onStart() {
         super.onStart()
-        if(favoriteViewModel.calledFrom=="Main"){
-            (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        }else if(favoriteViewModel.calledFrom=="Account"){
-            (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        GlobalScope.launch {
+            val job=launch (Dispatchers.IO){
+                val amount=cartViewModel.getCartItemCount()
+                favoriteViewModel.getWishlistItems()
+                //adapter.setData(favoriteViewModel.getWishlistItems())
+            }
+            job.join()
         }
-    }*/
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity)?.supportActionBar?.show()
+        (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.title="Wishlist"
         //(activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         if(favoriteViewModel.calledFrom=="Main"){
@@ -72,11 +77,18 @@ class WishlistFragment : Fragment() {
         adapter= WishlistAdapter()
         adapter.setOnItemClickListener(object :ItemClickListener{
             override fun onItemClick(position: Int) {
-                parentFragmentManager.commit {
+                val selectedProduct=favoriteViewModel.favoriteItems.value?.get(position)
+                val intent= Intent(context,CategoryActivity::class.java)
+                intent.putExtra("fragment_name","product")
+                intent.putExtra("selected_product_id",selectedProduct?.productId)
+                startActivity(intent)
+                /*parentFragmentManager.commit {
                     addToBackStack(null)
                     val selectedProduct=favoriteViewModel.favoriteItems.value?.get(position)
                     if(selectedProduct!=null){
-                        val product=Product(selectedProduct.productId,selectedProduct.title,selectedProduct.description,selectedProduct.originalPrice,selectedProduct.discountPercentage,selectedProduct.priceAfterDiscount,selectedProduct.rating,selectedProduct.stock,selectedProduct.brand,selectedProduct.category,selectedProduct.thumbnail,true)
+
+
+                        *//*val product=Product(selectedProduct.productId,selectedProduct.title,selectedProduct.description,selectedProduct.originalPrice,selectedProduct.discountPercentage,selectedProduct.priceAfterDiscount,selectedProduct.rating,selectedProduct.stock,selectedProduct.brand,selectedProduct.category,selectedProduct.thumbnail,true)
                         productViewModel.selectedProduct.value=product
                         //replace(R.id.fragment_container,ProductFragment())
                         hide(this@WishlistFragment)
@@ -86,27 +98,35 @@ class WishlistFragment : Fragment() {
                         }else if(favoriteViewModel.calledFrom=="Account"){
                             add<ProductFragment>(R.id.account_fragment_container)
                         }
-                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)*//*
 
                     }
-                }
+                }*/
             }
         })
 
         adapter.setWishListListener(object :WishlistListener{
             override fun addToCart(position: Int) {
-                GlobalScope.launch {
-                    val job=launch (Dispatchers.IO){
-                        val product=favoriteViewModel.favoriteItems.value?.get(position)
-                        if(product!=null){
-                            val selectedProduct= SelectedProduct(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,1,product.originalPrice,product.priceAfterDiscount)
-                            cartViewModel.addToCart(selectedProduct)
+                val product=favoriteViewModel.favoriteItems.value?.get(position)
+                if(product?.let { cartViewModel.isProductInCart(it?.productId) } == true){
+                    println("Already in the Cart")
+                    Snackbar.make(recyclerView,"Already present in the Cart",Snackbar.LENGTH_LONG)
+                        .show()
+                }else{
+                    println("Not present in the Cart")
+                    lifecycleScope.launch {
+                        val job=launch (Dispatchers.IO){
+                            //val product=favoriteViewModel.favoriteItems.value?.get(position)
+                            if(product!=null){
+                                val selectedProduct= SelectedProduct(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,1,product.originalPrice,product.priceAfterDiscount)
+                                cartViewModel.addToCart(selectedProduct)
+                            }
                         }
+                        job.join()
                     }
-                    job.join()
+                    Snackbar.make(recyclerView,"Added to the Cart",Snackbar.LENGTH_LONG)
+                        .show()
                 }
-                Snackbar.make(recyclerView,"Added to the Cart",Snackbar.LENGTH_LONG)
-                    .show()
             }
 
             override fun removeItem(position: Int) {
@@ -176,7 +196,7 @@ class WishlistFragment : Fragment() {
             }else if(favoriteViewModel.calledFrom=="Account"){
                 (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
             }
-            (activity as AppCompatActivity)?.supportActionBar?.show()
+            (activity as AppCompatActivity).supportActionBar?.show()
         }
         super.onHiddenChanged(hidden)
     }

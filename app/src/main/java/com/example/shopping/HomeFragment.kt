@@ -27,6 +27,7 @@ import com.example.shopping.viewmodel.RecentlyViewedViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.lang.IllegalStateException
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -83,10 +84,14 @@ class HomeFragment : Fragment() {
         val childCount=container.childCount
         for(i in 0 until childCount){
             val imageView= container[i] as ImageView
-            if(i==position){
-                imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_selected))
-            }else{
-                imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_default))
+            try{
+                if(i==position){
+                    imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_selected))
+                }else{
+                    imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.dot_default))
+                }
+            }catch (ex:IllegalStateException){
+
             }
         }
     }
@@ -202,24 +207,22 @@ class HomeFragment : Fragment() {
         }*/
         topOfferListAdapter.setOnItemClickListener(object : ItemClickListener{
             override fun onItemClick(position: Int) {
-                parentFragmentManager.commit {
-                    /*hide(this@HomeFragment)
+                val intent=Intent(context,CategoryActivity::class.java)
+                intent.putExtra("fragment_name","product")
+                intent.putExtra("selected_product_id",productViewModel.topOfferList.value?.get(position)?.productId)
+                startActivity(intent)
+                /*parentFragmentManager.commit {
+                    *//*hide(this@HomeFragment)
                     productViewModel.selectedProduct.value= productViewModel.topOfferList.value?.get(position)
                     add<ProductFragment>(R.id.fragment_container)
-                    addToBackStack(null)*/
-                    /*val btm=requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
-                    btm.visibility=View.GONE*/
-                    addToBackStack("fragment")
+                    addToBackStack(null)*//*
+                    *//*val btm=requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
+                    btm.visibility=View.GONE*//*
+                   *//* addToBackStack("fragment")
                     productViewModel.selectedProduct.value= productViewModel.topOfferList.value?.get(position)
                     replace(R.id.fragment_container,ProductFragment() )
-                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-
-                    /*val intent=Intent(context,CategoryActivity::class.java)
-                    intent.putExtra("fragment_name","product")
-                    intent.putExtra("selected_product_id",productViewModel.topOfferList.value?.get(position)?.productId)
-                    startActivity(intent)*/
-
-                }
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)*//*
+                }*/
             }
         })
         /*topOfferListAdapter.setOnItemClickListener(object :ItemClickListener{
@@ -238,20 +241,26 @@ class HomeFragment : Fragment() {
         recentlyViewedAdapter=RecentlyViewedListAdapter(requireContext())
         recentlyViewedAdapter.setOnItemClickListener(object :ItemClickListener{
             override fun onItemClick(position: Int) {
-                parentFragmentManager.commit {
+                val selectedProduct=recentlyViewedViewModel.recentlyViewedProductList.value?.get(position)
+                val intent=Intent(context,CategoryActivity::class.java)
+                intent.putExtra("fragment_name","product")
+                intent.putExtra("selected_product_id",selectedProduct?.productId)
+                startActivity(intent)
+                /*parentFragmentManager.commit {
                     addToBackStack(null)
                     val selectedProduct=recentlyViewedViewModel.recentlyViewedProductList.value?.get(position)
                     if(selectedProduct!=null){
-                        val product=Product(selectedProduct.productId,selectedProduct.title,selectedProduct.description,selectedProduct.originalPrice,selectedProduct.discountPercentage,selectedProduct.priceAfterDiscount,selectedProduct.rating,selectedProduct.stock,selectedProduct.brand,selectedProduct.category,selectedProduct.thumbnail,selectedProduct.isFavorite)
+                        *//*val product=Product(selectedProduct.productId,selectedProduct.title,selectedProduct.description,selectedProduct.originalPrice,selectedProduct.discountPercentage,selectedProduct.priceAfterDiscount,selectedProduct.rating,selectedProduct.stock,selectedProduct.brand,selectedProduct.category,selectedProduct.thumbnail,selectedProduct.isFavorite)
                         productViewModel.selectedProduct.value=product
                         replace(R.id.fragment_container,ProductFragment())
-                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        /*hide(this@HomeFragment)
+                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)*//*
+
+                        *//*hide(this@HomeFragment)
                         productViewModel.selectedProduct.value=product
-                        add<ProductFragment>(R.id.fragment_container)*/
+                        add<ProductFragment>(R.id.fragment_container)*//*
 
                     }
-                }
+                }*/
             }
         })
 
@@ -270,9 +279,11 @@ class HomeFragment : Fragment() {
             }else{
                 group.visibility=View.VISIBLE
                 recentlyViewedAdapter.setData(it)
+                println("recebt list updated")
                 recentlyViewedAdapter.notifyDataSetChanged()
             }
         })
+
         recentlyViewedLayoutManager= LinearLayoutManager(requireContext())
         recentlyViewedLayoutManager.orientation=LinearLayoutManager.HORIZONTAL
         recentlyViewedRecyclerView.adapter=recentlyViewedAdapter

@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.math.RoundingMode
 import java.net.URL
 import java.text.DecimalFormat
@@ -176,11 +177,18 @@ class OrderAdapter:RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
                         withContext(Dispatchers.Main) {
                             imageView.setImageResource(R.drawable.placeholder)
                         }
+                        try{
+                            bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        }catch (exception: IOException){
+                            println("Exception caught")
+                        }
                         //imageView.setImageResource(R.drawable.placeholder)
-                        bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        //bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                         withContext(Dispatchers.Main){
-                            imageView.setImageBitmap(bitmapValue)
-                            ProductImageMemoryCache.addBitmapToCache(orderedProduct.productId.toString(),bitmapValue!!)
+                            if(bitmapValue!=null){
+                                imageView.setImageBitmap(bitmapValue)
+                                ProductImageMemoryCache.addBitmapToCache(orderedProduct.productId.toString(),bitmapValue!!)
+                            }
                         }
                     }
                     job.join()

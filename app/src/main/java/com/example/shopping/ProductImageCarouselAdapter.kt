@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.net.URL
 
 class ProductImageCarouselAdapter(private val list:List<CarouselImage>) : RecyclerView.Adapter<ProductImageCarouselAdapter.ViewHolder>(){
@@ -34,10 +35,17 @@ class ProductImageCarouselAdapter(private val list:List<CarouselImage>) : Recycl
                             imageView.setImageBitmap(bitmapValue)
                             //imageView.setImageResource(R.drawable.placeholder)
                         }
-                        bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        try{
+                            bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
+                        }catch (exception: IOException){
+                            println("Exception caught")
+                        }
+                        //bitmapValue= BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream())
                         withContext(Dispatchers.Main){
-                            imageView.setImageBitmap(bitmapValue)
-                            CarouselImageMemoryCache.addBitmapToCache(image.imageId.toString(),bitmapValue!!)
+                            if(bitmapValue!=null){
+                                imageView.setImageBitmap(bitmapValue)
+                                CarouselImageMemoryCache.addBitmapToCache(image.imageId.toString(),bitmapValue!!)
+                            }
                         }
                     }
                     job.join()
