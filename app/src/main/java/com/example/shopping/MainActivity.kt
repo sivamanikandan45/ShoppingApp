@@ -190,7 +190,20 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }else{
-            replaceFragment(HomeFragment())
+            val sharePreferences=getSharedPreferences("shared_preferences",Context.MODE_PRIVATE)
+            val loginSkipped=sharePreferences.getBoolean("login_skipped",false)
+            val loginStatus=sharePreferences.getBoolean("login_status",false)
+            if(loginSkipped){
+                println("login is skipped...")
+                replaceFragment(HomeFragment())
+            }else if(loginStatus){
+                println("Already logged in")
+                replaceFragment(HomeFragment())
+            }else{
+                println("Newly opening....")
+                replaceFragment(OnBoardingFragment())
+            }
+
         }
 
     }

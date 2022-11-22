@@ -214,6 +214,8 @@ class ProductFragment : Fragment() {
                 container=view.findViewById(R.id.dots_container)
                 //val images= listOf(R.drawable.image1,R.drawable.image2,R.drawable.image3)
                 val autoScrollableCarouselAdapter=ProductImageCarouselAdapter(list)
+                println("list is $list")
+                println(list.size)
                 setUpIndicators(list.size)
                 setCurrentIndicator(0)
                 autoScrollableCarouselAdapter.setOnItemClickListener(object :ItemClickListener{

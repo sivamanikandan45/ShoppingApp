@@ -1,0 +1,152 @@
+package com.example.shopping
+
+import android.os.Bundle
+import android.util.Patterns
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.example.shopping.model.Address
+import com.example.shopping.model.User
+import com.example.shopping.viewmodel.UserViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
+
+class RegisterFragment : Fragment() {
+    private val userViewModel:UserViewModel by activityViewModels()
+    private lateinit var emailInputLayout: TextInputLayout
+    private lateinit var passwordInputLayout: TextInputLayout
+    private lateinit var reEnteredPasswordInputLayout: TextInputLayout
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_register, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if(requireActivity() is MainActivity){
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view).visibility=View.GONE
+        }
+
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            title="Register Account"
+            setDisplayHomeAsUpEnabled(true)
+        }
+
+        emailInputLayout=view.findViewById<TextInputLayout>(R.id.emailInputLayout)
+        passwordInputLayout=view.findViewById<TextInputLayout>(R.id.passwordInputLayout)
+        reEnteredPasswordInputLayout=view.findViewById<TextInputLayout>(R.id.reEnterPasswordLayout)
+
+        val registerButton=view.findViewById<Button>(R.id.registerButton)
+        registerButton.setOnClickListener {
+            if(validateInputs()){
+                val email=emailInputLayout.editText?.text.toString()
+                val password=passwordInputLayout.editText?.text.toString()
+                val newUser= User(0,email,password)
+                registerUser(newUser)
+            }
+        }
+    }
+
+    private fun registerUser(newUser: User) {
+        GlobalScope.launch {
+            val job=launch (Dispatchers.IO){
+               userViewModel.registerUser(newUser)
+            }
+            job.join()
+            withContext(Dispatchers.Main){
+                activity?.onBackPressed()
+            }
+        }
+    }
+
+    private fun CharSequence?.isValidEmail() = !isNullOrEmpty() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
+
+
+    private fun validateInputs(): Boolean {
+        var returnValue=true
+        val mail=view?.findViewById<TextInputLayout>(R.id.emailInputLayout)
+        val password=view?.findViewById<TextInputLayout>(R.id.passwordInputLayout)
+        val rePass=view?.findViewById<TextInputLayout>(R.id.reEnterPasswordLayout)
+
+        if(mail!=null){
+            if(mail.editText?.text.toString()==""){
+                mail.isErrorEnabled =true
+                mail.error ="Enter the Email id"
+                returnValue=returnValue and false
+            }else if(!mail.editText?.text.toString().isValidEmail()){
+                mail.isErrorEnabled =true
+                mail.error ="Invalid email id"
+                returnValue=returnValue and false
+            }
+            else{
+                mail.error =null
+                mail.isErrorEnabled =false
+            }
+        }
+
+        if(password!=null){
+            val pass=password.editText?.text.toString()
+            if(pass==""){
+                password.isErrorEnabled =true
+                password.error ="Enter the Password"
+                returnValue=returnValue and false
+            }else if(!pass.isValidPassword()){
+                password.isErrorEnabled =true
+                password.error ="Password must contain Special character, Number and Uppercase"
+                returnValue=returnValue and false
+            }else{
+                password.error =null
+                password.isErrorEnabled =false
+            }
+        }
+
+        if(rePass!=null){
+            if(rePass.editText?.text.toString()==""){
+                rePass.isErrorEnabled =true
+                rePass.error ="Re enter the Password"
+                returnValue=returnValue and false
+            }else if(password!=null && password.editText?.text.toString()!=rePass.editText?.text.toString()){
+                    println("${password.editText?.text.toString()} ${rePass.editText?.text.toString()} ")
+                    rePass.isErrorEnabled =true
+                    rePass.error ="Password not matching"
+                    returnValue=returnValue and false
+            }else{
+                rePass.error =null
+                rePass.isErrorEnabled =false
+            }
+        }
+
+        return returnValue
+    }
+}
+
+private fun String.isValidPassword(): Boolean {
+    return if (this.length==8){
+        val upperCase: Pattern = Pattern.compile("[A-Z]")
+        val digit: Pattern = Pattern.compile("[0-9]")
+        val special: Pattern = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]")
+
+        val hasLetter: Matcher = upperCase.matcher(this)
+        val hasDigit: Matcher = digit.matcher(this)
+        val hasSpecial: Matcher = special.matcher(this)
+
+        hasLetter.find() && hasDigit.find() && hasSpecial.find()
+    }else
+        false
+}
