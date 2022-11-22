@@ -67,7 +67,7 @@
                 android:orientation="horizontal" />
 
             <ImageView
-                android:background="?attr/selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
                 android:id="@+id/favorite_button"
@@ -305,7 +305,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/product_description" />-->
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:background="?attr/selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
                 android:id="@+id/increaseButtonLayout"
@@ -349,7 +349,7 @@
                 android:id="@+id/decreaseButtonLayout"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="?attr/selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
                 app:layout_constraintBottom_toBottomOf="@+id/increaseButtonLayout"
@@ -361,7 +361,7 @@
                 app:layout_constraintVertical_bias="0.441">
 
                 <ImageButton
-                    android:foreground="?android:attr/selectableItemBackground"
+                    android:foreground="?android:attr/selectableItemBackgroundBorderless"
                     android:id="@+id/decrease_qty_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
