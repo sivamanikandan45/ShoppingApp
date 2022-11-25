@@ -14,8 +14,7 @@ data class Product(@PrimaryKey val productId:Int,
                    val stock:Int,
                    val brand:String,
                    val category:String,
-                   val thumbnail:String,
-                   var favorite: Boolean =false){
+                   val thumbnail:String,){
 
     override fun equals(other: Any?): Boolean {
         if(other is Product){
@@ -32,7 +31,6 @@ data class Product(@PrimaryKey val productId:Int,
                 this.brand!=other.brand-> false
                 this.category!=other.category-> false
                 this.thumbnail!=other.thumbnail-> false
-                this.favorite!=other.favorite-> false
                 else-> true
             }
         }

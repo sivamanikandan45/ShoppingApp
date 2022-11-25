@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.enums.FormMode
@@ -40,6 +42,20 @@ class SavedAddressFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val activity=(activity as AppCompatActivity)
+        val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+        val currentUserId=sharePreferences?.getInt("userId",-1)
+        println("Saved user1 id is:$currentUserId")
+        if (currentUserId != null) {
+            println("Saved user id is:$currentUserId")
+            addressViewModel.setUserId(currentUserId)
+            /*GlobalScope.launch(Dispatchers.IO){
+                val job=launch {
+
+                    savedAddressListAdapter.notifyDataSetChanged()
+                }
+                job.join()
+            }*/
+        }
         activity.supportActionBar?.title="Saved Address"
         activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

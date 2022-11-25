@@ -10,9 +10,9 @@ interface FavoriteDao {
     @Insert(onConflict =OnConflictStrategy.REPLACE)
     fun addToFavorite(favoriteProduct: FavoriteProduct)
 
-    @Query("DELETE FROM FavoriteProduct where productId=:productId")
-    fun removeFromFavorites(productId:Int)
+    @Query("DELETE FROM FavoriteProduct where productId=:productId and customerId=:userId")
+    fun removeFromFavorites(productId:Int,userId: Int)
 
-    @Query("SELECT * FROM FavoriteProduct")
-    fun getFavoriteProductList():List<FavoriteProduct>
+    @Query("SELECT * FROM FavoriteProduct where customerId=:userId")
+    fun getFavoriteProductList(userId:Int):List<FavoriteProduct>
 }

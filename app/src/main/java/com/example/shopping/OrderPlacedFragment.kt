@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -49,6 +50,11 @@ class OrderPlacedFragment : Fragment() {
             CheckoutMode.OVERALL->{placeOrder()}
             CheckoutMode.BUY_NOW->{buyNow()}
         }*/
+        val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+        val currentUserId=sharePreferences?.getInt("userId",-1)
+        if (currentUserId != null) {
+            addressViewModel.setUserId(currentUserId)
+        }
         val redirect=view.findViewById<TextView>(R.id.redirect)
         when(checkoutViewModel.mode){
             CheckoutMode.BUY_NOW->{
@@ -111,10 +117,13 @@ class OrderPlacedFragment : Fragment() {
 
                 val address= selectedAddressId?.let { addressViewModel.getAddress(it) }
                 var order: Order? =null
-                if(address!=null) {
+                val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                val currentUserId=sharePreferences?.getInt("userId",-1)
+                if(address!=null&&currentUserId!=-1) {
                      order= itemCount?.let {
                         Order(
                             0,
+                            currentUserId!!,
                             address.name,
                             address.phone,
                             address.pinCode,

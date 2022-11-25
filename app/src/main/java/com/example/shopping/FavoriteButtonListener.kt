@@ -7,5 +7,7 @@ interface FavoriteButtonListener {
 
     fun removeFromFavoriteButton(position: Int)*/
 
+    fun isFavorite(position: Int):Boolean
+
     fun handle(position: Int)
 }

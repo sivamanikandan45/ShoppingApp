@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -41,6 +42,13 @@ class OrderDetailFragment : Fragment() {
             title="My Orders"
             setDisplayHomeAsUpEnabled(true)
         }
+
+        val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+        val currentUserId=sharePreferences?.getInt("userId",-1)
+        if (currentUserId != null) {
+            orderViewModel.setUserId(currentUserId)
+        }
+
         val orderId=view.findViewById<TextView>(R.id.order_details_id)
         val orderedDate=view.findViewById<TextView>(R.id.order_date_detail)
         val billAmount=view.findViewById<TextView>(R.id.bill_amount)

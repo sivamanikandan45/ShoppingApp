@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="#000000"
-    android:radius="48dp">
-    <item android:id="@android:id/mask">
-        <color android:color="@color/teal_700"></color>
-    </item>
+    android:color="#008a8a8a"
+    android:radius="24dp">
 </ripple>

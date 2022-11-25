@@ -99,18 +99,25 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
 
             imageButton.setOnClickListener {
                 val product=list[adapterPosition]
-                if(product.favorite){
+
+
+                if(favoriteButtonListener.isFavorite(adapterPosition)){
                     imageButton.setImageResource(R.drawable.border_heart)
                 }else{
                     imageButton.setImageResource(R.drawable.heart_red)
                 }
+                /*if(product.favorite){
+
+                }else{
+                    imageButton.setImageResource(R.drawable.heart_red)
+                }*/
 
                 GlobalScope.launch {
                     val job=launch {
                         favoriteButtonListener.handle(adapterPosition)
                     }
                     job.join()
-                    list[adapterPosition].favorite=!list[adapterPosition].favorite
+                    //list[adapterPosition].favorite=!list[adapterPosition].favorite -->here
                 }
             }
 
@@ -161,7 +168,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
             }
 
 
-            if(product.favorite){
+            if(favoriteButtonListener.isFavorite(adapterPosition)){
                 imageButton.setImageResource(R.drawable.heart_red)
             }
 

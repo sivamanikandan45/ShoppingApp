@@ -83,7 +83,7 @@
         app:layout_constraintStart_toStartOf="@+id/cart_item_product_name"
         app:layout_constraintTop_toBottomOf="@+id/cart_item_product_name" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!--<androidx.constraintlayout.widget.ConstraintLayout
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
@@ -154,10 +154,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+-->
 
-
-    <!--<ImageButton
-        android:layout_marginStart="8dp"
+    <ImageButton
+        android:layout_marginStart="16dp"
         android:id="@+id/increase_qty_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -167,6 +167,19 @@
         app:layout_constraintStart_toEndOf="@+id/cart_qty"
         app:layout_constraintTop_toTopOf="@+id/cart_qty" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="?attr/actionBarItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:id="@+id/increaseButtonLayout"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/decreaseButtonLayout"
+        app:layout_constraintStart_toEndOf="@+id/cart_qty"
+        app:layout_constraintTop_toBottomOf="@+id/cart_item_product_old_price">
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <TextView
         android:id="@+id/cart_qty"
         android:layout_width="wrap_content"
@@ -174,21 +187,35 @@
         android:ems="2"
         android:text="1"
         android:textColor="@color/black"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/decrease_qty_btn"
         app:layout_constraintStart_toEndOf="@+id/decrease_qty_btn"
         app:layout_constraintTop_toTopOf="@+id/decrease_qty_btn" />
 
     <ImageButton
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:id="@+id/decrease_qty_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/qty_btn"
         android:src="@drawable/ic_baseline_remove_16"
         app:layout_constraintStart_toStartOf="@+id/cart_item_product_old_price"
-        app:layout_constraintTop_toBottomOf="@+id/cart_item_product_old_price" />-->
+        app:layout_constraintTop_toBottomOf="@+id/cart_item_product_old_price" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/decreaseButtonLayout"
+        android:layout_width="48dp"
+        android:background="?attr/actionBarItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/cart_qty"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/cart_item_product_image"
+        app:layout_constraintTop_toBottomOf="@+id/cart_item_product_old_price">
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!--<com.google.android.material.divider.MaterialDivider
         android:layout_width="0dp"

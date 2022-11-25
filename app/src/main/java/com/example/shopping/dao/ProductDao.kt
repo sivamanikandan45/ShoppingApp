@@ -18,11 +18,11 @@ interface ProductDao{
     @Query("SELECT * FROM Product WHERE category=:category")
     fun getCategoryList(category:String):MutableList<Product>
 
-    @Query("UPDATE Product SET favorite=1 WHERE productId=:productId")
+    /*@Query("UPDATE Product SET favorite=1 WHERE productId=:productId")
     fun markAsFavorite(productId:Int)
 
     @Query("UPDATE Product SET favorite=0 WHERE productId=:productId")
-    fun removeFavorite(productId:Int)
+    fun removeFavorite(productId:Int)*/
 
     @Query("SELECT * FROM Product ORDER BY discountPercentage DESC LIMIT 10")
     fun getTopOffers():List<Product>

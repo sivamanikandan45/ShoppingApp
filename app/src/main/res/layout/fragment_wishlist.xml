@@ -6,11 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".WishlistFragment">
 
-    <!--&lt;!&ndash; TODO: Update blank fragment layout &ndash;&gt;
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="wishlist fragment" />-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/login_skipped"
@@ -20,27 +15,67 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:scaleType="fitXY"
-            android:src="@drawable/no_fav"
+            android:src="@drawable/app_icon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.394" />
 
         <TextView
+            android:id="@+id/textView11"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No favorites found"
+            android:text="Log in for the best experience"
+            android:layout_marginTop="16dp"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+        <Button
+            android:id="@+id/login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView11"
+            app:layout_constraintVertical_bias="0.286" />
+
+        <!--<TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Don't have an account?"
+            android:textColor="@color/gray"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.401"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/login"
+            app:layout_constraintVertical_bias="0.186" />
+
+        <Button
+            android:id="@+id/register"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Register"
+            android:textAllCaps="false"
+            app:layout_constraintBaseline_toBaselineOf="@+id/textView9"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.082"
+            app:layout_constraintStart_toEndOf="@+id/textView9" />-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -78,7 +113,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:visibility="visible"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:paddingBottom="8dp"
         android:id="@+id/wishlist_recyclerView"
         android:clipToPadding="false"
         android:layout_width="match_parent"

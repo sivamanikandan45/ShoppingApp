@@ -17,32 +17,45 @@ class AddressViewModel(application: Application): AndroidViewModel(application){
 
     var formMode:FormMode = FormMode.CREATE
     val selectedAddress=MutableLiveData<Address>()
+    private var currentUserId=-1
 
     init{
         viewModelScope.launch{
             val job=launch (Dispatchers.IO){
-                getAddressFromDB()
+                //getAddressFromDB()
             }
             job.join()
         }
     }
 
-    fun getAddressFromDB() {
+    fun setUserId(userId:Int){
+        currentUserId=userId
+        viewModelScope.launch{
+            val job=launch (Dispatchers.IO){
+                getAddress(currentUserId)
+            }
+            job.join()
+        }
+    }
+
+    fun getAddressFromDB(userId: Int) {
+        println("fetching adressed of user $userId")
         val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
-        val list=dao.getAllAddress()
+        val list=dao.getAllAddress(userId)
+        println("fetched $list")
         addressList.postValue(list)
     }
 
     fun addAddress(address: Address){
         val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
         dao.insertAddress(address)
-        getAddressFromDB()
+        getAddressFromDB(currentUserId)
     }
 
     fun deleteAddress(addressId:Int){
         val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
         dao.deleteAddress(addressId)
-        getAddressFromDB()
+        getAddressFromDB(currentUserId)
     }
 
     fun getAddressLists():List<Address>{
@@ -50,7 +63,7 @@ class AddressViewModel(application: Application): AndroidViewModel(application){
         GlobalScope.launch{
             val job=launch(Dispatchers.IO) {
                 val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
-                list=dao.getAllAddress()
+                list=dao.getAllAddress(currentUserId)
                 addressList.postValue(list)
             }
             job.join()
@@ -61,7 +74,7 @@ class AddressViewModel(application: Application): AndroidViewModel(application){
     fun updateAddress(address: Address) {
         val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
         dao.updateAddress(address)
-        getAddressFromDB()
+        getAddressFromDB(currentUserId)
     }
 
     fun getAddress(addressId: Int):Address {

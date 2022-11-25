@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -31,7 +32,14 @@ class MyOrdersFragment : Fragment() {
         super.onStart()
         GlobalScope.launch {
             val job=launch(Dispatchers.IO) {
-                orderViewModel.getOrdersFromDB()
+                val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                val currentUserId=sharePreferences?.getInt("userId",-1)
+                if(currentUserId!=-1){
+                    if (currentUserId != null) {
+                        orderViewModel.setUserId(currentUserId)
+                        orderViewModel.getOrdersFromDB(currentUserId)
+                    }
+                }
             }
             job.join()
         }

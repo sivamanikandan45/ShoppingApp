@@ -1,12 +1,16 @@
 package com.example.shopping
 
+import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.enums.Sort
@@ -16,11 +20,9 @@ import com.example.shopping.viewmodel.FavoriteViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.SortViewModel
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.util.Collections.addAll
+import java.util.concurrent.TimeUnit
 
 
 class ProductListFragment : Fragment() {
@@ -73,6 +75,12 @@ class ProductListFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         productRecyclerView=view.findViewById<RecyclerView>(R.id.product_list_recyclerView)
+        val sharedPreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+        val currentUserId=sharedPreferences?.getInt("userId",-1)
+        if (currentUserId != null) {
+            favoriteViewModel.setUserId(currentUserId)
+        }
+
         adapter=ProductListAdapter()
 
         setAdapterAttributes()
@@ -109,66 +117,105 @@ class ProductListFragment : Fragment() {
             adapter.setData(it)
         }
         adapter.setFavoriteButtonListener(object : FavoriteButtonListener {
+
+            override fun isFavorite(position: Int): Boolean {
+                val viewModel: ProductViewModel by activityViewModels()
+                val product = viewModel.categoryList.value?.get(position)
+                val productId=product?.productId
+                return favoriteViewModel.isFavorite(productId)
+            }
+
             override fun handle(position: Int) {
-                /*if(product?.favorite==true){
+                val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                val loginSkipped=sharePreferences?.getBoolean("login_skipped",false)
+                val loginStatus=sharePreferences?.getBoolean("login_status",false)
+                println("login status is $loginStatus")
+                println("login  skioped status is $loginSkipped")
+                if(loginSkipped!! || !loginStatus!!){
+                    lifecycleScope.launch(Dispatchers.Main){
+                        AlertDialog.Builder(requireActivity())
+                            .setTitle("Login Required")
+                            .setMessage("Log in for the best experience")
+                            .setPositiveButton("Login") { _, _ ->
+                                val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                                with(sharePreferences?.edit()){
+                                    this?.putBoolean("login_skipped",false)
+                                    this?.apply()
+                                }
+                                val intent= Intent(requireContext(),MainActivity::class.java)
+                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                startActivity(intent)
+                            }
+                            .show()
+                    }
+
+                    /*Snackbar.make(productRecyclerView,"Login 1!!",Snackbar.LENGTH_LONG)
+                        .show()*/
+                }else{
+                    val viewModel: ProductViewModel by activityViewModels()
+                    val product = viewModel.categoryList.value?.get(position)
+                    val productId=product?.productId
+                    if (favoriteViewModel.isFavorite(productId)) {
+                        GlobalScope.launch {
+                            val job = launch(Dispatchers.IO) {
+                                favoriteViewModel.deleteFromFavorites(product?.productId)
+                                //viewModel.removeFavorite(product.productId)
+                            }
+                            job.join()
+                            Snackbar.make(
+                                productRecyclerView,
+                                "Removed from WishList",
+                                Snackbar.LENGTH_LONG
+                            )
+                                .show()
+                        }
+                    } else {
+                        GlobalScope.launch {
+                            val job = launch(Dispatchers.IO) {
+                                if (product != null) {
+                                    val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                                    val currentUserId=sharePreferences?.getInt("userId",-1)
+                                    val favoriteProduct = FavoriteProduct(0,
+                                        product.productId,
+                                        currentUserId!!,
+                                        product.title,
+                                        product.description,
+                                        product.originalPrice,
+                                        product.discountPercentage,
+                                        product.priceAfterDiscount,
+                                        product.rating,
+                                        product.stock,
+                                        product.brand,
+                                        product.category,
+                                        product.thumbnail
+                                    )
+                                    favoriteViewModel.addToFavorites(favoriteProduct)
+                                    //viewModel.markAsFavorite(product.productId)
+                                }
+                            }
+                            job.join()
+                            Snackbar.make(
+                                productRecyclerView,
+                                "Added to WishList",
+                                Snackbar.LENGTH_LONG
+                            )
+                                .show()
+                        }
+                    }
+                }                /*if(product?.favorite==true){
                     favoriteButton.setImageResource(R.drawable.heart_red)
                 }else{
                     favoriteButton.setImageResource(R.drawable.border_heart)
                 }*/
 
-                val viewModel: ProductViewModel by activityViewModels()
-                val product = viewModel.categoryList.value?.get(position)
-                if (product?.favorite == true) {
-                    GlobalScope.launch {
-                        val job = launch(Dispatchers.IO) {
-                            favoriteViewModel.deleteFromFavorites(product.productId)
-                            viewModel.removeFavorite(product.productId)
-                        }
-                        job.join()
-                        Snackbar.make(
-                            productRecyclerView,
-                            "Removed from WishList",
-                            Snackbar.LENGTH_LONG
-                        )
-                            .show()
-                    }
-                } else {
-                    GlobalScope.launch {
-                        val job = launch(Dispatchers.IO) {
-                            if (product != null) {
-                                val favoriteProduct = FavoriteProduct(
-                                    product.productId,
-                                    product.title,
-                                    product.description,
-                                    product.originalPrice,
-                                    product.discountPercentage,
-                                    product.priceAfterDiscount,
-                                    product.rating,
-                                    product.stock,
-                                    product.brand,
-                                    product.category,
-                                    product.thumbnail
-                                )
-                                favoriteViewModel.addToFavorites(favoriteProduct)
-                                viewModel.markAsFavorite(product.productId)
-                            }
-                        }
-                        job.join()
-                        Snackbar.make(
-                            productRecyclerView,
-                            "Added to WishList",
-                            Snackbar.LENGTH_LONG
-                        )
-                            .show()
-                    }
-                }
+
             }
         })
 
         adapter.setOnItemClickListener(object : ItemClickListener {
             override fun onItemClick(position: Int) {
                 currentProductList= mutableListOf()
-                parentFragmentManager.commit {
+                parentFragmentManager.commit{
                     /*for(i in productViewModel.categoryList.value!!){
                         currentProductList.add(i)
                     }*/
@@ -180,7 +227,14 @@ class ProductListFragment : Fragment() {
                         productViewModel.categoryList.value?.get(position)
                     add<ProductFragment>(R.id.category_fragment_container)
                     addToBackStack(null)
+                    //setReorderingAllowed(true)
+                    //postponeEnterTransition(5000,TimeUnit.MILLISECONDS)
+                    //startPostponedEnterTransition()
+                    //setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    /*setCustomAnimations(androidx.transition.R.anim.abc_fade_in,
+                        androidx.transition.R.anim.abc_fade_out)*/
                     setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+
 
                     /*productViewModel.selectedProduct.value= productViewModel.categoryList.value?.get(position)
                     replace(R.id.category_fragment_container,ProductFragment() )
@@ -341,31 +395,65 @@ class ProductListFragment : Fragment() {
             adapter.setData(list)
             currentProductList=list
             adapter.setFavoriteButtonListener(object :FavoriteButtonListener{
+                override fun isFavorite(position: Int): Boolean {
+                    val viewModel: ProductViewModel by activityViewModels()
+                    val product = adapter.list[position]
+                    val productId=product.productId
+                    return favoriteViewModel.isFavorite(productId)
+                }
+
                 override fun handle(position: Int) {
-                    val viewModel:ProductViewModel by activityViewModels()
-                    val product=adapter.list[position]
-                    if(product.favorite){
-                        GlobalScope.launch {
-                            val job=launch(Dispatchers.IO) {
-                                favoriteViewModel.deleteFromFavorites(product.productId)
-                                viewModel.removeFavorite(product.productId)
-                            }
-                            job.join()
-                            Snackbar.make(productRecyclerView,"Removed from WishList",Snackbar.LENGTH_LONG)
+                    val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                    val loginSkipped=sharePreferences?.getBoolean("login_skipped",false)
+                    val loginStatus=sharePreferences?.getBoolean("login_status",false)
+                    println("login status is $loginStatus")
+                    println("login  skioped status is $loginSkipped")
+                    if(loginSkipped!! || !loginStatus!!){
+                        lifecycleScope.launch(Dispatchers.Main){
+                            AlertDialog.Builder(requireActivity())
+                                .setTitle("Login Required")
+                                .setMessage("Log in for the best experience")
+                                .setPositiveButton("Login") { _, _ ->
+                                    val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                                    with(sharePreferences?.edit()){
+                                        this?.putBoolean("login_skipped",false)
+                                        this?.apply()
+                                    }
+                                    val intent= Intent(requireContext(),MainActivity::class.java)
+                                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                    startActivity(intent)
+                                }
                                 .show()
                         }
                     }else{
-                        GlobalScope.launch {
-                            val job=launch(Dispatchers.IO) {
-                                if(product!=null){
-                                    val favoriteProduct=FavoriteProduct(product.productId,product.title,product.description,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,product.rating,product.stock,product.brand,product.category,product.thumbnail)
-                                    favoriteViewModel.addToFavorites(favoriteProduct)
-                                    viewModel.markAsFavorite(product.productId)
+                        val viewModel:ProductViewModel by activityViewModels()
+                        val product=adapter.list[position]
+                        val productId=product?.productId
+                        if (favoriteViewModel.isFavorite(productId)) {
+                            GlobalScope.launch {
+                                val job=launch(Dispatchers.IO) {
+                                    favoriteViewModel.deleteFromFavorites(product.productId)
+                                    //viewModel.removeFavorite(product.productId)
                                 }
+                                job.join()
+                                Snackbar.make(productRecyclerView,"Removed from WishList",Snackbar.LENGTH_LONG)
+                                    .show()
                             }
-                            job.join()
-                            Snackbar.make(productRecyclerView,"Added to WishList",Snackbar.LENGTH_LONG)
-                                .show()
+                        }else{
+                            GlobalScope.launch {
+                                val job=launch(Dispatchers.IO) {
+                                    if(product!=null){
+                                        val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                                        val currentUserId=sharePreferences?.getInt("userId",-1)
+                                        val favoriteProduct=FavoriteProduct(0,product.productId,currentUserId!!,product.title,product.description,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,product.rating,product.stock,product.brand,product.category,product.thumbnail)
+                                        favoriteViewModel.addToFavorites(favoriteProduct)
+                                        //viewModel.markAsFavorite(product.productId)
+                                    }
+                                }
+                                job.join()
+                                Snackbar.make(productRecyclerView,"Added to WishList",Snackbar.LENGTH_LONG)
+                                    .show()
+                            }
                         }
                     }
                 }
@@ -395,12 +483,12 @@ class ProductListFragment : Fragment() {
         if(!hidden){
 
             if(searchedQuery.isNotEmpty()){
-                //activity?.invalidateOptionsMenu()
                 println("Setting value got $searchedQuery")
             }else{
                 try{
+                    adapter.notifyDataSetChanged()
                     println("Current data is $currentProductList")
-                    GlobalScope.launch {
+                    /*GlobalScope.launch {
                         val job=launch(Dispatchers.IO) {
                             productViewModel.getCategoryWiseProductList()
                         }
@@ -408,7 +496,7 @@ class ProductListFragment : Fragment() {
                         withContext(Dispatchers.Main){
                             adapter.setList(currentProductList,productViewModel.categoryList.value!!)
                         }
-                    }
+                    }*/
                 }catch (exception:UninitializedPropertyAccessException){
                     //activity?.onBackPressed()
                 }

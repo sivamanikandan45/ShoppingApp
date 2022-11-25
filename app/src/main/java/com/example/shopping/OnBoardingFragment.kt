@@ -1,6 +1,7 @@
 package com.example.shopping
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -51,16 +52,20 @@ class OnBoardingFragment : Fragment() {
             }
         }
         skipButton.setOnClickListener {
-            parentFragmentManager.commit {
+            val sharePreferences=activity?.getSharedPreferences("shared_preferences",Context.MODE_PRIVATE)
+            with(sharePreferences?.edit()){
+                this?.putBoolean("login_skipped",true)
+                this?.apply()
+            }
+            val intent= Intent(requireContext(),MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            /*parentFragmentManager.commit {
                 replace(R.id.fragment_container,HomeFragment())
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                val sharePreferences=activity?.getSharedPreferences("shared_preferences",Context.MODE_PRIVATE)
-                with(sharePreferences?.edit()){
-                    this?.putBoolean("login_skipped",true)
-                    this?.apply()
-                }
+
                 requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view).visibility=View.VISIBLE
-            }
+            }*/
         }
     }
 

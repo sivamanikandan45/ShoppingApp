@@ -1,13 +1,13 @@
 package com.example.shopping
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.Paint
-import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -24,6 +24,7 @@ import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.FavoriteViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.RecentlyViewedViewModel
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.snackbar.Snackbar
@@ -31,13 +32,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.IllegalStateException
 import java.util.*
+
 
 class ProductFragment : Fragment() {
 
     private val recentlyViewedViewModel:RecentlyViewedViewModel by activityViewModels()
-    private val viewModel:ProductViewModel by activityViewModels()
+    private val productViewModel:ProductViewModel by activityViewModels()
     private val favoriteViewModel:FavoriteViewModel by activityViewModels()
     private val cartViewModel:CartViewModel by activityViewModels()
     private lateinit var container:LinearLayout
@@ -62,8 +63,7 @@ class ProductFragment : Fragment() {
 
     private fun setUpIndicators(size:Int) {
         val indicators= arrayOfNulls<ImageView>(size)
-        val layoutParams=
-            LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        val layoutParams= LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         layoutParams.setMargins(8,0,8,0)
         for(i in indicators.indices){
             indicators[i]= ImageView(requireContext())
@@ -77,7 +77,9 @@ class ProductFragment : Fragment() {
     }
 
 
+    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         //toolbar=activity.findViewById(R.id.toolbar)
         //setHasOptionsMenu(true) --->Edited
@@ -106,6 +108,22 @@ class ProductFragment : Fragment() {
 
     override fun onStart() {
         var amount=0
+        /*val goToCartButton=view?.findViewById<Button>(R.id.go_to_cart_button)
+        val addToCartBtn=view?.findViewById<Button>(R.id.add_to_cart_button)
+        println("cart is ${cartViewModel.cartItems.value}")
+        val product=productViewModel.selectedProduct.value
+        println("Selected Product is $product")
+
+        cartViewModel.cartItems.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            if(product?.let { cartViewModel.isProductInCart(it.productId) } == true){
+                addToCartBtn?.visibility=View.GONE
+                goToCartButton?.visibility=View.VISIBLE
+            }
+            else{
+                println("Product is not available")
+            }
+        })
+        */
         GlobalScope.launch {
             val job=launch{
                 amount=cartViewModel.getCartItemCount()
@@ -115,17 +133,44 @@ class ProductFragment : Fragment() {
         }
         super.onStart()
     }
+    /*fun getActionBarView(): View? {
+        val window = activity?.window
+        val v = window?.decorView
+        val resId = resources.getIdentifier("action_bar_container", "id", "android")
+        return v?.findViewById(resId)
+    }*/
 
     @SuppressLint("UnsafeOptInUsageError", "RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val productViewModel:ProductViewModel by activityViewModels()
-        (activity as AppCompatActivity).supportActionBar?.setShowHideAnimationEnabled(false)
+        val sharedPreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+        val currentUserId=sharedPreferences?.getInt("userId",-1)
+        /*try {
+            (activity as AppCompatActivity).supportActionBar?.javaClass
+                ?.getDeclaredMethod("setShowHideAnimationEnabled", Boolean::class.javaPrimitiveType)
+                ?.invoke((activity as AppCompatActivity).supportActionBar!!, false)
+        } catch (exception: Exception) {
+            // Too bad, the animation will be run ;(
+        }*/
+
+       (activity as AppCompatActivity).supportActionBar?.setShowHideAnimationEnabled(false)
         (activity as AppCompatActivity).supportActionBar?.hide()
+
+
+        if (currentUserId != null) {
+            GlobalScope.launch {
+                val job=launch {
+                    favoriteViewModel.setUserId(currentUserId)
+                }
+                job.join()
+            }
+        }
         val goToCartButton=view.findViewById<Button>(R.id.go_to_cart_button)
         val addToCartBtn=view.findViewById<Button>(R.id.add_to_cart_button)
 
-
+        val toolbar_layout=view.findViewById<AppBarLayout>(R.id.toolbar_layout)
+        toolbar_layout.visibility=View.VISIBLE
 
         val toolbar=view.findViewById<Toolbar>(R.id.toolbar)
         toolbar.inflateMenu(R.menu.product_fragment_menu)
@@ -133,6 +178,7 @@ class ProductFragment : Fragment() {
         toolbar.setNavigationOnClickListener { view ->
             activity?.onBackPressed()
         }
+//        (activity as AppCompatActivity).setSupportActionBar(toolbar)//set support action bar
 
 
 
@@ -184,16 +230,41 @@ class ProductFragment : Fragment() {
 
 
         buyNowButton.setOnClickListener {
-            val intent=Intent(requireContext(),CheckoutActivity::class.java)
-            intent.putExtra("checkoutMode","buy_now")
-            intent.putExtra("productId",product?.productId)
-            intent.putExtra("quantity",quantityTextView.text.toString().toInt())
-            startActivity(intent)
+            val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+            val loginSkipped=sharePreferences?.getBoolean("login_skipped",false)
+            val loginStatus=sharePreferences?.getBoolean("login_status",false)
+            println("login status is $loginStatus")
+            println("login  skipped status is $loginSkipped")
+            if(loginSkipped!! || !loginStatus!!){
+                lifecycleScope.launch(Dispatchers.Main){
+                    AlertDialog.Builder(requireActivity())
+                        .setTitle("Login Required")
+                        .setMessage("Log in for the best experience")
+                        .setPositiveButton("Login") { _, _ ->
+                            //val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                            with(sharePreferences.edit()){
+                                this?.putBoolean("login_skipped",false)
+                                this?.apply()
+                            }
+                            val intent= Intent(requireContext(),MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
+                        }
+                        .show()
+                }
+            }else{
+                val intent=Intent(requireContext(),CheckoutActivity::class.java)
+                intent.putExtra("checkoutMode","buy_now")
+                intent.putExtra("productId",product?.productId)
+                intent.putExtra("quantity",quantityTextView.text.toString().toInt())
+                startActivity(intent)
+            }
         }
 
         if(product!=null){
             println("added to Recently viewed")
-            val recentlyViewed=RecentlyViewed(product.productId,product.title,product.description,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,product.rating,product.stock,product.brand,product.category,product.thumbnail,product.favorite)
+            val productId=product?.productId
+            val recentlyViewed=RecentlyViewed(product.productId,product.title,product.description,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,product.rating,product.stock,product.brand,product.category,product.thumbnail,true)
             GlobalScope.launch {
                 val job = launch(Dispatchers.IO) { recentlyViewedViewModel.addToRecentlyViewed(recentlyViewed) }
                 job.join()
@@ -247,28 +318,62 @@ class ProductFragment : Fragment() {
             }
         }
 
+        val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+        val loginSkipped=sharePreferences?.getBoolean("login_skipped",false)
+        val loginStatus=sharePreferences?.getBoolean("login_status",false)
+        println("login status is $loginStatus")
+        println("login  skioped status is $loginSkipped")
+
+
         val favoriteButton:ImageView=view.findViewById(R.id.favorite_button)
-        if(product?.favorite==true){
-            favoriteButton.setImageResource(R.drawable.heart_red)
+        if(loginSkipped!! || !loginStatus!!){
+            println()
         }else{
-            favoriteButton.setImageResource(R.drawable.border_heart)
+            val productId=product?.productId
+            if (favoriteViewModel.isFavorite(productId)==true) {
+                println("Its is a favorite product")
+                favoriteButton.setImageResource(R.drawable.heart_red)
+            }else{
+                println("Its is not a favorite product")
+                favoriteButton.setImageResource(R.drawable.border_heart)
+            }
         }
 
         favoriteButton.setOnClickListener{
             println("Favorite btn is clicked")
-            if(product?.favorite!=true){
-                favoriteButton.setImageResource(R.drawable.heart_red)
-                addToFavorite(product)
-                product?.favorite=true
-                Snackbar.make(view,"Added to WishList",Snackbar.LENGTH_LONG)
-                    .show()
-
+            if(loginSkipped!! || !loginStatus!!){
+                lifecycleScope.launch(Dispatchers.Main){
+                    AlertDialog.Builder(requireActivity())
+                        .setTitle("Login Required")
+                        .setMessage("Log in for the best experience")
+                        .setPositiveButton("Login") { _, _ ->
+                            val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                            with(sharePreferences?.edit()){
+                                this?.putBoolean("login_skipped",false)
+                                this?.apply()
+                            }
+                            val intent= Intent(requireContext(),MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
+                        }
+                        .show()
+                }
             }else{
-                favoriteButton.setImageResource(R.drawable.border_heart)
-                removeFromFavorite(product)
-                product?.favorite=false
-                Snackbar.make(view,"Removed from WishList",Snackbar.LENGTH_LONG)
-                    .show()
+                val productId=product?.productId
+                if (!favoriteViewModel.isFavorite(productId)) {
+                    favoriteButton.setImageResource(R.drawable.heart_red)
+                    addToFavorite(product)
+                    println("!favorite product to favorite")
+                    Snackbar.make(view,"Added to WishList",Snackbar.LENGTH_LONG)
+                        .show()
+
+                }else{
+                    favoriteButton.setImageResource(R.drawable.border_heart)
+                    removeFromFavorite(product)
+                    println("favorite product to !favorite")
+                    Snackbar.make(view,"Removed from WishList",Snackbar.LENGTH_LONG)
+                        .show()
+                }
             }
         }
 
@@ -419,7 +524,6 @@ class ProductFragment : Fragment() {
             val job=launch(Dispatchers.IO) {
                 favoriteViewModel.deleteFromFavorites(product?.productId)
                 product?.productId?.let { recentlyViewedViewModel.updateFavoriteStatus(false, it) }
-                product?.productId?.let { viewModel.removeFavorite(it) }
             }
             job.join()
         }
@@ -429,8 +533,11 @@ class ProductFragment : Fragment() {
         GlobalScope.launch {
             val job = launch(Dispatchers.IO) {
                 if (product != null) {
-                    val favoriteProduct = FavoriteProduct(
+                    val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                    val currentUserId=sharePreferences?.getInt("userId",-1)
+                    val favoriteProduct = FavoriteProduct(0,
                         product.productId,
+                        currentUserId!!,
                         product.title,
                         product.description,
                         product.originalPrice,
@@ -444,7 +551,6 @@ class ProductFragment : Fragment() {
                     )
                     favoriteViewModel.addToFavorites(favoriteProduct)
                     recentlyViewedViewModel.updateFavoriteStatus(true,product.productId)
-                    viewModel.markAsFavorite(product.productId)
                 }
             }
             job.join()

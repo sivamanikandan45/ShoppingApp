@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -36,6 +37,11 @@ class SelectAddressFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title="Select Address"
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+        val currentUserId=sharePreferences?.getInt("userId",-1)
+        if (currentUserId != null) {
+            addressViewModel.setUserId(currentUserId)
+        }
         val deliverHereBtn=view.findViewById<Button>(R.id.deliver_here)
 
         addressListRecyclerView=view.findViewById(R.id.address_list_recycler_view)

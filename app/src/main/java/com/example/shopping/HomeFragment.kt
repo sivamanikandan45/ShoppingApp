@@ -4,7 +4,10 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.*
 import android.widget.Button
 import android.widget.ImageView
@@ -15,7 +18,8 @@ import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.Group
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
-import androidx.fragment.app.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,8 +32,8 @@ import com.example.shopping.viewmodel.RecentlyViewedViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.lang.IllegalStateException
 import java.util.*
+
 
 class HomeFragment : Fragment() {
     private val cartViewModel:CartViewModel by activityViewModels()
@@ -64,6 +68,33 @@ class HomeFragment : Fragment() {
         inflater.inflate(R.menu.home_menu,menu)
         val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val searchView=menu.findItem(R.id.product_search)?.actionView as SearchView
+        val searchItem=menu.findItem(R.id.product_search)
+        searchItem.setOnActionExpandListener(object :MenuItem.OnActionExpandListener{
+            override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+                println("On search called")
+                val r: Resources = resources
+                val px = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    16F,
+                    r.displayMetrics
+                )
+                val right=convertDpToPixel(16F,requireContext())
+                val rightInt=right.toInt()
+                searchView.setPadding(0,0, -rightInt,0)
+                searchView.isIconified=false
+                return true
+            }
+
+            fun convertDpToPixel(dp: Float, context: Context): Float {
+                return dp * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+            }
+
+            override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+                return true
+            }
+
+        })
+
         searchView.setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
     }
 

@@ -12,8 +12,8 @@ interface AddressDao {
     @Insert
     fun insertAddress(address: Address)
 
-    @Query("SELECT * FROM ADDRESS")
-    fun getAllAddress():List<Address>
+    @Query("SELECT * FROM ADDRESS where customerId= :userId")
+    fun getAllAddress(userId:Int):List<Address>
 
     @Query("DELETE FROM ADDRESS where addressId=:addressId")
     fun deleteAddress(addressId:Int)

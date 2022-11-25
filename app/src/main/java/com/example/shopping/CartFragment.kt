@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
@@ -16,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -116,8 +118,34 @@ class CartFragment : Fragment() {
         val placeOrderButton=view.findViewById<Button>(R.id.place_order_btn)
 
         placeOrderButton.setOnClickListener {
-            val intent=Intent(requireContext(),CheckoutActivity::class.java)
-            startActivity(intent)
+            val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+            val loginSkipped=sharePreferences?.getBoolean("login_skipped",false)
+            val loginStatus=sharePreferences?.getBoolean("login_status",false)
+            println("login status is $loginStatus")
+            println("login  skioped status is $loginSkipped")
+            if(loginSkipped!! || !loginStatus!!){
+                lifecycleScope.launch(Dispatchers.Main){
+                    AlertDialog.Builder(requireActivity())
+                        .setTitle("Login Required")
+                        .setMessage("Log in for the best experience")
+                        .setPositiveButton("Login") { _, _ ->
+                            val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                            with(sharePreferences?.edit()){
+                                this?.putBoolean("login_skipped",false)
+                                //this?.putBoolean("login_status",false)
+                                this?.apply()
+                            }
+                            val intent= Intent(requireContext(),MainActivity::class.java)
+                            intent.putExtra("fragment_from","cart")
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
+                        }
+                        .show()
+                }
+            }else{
+                val intent=Intent(requireContext(),CheckoutActivity::class.java)
+                startActivity(intent)
+            }
         }
         //totalAmountTextView.text="$"+cartViewModel.cartAmount.value.toString()
         /*val tv2=view.findViewById<TextView>(R.id.empty_label_11)

@@ -15,19 +15,30 @@ class FavoriteViewModel(application: Application):AndroidViewModel(application) 
 
     var favoriteItems= MutableLiveData<List<FavoriteProduct>>()
     var calledFrom=""
+    private var currentUserId=-1
 
     init {
         viewModelScope.launch{
             val job=launch (Dispatchers.IO){
-                getFavoriteListFromDB()
+                //getFavoriteListFromDB()
             }
             job.join()
         }
     }
 
-    fun getFavoriteListFromDB() {
+    fun setUserId(userId:Int){
+        currentUserId=userId
+        viewModelScope.launch{
+            val job=launch (Dispatchers.IO){
+                getFavoriteListFromDB(currentUserId)
+            }
+            job.join()
+        }
+    }
+
+    fun getFavoriteListFromDB(userId: Int) {
             val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getFavoriteDao()
-            val list=dao.getFavoriteProductList()
+            val list=dao.getFavoriteProductList(userId)
             favoriteItems.postValue(list)
     }
 
@@ -35,23 +46,34 @@ class FavoriteViewModel(application: Application):AndroidViewModel(application) 
     fun addToFavorites(product:FavoriteProduct){
         val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getFavoriteDao()
         dao.addToFavorite(product)
-        getFavoriteListFromDB()
+        getFavoriteListFromDB(currentUserId)
     }
 
     fun deleteFromFavorites(productId: Int?) {
         val dao=AppDB.getDB(getApplication<Application?>().applicationContext).getFavoriteDao()
         if(productId!=null){
-            dao.removeFromFavorites(productId)
-            getFavoriteListFromDB()
+            dao.removeFromFavorites(productId,currentUserId)
+            getFavoriteListFromDB(currentUserId)
         }
-        getFavoriteListFromDB()
+        getFavoriteListFromDB(currentUserId)
     }
 
     suspend fun getWishlistItems():List<FavoriteProduct>{
         val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getFavoriteDao()
-        val list=dao.getFavoriteProductList()
+        val list=dao.getFavoriteProductList(currentUserId)
         favoriteItems.postValue(list)
         return list
+    }
+
+    fun isFavorite(productId: Int?):Boolean {
+        if(favoriteItems.value!=null){
+            for(product in favoriteItems.value!!){
+                if(product.productId==productId){
+                    return true
+                }
+            }
+        }
+        return false
     }
 
 }

@@ -1,15 +1,18 @@
 package com.example.shopping
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -60,6 +63,11 @@ class WishlistFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.title="Wishlist"
+        val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+        val currentUserId=sharePreferences?.getInt("userId",-1)
+        if (currentUserId != null) {
+            favoriteViewModel.setUserId(currentUserId)
+        }
         //(activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         if(favoriteViewModel.calledFrom=="Main"){
             /*(activity as AppCompatActivity).supportActionBar?.setHomeButtonEnabled(false); // disable the button
@@ -67,11 +75,13 @@ class WishlistFragment : Fragment() {
             (activity as AppCompatActivity).supportActionBar?.setDisplayShowHomeEnabled(false);*/
             (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         }else if(favoriteViewModel.calledFrom=="Account"){
+            println("called from acc")
             (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
         val empty=view.findViewById<ConstraintLayout>(R.id.empty_page)
         val scroll=view.findViewById<RecyclerView>(R.id.wishlist_recyclerView)
+        val loginStatusFalseScreen=view.findViewById<ConstraintLayout>(R.id.login_skipped)
 
         recyclerView=view.findViewById(R.id.wishlist_recyclerView)
         adapter= WishlistAdapter()
@@ -136,7 +146,7 @@ class WishlistFragment : Fragment() {
                     val job=launch(Dispatchers.IO) {
                         if(product!=null){
                             favoriteViewModel.deleteFromFavorites(product.productId)
-                            productViewModel.removeFavorite(product.productId)
+                            /*productViewModel.removeFavorite(product.productId)*/
                             println("Removing recently viewed item")
                             recentlyViewedViewModel.updateFavoriteStatus(false,product.productId)
                         }
@@ -171,21 +181,47 @@ class WishlistFragment : Fragment() {
         recyclerView.adapter=adapter
         recyclerView.layoutManager=manager
 
-        favoriteViewModel.favoriteItems.observe(viewLifecycleOwner, Observer {
 
-            if(favoriteViewModel.favoriteItems.value?.isEmpty()==true){
-                empty.visibility=View.VISIBLE
-                scroll.visibility=View.GONE
-            }else{
-                scroll.visibility=View.VISIBLE
-                empty.visibility=View.GONE
-                favoriteViewModel.favoriteItems.value?.let { it1 -> adapter.setData(it1) }
-                //adapter.notifyDataSetChanged()
+        //val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+        val loginSkipped=sharePreferences?.getBoolean("login_skipped",false)
+        val loginStatus=sharePreferences?.getBoolean("login_status",false)
+        println("login status is $loginStatus")
+        println("login  skipped status is $loginSkipped")
+        val loginButton=view.findViewById<Button>(R.id.login)
+        loginButton.setOnClickListener {
+            println("login button clicked")
+            if(loginSkipped!! || !loginStatus!!){
+                with(sharePreferences?.edit()){
+                    this?.putBoolean("login_skipped",false)
+                    this?.apply()
+                }
+                val intent= Intent(requireContext(),MainActivity::class.java)
+                intent.putExtra("fragment_from","wishlist")
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
             }
+        }
+        if(loginSkipped!! || !loginStatus!!){
+            loginStatusFalseScreen.visibility=View.VISIBLE
+            empty.visibility=View.GONE
+            scroll.visibility=View.GONE
+        }else{
+            favoriteViewModel.favoriteItems.observe(viewLifecycleOwner, Observer {
+                if(favoriteViewModel.favoriteItems.value?.isEmpty()==true){
+                    loginStatusFalseScreen.visibility=View.GONE
+                    empty.visibility=View.VISIBLE
+                    scroll.visibility=View.GONE
+                }else{
+                    loginStatusFalseScreen.visibility=View.GONE
+                    scroll.visibility=View.VISIBLE
+                    empty.visibility=View.GONE
+                    favoriteViewModel.favoriteItems.value?.let { it1 -> adapter.setData(it1) }
+                    //adapter.notifyDataSetChanged()
+                }
+            })
+        }
 
-            //adapter.setData(favoriteViewModel.favoriteItems.value!!)
-            //adapter.notifyDataSetChanged()
-        })
+
 
     }
 
@@ -206,7 +242,7 @@ class WishlistFragment : Fragment() {
             val job=launch(Dispatchers.IO) {
                 if(product!=null){
                     favoriteViewModel.addToFavorites(product)
-                    productViewModel.markAsFavorite(product.productId)
+                    //productViewModel.markAsFavorite(product.productId)
                     recentlyViewedViewModel.updateFavoriteStatus(true,product.productId)
                 }
             }

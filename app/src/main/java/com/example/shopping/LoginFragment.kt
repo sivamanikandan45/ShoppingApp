@@ -4,19 +4,17 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.commit
+import androidx.fragment.app.*
 import androidx.lifecycle.lifecycleScope
 import com.example.shopping.enums.CheckoutMode
 import com.example.shopping.model.User
+import com.example.shopping.viewmodel.OnBoardingFormViewModel
 import com.example.shopping.viewmodel.UserViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputLayout
@@ -28,6 +26,7 @@ import java.util.regex.Pattern
 
 class LoginFragment : Fragment() {
     private val userViewModel: UserViewModel by activityViewModels()
+    private val onBoardingFormViewModel:OnBoardingFormViewModel by viewModels()
     private lateinit var emailInputLayout: TextInputLayout
     private lateinit var passwordInputLayout: TextInputLayout
 
@@ -47,8 +46,16 @@ class LoginFragment : Fragment() {
             title="Login"
             setDisplayHomeAsUpEnabled(true)
         }
+
         emailInputLayout=view.findViewById<TextInputLayout>(R.id.emailInputLayout)
         passwordInputLayout=view.findViewById<TextInputLayout>(R.id.passwordLayout)
+
+        if(onBoardingFormViewModel.username!=""){
+            emailInputLayout.editText?.setText(onBoardingFormViewModel.username)
+        }
+        if(onBoardingFormViewModel.password!=""){
+            passwordInputLayout.editText?.setText(onBoardingFormViewModel.password)
+        }
 
         val registerButton=view.findViewById<Button>(R.id.loginButton)
         registerButton.setOnClickListener {
@@ -62,11 +69,21 @@ class LoginFragment : Fragment() {
                             if(validUserId!=-1){
                                 val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
                                 with(sharePreferences?.edit()){
+                                    this?.putBoolean("login_skipped",false)
                                     this?.putBoolean("login_status",true)
                                     this?.putInt("userId",validUserId)
                                     this?.apply()
                                 }
                                 val intent= Intent(requireContext(),MainActivity::class.java)
+                                println("got intent string as ${requireActivity().intent.getStringExtra("fragment")}")
+                                when(requireActivity().intent.getStringExtra("fragment_from")){
+                                    "cart"->{intent.putExtra("fragment","cart")}
+                                    "account"->{intent.putExtra("fragment","account")}
+                                    "wishlist"->{intent.putExtra("fragment","wishlist")}
+                                }
+                                /*if(requireActivity().intent.getStringExtra("fragment_from")=="cart"){
+                                    intent.putExtra("fragment","cart")
+                                }else if(requireActivity().intent.getStringExtra("fragment_from")=="account")*/
                                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TOP
                                 startActivity(intent)
                                 /*parentFragmentManager.commit {
@@ -117,7 +134,7 @@ class LoginFragment : Fragment() {
                 returnValue=returnValue and false
             }else if(!pass.isValidPassword()){
                 password.isErrorEnabled =true
-                password.error ="Password must contain Special character, Number and Uppercase"
+                password.error ="Password must be atleast 8 characters containing Special character, Number and Uppercase"
                 returnValue=returnValue and false
             }else{
                 password.error =null
@@ -129,7 +146,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun String.isValidPassword(): Boolean {
-        return if (this.length==8){
+        return if (this.length>=8){
             val upperCase: Pattern = Pattern.compile("[A-Z]")
             val digit: Pattern = Pattern.compile("[0-9]")
             val special: Pattern = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]")
@@ -141,5 +158,14 @@ class LoginFragment : Fragment() {
             hasLetter.find() && hasDigit.find() && hasSpecial.find()
         }else
             false
+    }
+
+    override fun onDestroy() {
+        println("Destroy called")
+        onBoardingFormViewModel.apply {
+            username=emailInputLayout.editText?.text.toString()
+            password=passwordInputLayout.editText?.text.toString()
+        }
+        super.onDestroy()
     }
 }

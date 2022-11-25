@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -15,7 +16,12 @@ class AccountActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharePreferences=getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+        val currentUserId=sharePreferences?.getInt("userId",-1)
         val favoriteViewModel=ViewModelProvider(this)[FavoriteViewModel::class.java]
+        if (currentUserId != null) {
+            favoriteViewModel.setUserId(currentUserId)
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account)
         when(intent.getStringExtra("frag_name")){

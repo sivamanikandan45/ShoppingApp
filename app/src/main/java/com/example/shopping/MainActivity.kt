@@ -29,6 +29,11 @@ class MainActivity : AppCompatActivity() {
         val viewModel= ViewModelProvider(this)[CustomViewModel::class.java]
         val cartViewModel= ViewModelProvider(this)[CartViewModel::class.java]
         val favViewModel= ViewModelProvider(this)[FavoriteViewModel::class.java]
+        val sharePreferences=getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+        val currentUserId=sharePreferences?.getInt("userId",-1)
+        if (currentUserId != null) {
+            favViewModel.setUserId(currentUserId)
+        }
         var amount=0
 
         GlobalScope.launch {
@@ -107,6 +112,11 @@ class MainActivity : AppCompatActivity() {
                 viewModel.fragmentId=R.id.account
                 viewModel.fragmentName.value="Account"
             }
+            if(frag=="wishlist"){
+                println("Got wishlist")
+                viewModel.fragmentId=R.id.account
+                viewModel.fragmentName.value="Wishlist"
+            }
         }
 
         viewModel.fragmentName.observe(this, Observer {
@@ -118,6 +128,10 @@ class MainActivity : AppCompatActivity() {
                 viewModel.fragmentId=R.id.cart*/
             }else if(it.equals("Account")){
                 bottomNavigationView.selectedItemId=R.id.account
+                viewModel.fragmentName.value=""
+                intent.putExtra("fragment","")
+            }else if(it.equals("Wishlist")){
+                bottomNavigationView.selectedItemId=R.id.wishlist
                 viewModel.fragmentName.value=""
                 intent.putExtra("fragment","")
             }
@@ -193,16 +207,21 @@ class MainActivity : AppCompatActivity() {
             val sharePreferences=getSharedPreferences("shared_preferences",Context.MODE_PRIVATE)
             val loginSkipped=sharePreferences.getBoolean("login_skipped",false)
             val loginStatus=sharePreferences.getBoolean("login_status",false)
-            if(loginSkipped){
+            if(loginSkipped||loginStatus){
+                println("login status is $loginStatus")
+                println("skip status is $loginSkipped")
                 println("login is skipped...")
                 replaceFragment(HomeFragment())
-            }else if(loginStatus){
-                println("Already logged in")
-                replaceFragment(HomeFragment())
-            }else{
+            }
+            else{
                 println("Newly opening....")
                 replaceFragment(OnBoardingFragment())
             }
+
+           /* if(loginStatus){
+                println("Already logged in")
+                replaceFragment(HomeFragment())
+            }*/
 
         }
 

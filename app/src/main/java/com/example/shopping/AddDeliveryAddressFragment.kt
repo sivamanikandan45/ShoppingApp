@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -48,7 +49,11 @@ class AddDeliveryAddressFragment : Fragment() {
         println("Fetched ${deliveryAddressViewModel.city} ${deliveryAddressViewModel.pinCode}")
         (activity as AppCompatActivity).supportActionBar?.title="Add Delivery Address"
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
+        val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+        val currentUserId=sharePreferences?.getInt("userId",-1)
+        if (currentUserId != null) {
+            addressViewModel.setUserId(currentUserId)
+        }
         nameInputLayout=view.findViewById<TextInputLayout>(R.id.fullname)
         phoneInputLayout=view.findViewById<TextInputLayout>(R.id.phn)
         pinCodeInputLayout=view.findViewById<TextInputLayout>(R.id.pincode)
@@ -102,16 +107,19 @@ class AddDeliveryAddressFragment : Fragment() {
                 val city=cityInputLayout.editText?.text.toString()
                 val street=addressStreetInputLayout.editText?.text.toString()
                 val area=areaInputLayout.editText?.text.toString()
-                if(addressViewModel.formMode==FormMode.CREATE){
-                    val address=Address(0,name,phone,pinCode,state,city,street, area)
-                    saveAddress(address)
+                val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                val currentUserId=sharePreferences?.getInt("userId",-1)
+                if(currentUserId!=null&&currentUserId!=-1){
+                    if(addressViewModel.formMode==FormMode.CREATE){
+                        val address=Address(0,currentUserId,name,phone,pinCode,state,city,street, area)
+                        saveAddress(address)
+                    }
+                    if(addressViewModel.formMode==FormMode.EDIT){
+                        val id=addressViewModel.selectedAddress.value?.addressId!!
+                        val address=Address(id,currentUserId,name,phone,pinCode,state,city,street, area)
+                        updateAddress(address)
+                    }
                 }
-                if(addressViewModel.formMode==FormMode.EDIT){
-                    val id=addressViewModel.selectedAddress.value?.addressId!!
-                    val address=Address(id,name,phone,pinCode,state,city,street, area)
-                    updateAddress(address)
-                }
-
             }else{
                 println("Some input error")
             }

@@ -1,6 +1,7 @@
 package com.example.shopping
 
 
+import android.content.Context
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +10,8 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.shopping.enums.CategoryType
+import com.example.shopping.viewmodel.CartViewModel
+import com.example.shopping.viewmodel.FavoriteViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -21,7 +24,16 @@ class CategoryActivity : AppCompatActivity() {
 //    val productViewModel= ViewModelProvider(this)[ProductViewModel::class.java]
     override fun onCreate(savedInstanceState: Bundle?) {
         val productViewModel= ViewModelProvider(this)[ProductViewModel::class.java]
-        super.onCreate(savedInstanceState)
+        val favoriteViewModel= ViewModelProvider(this)[FavoriteViewModel::class.java]
+
+
+    super.onCreate(savedInstanceState)
+    val sharePreferences=getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+    val currentUserId=sharePreferences?.getInt("userId",-1)
+
+    if (currentUserId != null) {
+        favoriteViewModel.setUserId(currentUserId)
+    }
         setContentView(R.layout.activity_category)
 
         val fragName=intent.getStringExtra("fragment_name")
@@ -109,5 +121,16 @@ class CategoryActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+/*
+    override fun onStart() {
+        val cartViewModel= ViewModelProvider(this)[CartViewModel::class.java]
+        GlobalScope.launch {
+            val job=launch{
+                cartViewModel.getCartFromDB()
+            }
+            job.join()
+        }
+        super.onStart()
+    }*/
 
 }
