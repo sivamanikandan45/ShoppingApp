@@ -156,12 +156,11 @@ class CartFragment : Fragment() {
         adapter.setOnQuantityClickListener(object :QuantityButtonListener{
             override fun onIncreaseClicked(adapterPosition: Int) {
                 println("Increase clicked at $adapterPosition")
-                //if(cartViewModel.cartItems.value.get(adapterPosition).quantity<10)
                 println("increased item is ${cartViewModel.cartItems.value?.get(adapterPosition)?.productName}")
                 val product=cartViewModel.cartItems.value?.get(adapterPosition)
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
-                        cartViewModel.updateQuantity(product!!,product.quantity+1)
+                        cartViewModel.updateQuantity(product!!,product.quantity)
                     }
                     job.join()
                 }
@@ -172,7 +171,7 @@ class CartFragment : Fragment() {
                 val product=cartViewModel.cartItems.value?.get(adapterPosition)
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
-                        cartViewModel.updateQuantity(product!!,product.quantity-1)
+                        cartViewModel.updateQuantity(product!!,product.quantity)
                     }
                     job.join()
                 }

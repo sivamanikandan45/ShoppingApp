@@ -29,6 +29,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
 
     var selectedProduct=MutableLiveData<Product>()
     var searchedQuery:String=""
+    var categorySearchIsExpanded:Boolean=false
     var selectedSort: Sort = Sort.NONE
 
     //var productStack=Stack<Product>()

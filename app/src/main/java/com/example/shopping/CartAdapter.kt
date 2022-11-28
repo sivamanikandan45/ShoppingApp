@@ -167,7 +167,21 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
             if (quantity > 1) {
                 quantity--
                 quantityTextView.text = quantity.toString()
+                val df = DecimalFormat("#.##")
+                df.roundingMode = RoundingMode.UP
+                val priceForSelectedQty= df.format(quantity*list[adapterPosition].pricePerProduct).toDouble()
+
+                productPriceTextView.text="₹$priceForSelectedQty"
+                productOldPriceTextView.text="₹${quantity*list[adapterPosition].oldPricePerProduct}"
+                println("Quantity of $adapterPosition is updated as $quantity")
+                println("The new price of $adapterPosition is updated as $productPriceTextView")
+                println("The old price3 of $adapterPosition is updated as $productOldPriceTextView")
                 listener.onDecreaseClicked(adapterPosition)
+                list[adapterPosition].apply {
+                    this.quantity=quantity
+                    priceForSelectedQuantity=quantity*list[adapterPosition].pricePerProduct
+                    oldPriceForSelectedQuantity=quantity*list[adapterPosition].oldPricePerProduct
+                }
             } else if (quantity == 1) {
                 Toast.makeText(it.context, "Swipe Item to remove from the Cart", Toast.LENGTH_SHORT)
                     .show()
@@ -179,14 +193,23 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
             if (quantity < 10) {
                 quantity++
                 quantityTextView.text = quantity.toString()
+                val df = DecimalFormat("#.##")
+                df.roundingMode = RoundingMode.UP
+                val priceForSelectedQty= df.format(quantity*list[adapterPosition].pricePerProduct).toDouble()
+                productPriceTextView.text="₹$priceForSelectedQty"
+                productOldPriceTextView.text="₹${quantity*list[adapterPosition].oldPricePerProduct}"
                 /*productPriceTextView.text=(quantity*list[adapterPosition].pricePerProduct).toString()
-                productOldPriceTextView.text=(quantity*list[adapterPosition].oldPricePerProduct).toString()
+                productOldPriceTextView.text=(quantity*list[adapterPosition].oldPricePerProduct).toString()*/
+                println("\n The value form the list is proce per product${list[adapterPosition].pricePerProduct} and oldprice per product ${list[adapterPosition].oldPricePerProduct}")
+                println("Quantity of $adapterPosition is updated as $quantity")
+                println("The new price of $adapterPosition is updated as ${(quantity*list[adapterPosition].pricePerProduct)}")
+                println("The old price3 of $adapterPosition is updated as ${(quantity*list[adapterPosition].oldPricePerProduct)}")
+                listener.onIncreaseClicked(adapterPosition)
                 list[adapterPosition].apply {
                     this.quantity=quantity
-                    pricePerProduct=quantity*list[adapterPosition].pricePerProduct
-                    oldPricePerProduct=quantity*list[adapterPosition].oldPricePerProduct
-                }*/
-                listener.onIncreaseClicked(adapterPosition)
+                    priceForSelectedQuantity=quantity*list[adapterPosition].pricePerProduct
+                    oldPriceForSelectedQuantity=quantity*list[adapterPosition].oldPricePerProduct
+                }
             } else {
                 Toast.makeText(
                     it.context,

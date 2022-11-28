@@ -41,6 +41,10 @@ class LoginFragment : Fragment() {
     private fun CharSequence?.isValidEmail() = !isNullOrEmpty() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        if(requireActivity() is MainActivity){
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view).visibility=View.GONE
+        }
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.apply {
             title="Login"

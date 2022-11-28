@@ -18,6 +18,7 @@ import com.example.shopping.model.FavoriteProduct
 import com.example.shopping.model.Product
 import com.example.shopping.viewmodel.FavoriteViewModel
 import com.example.shopping.viewmodel.ProductViewModel
+import com.example.shopping.viewmodel.SearchStateViewModel
 import com.example.shopping.viewmodel.SortViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
@@ -28,7 +29,7 @@ import java.util.concurrent.TimeUnit
 class ProductListFragment : Fragment() {
     private val productViewModel:ProductViewModel by activityViewModels()
     private val favoriteViewModel:FavoriteViewModel by activityViewModels()
-    private val sortViewModel:SortViewModel by activityViewModels()
+    private val searchStateViewModel:SearchStateViewModel by viewModels()
     private lateinit var adapter:ProductListAdapter
     private lateinit var productRecyclerView: RecyclerView
     private lateinit var manager: GridLayoutManager
@@ -38,7 +39,7 @@ class ProductListFragment : Fragment() {
     private lateinit var currentProductList:List<Product>
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        searchItem=menu.findItem(R.id.category_search)
+        /*searchItem=menu.findItem(R.id.category_search)
         sortItem=menu.findItem(R.id.sort)
         searchItem.setOnActionExpandListener(object :MenuItem.OnActionExpandListener{
             override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
@@ -53,7 +54,7 @@ class ProductListFragment : Fragment() {
                 return true
             }
 
-        })
+        })*/
         super.onPrepareOptionsMenu(menu)
     }
 
@@ -222,6 +223,7 @@ class ProductListFragment : Fragment() {
                    currentProductList= productViewModel.categoryList.value!!.map { it.copy() }
                        // productViewModel.categoryList.value!!.toMutableList()
                     println("Wihle opening the current list is $currentProductList")
+                    setCustomAnimations(R.anim.slide_in,R.anim.fade_out,R.anim.fade_in,R.anim.slide_out)
                     hide(this@ProductListFragment)
                     productViewModel.selectedProduct.value =
                         productViewModel.categoryList.value?.get(position)
@@ -231,9 +233,9 @@ class ProductListFragment : Fragment() {
                     //postponeEnterTransition(5000,TimeUnit.MILLISECONDS)
                     //startPostponedEnterTransition()
                     //setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    /*setCustomAnimations(androidx.transition.R.anim.abc_fade_in,
-                        androidx.transition.R.anim.abc_fade_out)*/
-                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    //setCustomAnimations(R.anim.slide_in,R.anim.fade_out)
+                    //setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+
 
 
                     /*productViewModel.selectedProduct.value= productViewModel.categoryList.value?.get(position)
@@ -273,18 +275,33 @@ class ProductListFragment : Fragment() {
         searchItem.setOnActionExpandListener(object :MenuItem.OnActionExpandListener{
             override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
                 println("On search called")
+                searchStateViewModel.searchBarExpanded=true
+                println("Search bar staus is changed to ${searchStateViewModel.searchBarExpanded}")
                 searchView.isIconified=false
                 sortItem.isVisible=false
                 return true
             }
 
             override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+                searchStateViewModel.searchBarExpanded=false
                 sortItem.isVisible=true
                 setAdapterAttributes()
                 return true
             }
 
         })
+
+        println("Status of search bar is ${searchStateViewModel.searchBarExpanded}")
+
+        if(searchStateViewModel.searchBarExpanded){
+            println("Search bar is opeend")
+            //val searchView=searchItem.actionView as SearchView
+            searchView.isIconified=false
+            searchItem.expandActionView()
+            searchView.setQuery(searchStateViewModel.searchedQuery,false)
+            searchView.isFocusable=true
+            searchData(searchStateViewModel.searchedQuery)
+        }
 
         if(searchedQuery.isNotEmpty()){
             val searchView=searchItem.actionView as SearchView
@@ -346,6 +363,7 @@ class ProductListFragment : Fragment() {
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText != null) {
                     productViewModel.searchedQuery=newText
+                    searchStateViewModel.searchedQuery=newText
                     if(!searchView.isIconified){
                         println("The searched value is ${productViewModel.searchedQuery}")
                         searchData(newText)

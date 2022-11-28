@@ -8,6 +8,8 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.fragment.app.viewModels
+import com.example.shopping.viewmodel.UPIViewModel
 import com.google.android.material.textfield.TextInputLayout
 import java.lang.String
 import java.util.regex.Matcher
@@ -15,6 +17,9 @@ import java.util.regex.Pattern
 
 
 class UpiFragment : Fragment() {
+    private val upiViewModel:UPIViewModel by viewModels()
+    private lateinit var idInputLayout: TextInputLayout
+    private lateinit var pinInputLayout: TextInputLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,6 +32,15 @@ class UpiFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        idInputLayout=view.findViewById<TextInputLayout>(R.id.upi_id)
+        pinInputLayout=view.findViewById<TextInputLayout>(R.id.upi_pin)
+
+        if(upiViewModel.idEntered!=""){
+            idInputLayout.editText?.setText(upiViewModel.idEntered)
+        }
+        if(upiViewModel.pinEntered!=""){
+            pinInputLayout.editText?.setText(upiViewModel.pinEntered)
+        }
 
         val payBtn=view.findViewById<Button>(R.id.pay)
         payBtn.setOnClickListener {
@@ -89,6 +103,14 @@ class UpiFragment : Fragment() {
         }*/
         return returnValue
         //return m.matches() && (String.valueOf(pin).length == 6 || String.valueOf(pin).length == 4)
+    }
+
+    override fun onDestroy() {
+        upiViewModel.apply {
+            idEntered=idInputLayout.editText?.text.toString()
+            pinEntered=pinInputLayout.editText?.text.toString()
+        }
+        super.onDestroy()
     }
 
 

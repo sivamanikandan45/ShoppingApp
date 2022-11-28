@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.shopping.enums.CategoryType
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.FavoriteViewModel
@@ -121,16 +122,25 @@ class CategoryActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-/*
+
     override fun onStart() {
+        println("On start of the Category activity called")
         val cartViewModel= ViewModelProvider(this)[CartViewModel::class.java]
-        GlobalScope.launch {
-            val job=launch{
+        val favoriteViewModel= ViewModelProvider(this)[FavoriteViewModel::class.java]
+        val sharePreferences=getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+        val currentUserId=sharePreferences?.getInt("userId",-1)
+
+        if (currentUserId != null) {
+            favoriteViewModel.setUserId(currentUserId)
+        }
+
+        lifecycleScope.launch {
+            val job=launch(Dispatchers.IO){
                 cartViewModel.getCartFromDB()
             }
             job.join()
         }
         super.onStart()
-    }*/
+    }
 
 }

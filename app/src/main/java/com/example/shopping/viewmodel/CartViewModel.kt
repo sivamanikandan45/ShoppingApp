@@ -70,6 +70,8 @@ class CartViewModel(application: Application):AndroidViewModel(application) {
         val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getCartDao()
         val list=dao.getCartItems()
         cartItems.postValue(list)
+        val after=getCartAmountAfterDiscount()
+        val before=getCartAmountBeforeDiscount()
         return list
     }
 
@@ -117,7 +119,9 @@ class CartViewModel(application: Application):AndroidViewModel(application) {
         dao.updateProductQuantity(productId,quantity)
         dao.updatePriceForSelectedQuantity(productId,quantity*pricePerProduct)
         dao.updateOldPriceForSelectedQuantity(productId,quantity*oldPricePerProduct)
-        getCartFromDB()
+        //getCartFromDB()
+        getCartAmountAfterDiscount()
+        getCartAmountBeforeDiscount()
     }
 
 

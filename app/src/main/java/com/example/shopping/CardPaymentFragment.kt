@@ -3,18 +3,32 @@ package com.example.shopping
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
+import androidx.fragment.app.viewModels
+import com.example.shopping.viewmodel.CardPaymentViewModel
+import com.example.shopping.viewmodel.UPIViewModel
+import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.textfield.TextInputLayout
 
 
 class CardPaymentFragment : Fragment() {
+
+    private val cardPaymentViewModel:CardPaymentViewModel by viewModels()
+    private lateinit var cardNoLayout: TextInputLayout
+    private lateinit var cvvLayout: TextInputLayout
+    private lateinit var monthDropDownTextField:AutoCompleteTextView
+    private lateinit var yearDropDownTextField:AutoCompleteTextView
+    /*private lateinit var monthLayout:TextInputLayout
+    private lateinit var yearLayout: TextInputLayout*/
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,19 +42,40 @@ class CardPaymentFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val monthDropDownTextField=view.findViewById<AutoCompleteTextView>(R.id.month_dropdown)
+        monthDropDownTextField=view.findViewById<AutoCompleteTextView>(R.id.month_dropdown)
         val monthList= listOf("01 - Jan","02 - Feb","03 - Mar","04 - Apr","05 - May","06 - Jun","07 - Jul","08 - Aug","09 - Sep","10 - Oct","11 - Nov","12 - Dec")
         val monthDropDownAdapter = ArrayAdapter(requireContext(), R.layout.list_item, monthList)
         monthDropDownTextField.setAdapter(monthDropDownAdapter)
 
 
-        val yearDropDownTextField=view.findViewById<AutoCompleteTextView>(R.id.year_dropdown)
+       yearDropDownTextField=view.findViewById<AutoCompleteTextView>(R.id.year_dropdown)
         var yearList= mutableListOf<String>()
         for(i in 0 until 50){
             yearList.add(i,(i+22).toString())
         }
         val yearDropDownAdapter = ArrayAdapter(requireContext(), R.layout.list_item, yearList)
         yearDropDownTextField.setAdapter(yearDropDownAdapter)
+
+        cardNoLayout=view.findViewById<TextInputLayout>(R.id.card_no)
+        cvvLayout=view.findViewById<TextInputLayout>(R.id.cvv)
+
+
+        if(cardPaymentViewModel.cardNoEntered!=""){
+            cardNoLayout.editText?.setText(cardPaymentViewModel.cardNoEntered)
+        }
+        if(cardPaymentViewModel.cvvEntered!=""){
+            cvvLayout.editText?.setText(cardPaymentViewModel.cvvEntered)
+        }
+        if(cardPaymentViewModel.month!=-1){
+            //monthLayout.editText?.setText(monthList[cardPaymentViewModel.month])
+            monthDropDownTextField.setText(monthList[cardPaymentViewModel.month],false)
+            //monthDropDownTextField.setAdapter(monthDropDownAdapter)
+        }
+        if(cardPaymentViewModel.year!=-1){
+            //yearLayout.editText?.setText((cardPaymentViewModel.year+22).toString())
+            yearDropDownTextField.setText((cardPaymentViewModel.year+22).toString(),false)
+            //yearDropDownTextField.freezesText=false
+        }
 
 
         val payBtn=view.findViewById<Button>(R.id.pay)
@@ -130,6 +165,39 @@ class CardPaymentFragment : Fragment() {
         }
 
         return returnValue
+    }
+
+    override fun onDestroy() {
+        val monthLayout=view?.findViewById<TextInputLayout>(R.id.month)
+        val monthTextField=view?.findViewById<AutoCompleteTextView>(R.id.month_dropdown)
+        val month=monthTextField?.text.toString()
+        val monthList= listOf("01 - Jan","02 - Feb","03 - Mar","04 - Apr","05 - May","06 - Jun","07 - Jul","08 - Aug","09 - Sep","10 - Oct","11 - Nov","12 - Dec")
+
+        if(monthTextField!=null&&monthLayout!=null){
+            if(month!=""){
+                for(i in 0..monthList.size){
+                    if(monthList[i]==month){
+                        cardPaymentViewModel.month=i
+                    }
+                }
+            }
+        }
+
+        val yearLayout=view?.findViewById<TextInputLayout>(R.id.year)
+        val yearTextField=view?.findViewById<AutoCompleteTextView>(R.id.year_dropdown)
+        val year=yearTextField?.text.toString()
+
+        if(yearTextField!=null&&yearLayout!=null){
+            if(year!=""){
+                cardPaymentViewModel.year=year.toInt()-22
+            }
+        }
+
+        cardPaymentViewModel.apply {
+            cardNoEntered=cardNoLayout.editText?.text.toString()
+            cvvEntered=cvvLayout.editText?.text.toString()
+        }
+        super.onDestroy()
     }
 
 }

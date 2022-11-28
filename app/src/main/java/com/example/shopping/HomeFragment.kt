@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +30,7 @@ import com.example.shopping.model.Category
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.RecentlyViewedViewModel
+import com.example.shopping.viewmodel.SearchStateViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -37,6 +39,7 @@ import java.util.*
 
 class HomeFragment : Fragment() {
     private val cartViewModel:CartViewModel by activityViewModels()
+    private val searchStateViewModel:SearchStateViewModel by viewModels()
     private lateinit var container:LinearLayout
     private lateinit var topOfferListAdapter:TopOfferListAdapter
     private lateinit var topOfferLayoutManager: LinearLayoutManager
@@ -72,6 +75,7 @@ class HomeFragment : Fragment() {
         searchItem.setOnActionExpandListener(object :MenuItem.OnActionExpandListener{
             override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
                 println("On search called")
+                searchStateViewModel.searchBarExpanded=true
                 val r: Resources = resources
                 val px = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
@@ -90,10 +94,37 @@ class HomeFragment : Fragment() {
             }
 
             override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+                searchStateViewModel.searchBarExpanded=false
                 return true
             }
 
         })
+
+        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText != null) {
+                    searchStateViewModel.searchedQuery=newText
+                    println("Query saved ${searchStateViewModel.searchedQuery}")
+                }
+                return true
+            }
+        })
+
+        if(searchStateViewModel.searchBarExpanded){
+            println("Search bar is opeend")
+            println("string found is ${searchStateViewModel.searchedQuery}")
+            searchView.isIconified=false
+            searchItem.expandActionView()
+            searchView.setQuery(searchStateViewModel.searchedQuery,false)
+            println("The query is set to ${searchView.query}")
+            //searchView.clearFocus()
+            searchView.isFocusable=true
+            //searchData(searchStateViewModel.searchedQuery)
+        }
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
     }
