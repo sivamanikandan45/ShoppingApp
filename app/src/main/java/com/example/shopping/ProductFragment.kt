@@ -225,6 +225,8 @@ class ProductFragment : Fragment() {
             }
             else{
                 println("Product is not available")
+                addToCartBtn.visibility=View.VISIBLE
+                goToCartButton.visibility=View.GONE
             }
         })
 
@@ -330,7 +332,7 @@ class ProductFragment : Fragment() {
             println()
         }else{
             val productId=product?.productId
-            if (favoriteViewModel.isFavorite(productId)==true) {
+            if (favoriteViewModel.isFavorite(productId)) {
                 println("Its is a favorite product")
                 favoriteButton.setImageResource(R.drawable.heart_red)
             }else{

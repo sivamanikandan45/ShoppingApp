@@ -72,6 +72,17 @@ class AddDeliveryAddressFragment : Fragment() {
             cityInputLayout.editText?.setText(selectedAddress?.city)
             addressStreetInputLayout.editText?.setText(selectedAddress?.street)
             areaInputLayout.editText?.setText(selectedAddress?.area)
+
+            if(deliveryAddressViewModel.isModified){
+                nameInputLayout.editText?.setText(deliveryAddressViewModel.name)
+                phoneInputLayout.editText?.setText(deliveryAddressViewModel.phone)
+                deliveryAddressViewModel.pinCode?.let { pinCodeInputLayout.editText?.setText(it.toString()) }
+                stateInputLayout.editText?.setText(deliveryAddressViewModel.state)
+                cityInputLayout.editText?.setText(deliveryAddressViewModel.city)
+                addressStreetInputLayout.editText?.setText(deliveryAddressViewModel.street)
+                areaInputLayout.editText?.setText(deliveryAddressViewModel.area)
+            }
+
         }
 
         if(deliveryAddressViewModel.name!=""){
@@ -261,6 +272,16 @@ class AddDeliveryAddressFragment : Fragment() {
 
     override fun onDestroy() {
         println("Destroy called")
+        if(addressViewModel.formMode==FormMode.EDIT){
+            checkIsModified(nameInputLayout.editText?.text.toString(),deliveryAddressViewModel.name)
+            checkIsModified(phoneInputLayout.editText?.text.toString(),deliveryAddressViewModel.phone)
+            checkIsModified(pinCodeInputLayout.editText?.text.toString(),deliveryAddressViewModel.pinCode.toString())
+            checkIsModified(stateInputLayout.editText?.text.toString(),deliveryAddressViewModel.state)
+            checkIsModified(cityInputLayout.editText?.text.toString(),deliveryAddressViewModel.city)
+            checkIsModified(addressStreetInputLayout.editText?.text.toString(),deliveryAddressViewModel.street)
+            checkIsModified(areaInputLayout.editText?.text.toString(),deliveryAddressViewModel.area)
+        }
+
         deliveryAddressViewModel.apply {
             name=nameInputLayout.editText?.text.toString()
             phone=phoneInputLayout.editText?.text.toString()
@@ -276,6 +297,12 @@ class AddDeliveryAddressFragment : Fragment() {
         }
         println("Saving ${deliveryAddressViewModel.city} ${deliveryAddressViewModel.pinCode}")
         super.onDestroy()
+    }
+
+    private fun checkIsModified(editTextData:String,storedString: String) {
+        if (editTextData != storedString) {
+            deliveryAddressViewModel.isModified = true
+        }
     }
 
 }

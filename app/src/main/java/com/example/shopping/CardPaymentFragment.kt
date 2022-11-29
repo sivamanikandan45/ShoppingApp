@@ -3,10 +3,8 @@ package com.example.shopping
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
@@ -15,8 +13,6 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import com.example.shopping.viewmodel.CardPaymentViewModel
-import com.example.shopping.viewmodel.UPIViewModel
-import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.textfield.TextInputLayout
 
 
@@ -27,8 +23,7 @@ class CardPaymentFragment : Fragment() {
     private lateinit var cvvLayout: TextInputLayout
     private lateinit var monthDropDownTextField:AutoCompleteTextView
     private lateinit var yearDropDownTextField:AutoCompleteTextView
-    /*private lateinit var monthLayout:TextInputLayout
-    private lateinit var yearLayout: TextInputLayout*/
+    private val monthList= listOf("01 - Jan","02 - Feb","03 - Mar","04 - Apr","05 - May","06 - Jun","07 - Jul","08 - Aug","09 - Sep","10 - Oct","11 - Nov","12 - Dec")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,23 +33,24 @@ class CardPaymentFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_card_payment, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        monthDropDownTextField=view.findViewById<AutoCompleteTextView>(R.id.month_dropdown)
-        val monthList= listOf("01 - Jan","02 - Feb","03 - Mar","04 - Apr","05 - May","06 - Jun","07 - Jul","08 - Aug","09 - Sep","10 - Oct","11 - Nov","12 - Dec")
+    override fun onResume() {
+        super.onResume()
+        monthDropDownTextField= view?.findViewById<AutoCompleteTextView>(R.id.month_dropdown)!!
         val monthDropDownAdapter = ArrayAdapter(requireContext(), R.layout.list_item, monthList)
         monthDropDownTextField.setAdapter(monthDropDownAdapter)
 
-
-       yearDropDownTextField=view.findViewById<AutoCompleteTextView>(R.id.year_dropdown)
+        yearDropDownTextField=view?.findViewById<AutoCompleteTextView>(R.id.year_dropdown)!!
         var yearList= mutableListOf<String>()
         for(i in 0 until 50){
             yearList.add(i,(i+22).toString())
         }
         val yearDropDownAdapter = ArrayAdapter(requireContext(), R.layout.list_item, yearList)
         yearDropDownTextField.setAdapter(yearDropDownAdapter)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         cardNoLayout=view.findViewById<TextInputLayout>(R.id.card_no)
         cvvLayout=view.findViewById<TextInputLayout>(R.id.cvv)

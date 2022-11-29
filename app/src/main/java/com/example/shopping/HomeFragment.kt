@@ -52,6 +52,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var categoryList:List<Category>
     private lateinit var images:List<Int>
+    private var query:String?=null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -75,6 +76,8 @@ class HomeFragment : Fragment() {
         searchItem.setOnActionExpandListener(object :MenuItem.OnActionExpandListener{
             override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
                 println("On search called")
+                println("query fetched is ${searchStateViewModel.searchedQuery}")
+                query=searchStateViewModel.searchedQuery
                 searchStateViewModel.searchBarExpanded=true
                 val r: Resources = resources
                 val px = TypedValue.applyDimension(
@@ -107,6 +110,7 @@ class HomeFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText != null) {
+                    println("typed text is $newText")
                     searchStateViewModel.searchedQuery=newText
                     println("Query saved ${searchStateViewModel.searchedQuery}")
                 }
@@ -115,15 +119,12 @@ class HomeFragment : Fragment() {
         })
 
         if(searchStateViewModel.searchBarExpanded){
-            println("Search bar is opeend")
-            println("string found is ${searchStateViewModel.searchedQuery}")
             searchView.isIconified=false
             searchItem.expandActionView()
-            searchView.setQuery(searchStateViewModel.searchedQuery,false)
-            println("The query is set to ${searchView.query}")
-            //searchView.clearFocus()
+            if(query!=null){
+                searchView.setQuery(query,false)
+            }
             searchView.isFocusable=true
-            //searchData(searchStateViewModel.searchedQuery)
         }
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
