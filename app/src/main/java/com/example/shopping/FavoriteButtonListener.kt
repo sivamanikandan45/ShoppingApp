@@ -9,5 +9,5 @@ interface FavoriteButtonListener {
 
     fun isFavorite(position: Int):Boolean
 
-    fun handle(position: Int)
+    fun handle(position: Int):Boolean
 }

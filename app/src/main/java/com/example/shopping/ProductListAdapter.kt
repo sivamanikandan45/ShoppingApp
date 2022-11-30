@@ -100,25 +100,28 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
             imageButton.setOnClickListener {
                 val product=list[adapterPosition]
 
-
-                if(favoriteButtonListener.isFavorite(adapterPosition)){
-                    imageButton.setImageResource(R.drawable.border_heart)
-                }else{
-                    imageButton.setImageResource(R.drawable.heart_red)
+                GlobalScope.launch {
+                    val job=launch {
+                        val isLogined=favoriteButtonListener.handle(adapterPosition)
+                        if(isLogined){
+                            if(favoriteButtonListener.isFavorite(adapterPosition)){
+                                imageButton.setImageResource(R.drawable.border_heart)
+                            }else{
+                                imageButton.setImageResource(R.drawable.heart_red)
+                            }
+                        }
+                    }
+                    job.join()
+                    //list[adapterPosition].favorite=!list[adapterPosition].favorite -->here
                 }
+
                 /*if(product.favorite){
 
                 }else{
                     imageButton.setImageResource(R.drawable.heart_red)
                 }*/
 
-                GlobalScope.launch {
-                    val job=launch {
-                        favoriteButtonListener.handle(adapterPosition)
-                    }
-                    job.join()
-                    //list[adapterPosition].favorite=!list[adapterPosition].favorite -->here
-                }
+
             }
 
             view.setOnClickListener{

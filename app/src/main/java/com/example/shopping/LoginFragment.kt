@@ -3,6 +3,7 @@ package com.example.shopping
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.PasswordTransformationMethod
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +13,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.*
 import androidx.lifecycle.lifecycleScope
-import com.example.shopping.enums.CheckoutMode
-import com.example.shopping.model.User
 import com.example.shopping.viewmodel.OnBoardingFormViewModel
 import com.example.shopping.viewmodel.UserViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -61,6 +60,32 @@ class LoginFragment : Fragment() {
             passwordInputLayout.editText?.setText(onBoardingFormViewModel.password)
         }
 
+        if(onBoardingFormViewModel.isPasswordHidden){
+            println("password is hidden by default")
+           passwordInputLayout.editText?.transformationMethod=PasswordTransformationMethod()
+        }else{
+            println("password is visible by default")
+            passwordInputLayout.editText?.transformationMethod=null
+        }
+
+        //passwordInputLayout.endIconMode=TextInputLayout.END_ICON_PASSWORD_TOGGLE
+
+        /*passwordInputLayout.setEndIconOnClickListener {
+            if(onBoardingFormViewModel.isPasswordHidden){
+                onBoardingFormViewModel.isPasswordHidden=false
+                println("password is visible now")
+                passwordInputLayout.editText?.transformationMethod=null
+                passwordInputLayout.editText?.length()
+                    ?.let { it1 -> passwordInputLayout.editText?.setSelection(it1) }
+            }else{
+                onBoardingFormViewModel.isPasswordHidden=true
+                println("password is hidden now")
+                passwordInputLayout.editText?.transformationMethod=PasswordTransformationMethod()
+                passwordInputLayout.editText?.length()
+                    ?.let { it1 -> passwordInputLayout.editText?.setSelection(it1) }
+            }
+        }*/
+
         val registerButton=view.findViewById<Button>(R.id.loginButton)
         registerButton.setOnClickListener {
             if(validateInputs()){
@@ -97,7 +122,9 @@ class LoginFragment : Fragment() {
                                 }*/
                                 Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_SHORT).show()
                             }else{
-                                Toast.makeText(requireContext(),"Invalid Credentials",Toast.LENGTH_SHORT).show()
+                                passwordInputLayout.isErrorEnabled =true
+                                passwordInputLayout.error ="Wrong Password. Try again"
+                                //Toast.makeText(requireContext(),"Invalid Credentials",Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
@@ -136,14 +163,15 @@ class LoginFragment : Fragment() {
                 password.isErrorEnabled =true
                 password.error ="Enter the Password"
                 returnValue=returnValue and false
-            }else if(!pass.isValidPassword()){
-                password.isErrorEnabled =true
-                password.error ="Password must be atleast 8 characters containing Special character, Number and Uppercase"
-                returnValue=returnValue and false
             }else{
                 password.error =null
                 password.isErrorEnabled =false
             }
+            /*else if(!pass.isValidPassword()){
+                password.isErrorEnabled =true
+                password.error ="Password must be atleast 8 characters containing Special character, Number and Uppercase"
+                returnValue=returnValue and false
+            }*/
         }
 
        return returnValue

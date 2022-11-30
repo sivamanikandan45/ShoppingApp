@@ -126,7 +126,7 @@ class ProductListFragment : Fragment() {
                 return favoriteViewModel.isFavorite(productId)
             }
 
-            override fun handle(position: Int) {
+            override fun handle(position: Int):Boolean {
                 val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
                 val loginSkipped=sharePreferences?.getBoolean("login_skipped",false)
                 val loginStatus=sharePreferences?.getBoolean("login_status",false)
@@ -149,7 +149,7 @@ class ProductListFragment : Fragment() {
                             }
                             .show()
                     }
-
+                    return false
                     /*Snackbar.make(productRecyclerView,"Login 1!!",Snackbar.LENGTH_LONG)
                         .show()*/
                 }else{
@@ -203,6 +203,7 @@ class ProductListFragment : Fragment() {
                                 .show()
                         }
                     }
+                    return true
                 }                /*if(product?.favorite==true){
                     favoriteButton.setImageResource(R.drawable.heart_red)
                 }else{
@@ -420,7 +421,7 @@ class ProductListFragment : Fragment() {
                     return favoriteViewModel.isFavorite(productId)
                 }
 
-                override fun handle(position: Int) {
+                override fun handle(position: Int):Boolean {
                     val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
                     val loginSkipped=sharePreferences?.getBoolean("login_skipped",false)
                     val loginStatus=sharePreferences?.getBoolean("login_status",false)
@@ -443,6 +444,7 @@ class ProductListFragment : Fragment() {
                                 }
                                 .show()
                         }
+                        return false
                     }else{
                         val viewModel:ProductViewModel by activityViewModels()
                         val product=adapter.list[position]
@@ -473,6 +475,7 @@ class ProductListFragment : Fragment() {
                                     .show()
                             }
                         }
+                        return true
                     }
                 }
             })
@@ -520,7 +523,7 @@ class ProductListFragment : Fragment() {
                 }
 
             }
-            (activity as AppCompatActivity)?.supportActionBar?.show()
+            (activity as AppCompatActivity).supportActionBar?.show()
             //val category=activity?.intent?.getStringExtra("category")
 
 

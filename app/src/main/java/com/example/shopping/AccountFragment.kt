@@ -100,7 +100,6 @@ class AccountFragment : Fragment() {
 
         logoutButton.setOnClickListener {
             AlertDialog.Builder(requireActivity())
-                .setTitle("Alert")
                 .setMessage("You will lose the current cart items by this action!!")
                 .setPositiveButton("Logout"){_,_ ->
                     lifecycleScope.launch(Dispatchers.IO){

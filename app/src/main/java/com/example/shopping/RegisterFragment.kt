@@ -3,6 +3,7 @@ package com.example.shopping
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.PasswordTransformationMethod
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
@@ -67,6 +68,22 @@ class RegisterFragment : Fragment() {
         }
         if(onBoardingFormViewModel.reenteredPass!=""){
             reEnteredPasswordInputLayout.editText?.setText(onBoardingFormViewModel.reenteredPass)
+        }
+
+        if(onBoardingFormViewModel.isPasswordHidden){
+            println("password is hidden by default")
+            passwordInputLayout.editText?.transformationMethod= PasswordTransformationMethod()
+        }else{
+            println("password is visible by default")
+            passwordInputLayout.editText?.transformationMethod=null
+        }
+
+        if(onBoardingFormViewModel.isRePassHidden){
+            println("password is hidden by default")
+            reEnteredPasswordInputLayout.editText?.transformationMethod= PasswordTransformationMethod()
+        }else{
+            println("password is visible by default")
+            reEnteredPasswordInputLayout.editText?.transformationMethod=null
         }
 
         val registerButton=view.findViewById<Button>(R.id.registerButton)
