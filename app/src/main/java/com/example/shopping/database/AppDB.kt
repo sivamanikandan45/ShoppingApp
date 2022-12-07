@@ -5,11 +5,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.shopping.dao.*
+import com.example.shopping.signinandsigupfeature.data.local.dao.UserDao
+import com.example.shopping.signinandsigupfeature.data.local.entity.User
 import com.example.shopping.model.*
 
 @Database(entities = [User::class,Product::class,CarouselImage::class,SelectedProduct::class,FavoriteProduct::class,RecentlyViewed::class,Address::class,Order::class,OrderedProduct::class], version = 1)
 abstract class AppDB :RoomDatabase(){
-    abstract fun getUserDao():UserDao
+    abstract fun getUserDao(): UserDao
     abstract fun getProductDao():ProductDao
     abstract fun getImageDao():ImageDao
     abstract fun getCartDao():CartDao

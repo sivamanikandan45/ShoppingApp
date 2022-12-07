@@ -1,4 +1,4 @@
-package com.example.shopping
+package com.example.shopping.signinandsigupfeature.ui.fragment
 
 import android.content.Context
 import android.content.Intent
@@ -13,8 +13,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.*
 import androidx.lifecycle.lifecycleScope
+import com.example.shopping.MainActivity
+import com.example.shopping.MyApplication
+import com.example.shopping.R
+import com.example.shopping.signinandsigupfeature.ui.di.AppContainer
+import com.example.shopping.signinandsigupfeature.ui.di.UserContainer
 import com.example.shopping.viewmodel.OnBoardingFormViewModel
-import com.example.shopping.viewmodel.UserViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
@@ -24,15 +28,17 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 class LoginFragment : Fragment() {
-    private val userViewModel: UserViewModel by activityViewModels()
+    //private val userViewModel: UserViewModel by activityViewModels()
     private val onBoardingFormViewModel:OnBoardingFormViewModel by viewModels()
     private lateinit var emailInputLayout: TextInputLayout
     private lateinit var passwordInputLayout: TextInputLayout
+    lateinit var appContainer: AppContainer
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_login, container, false)
     }
@@ -40,6 +46,9 @@ class LoginFragment : Fragment() {
     private fun CharSequence?.isValidEmail() = !isNullOrEmpty() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        appContainer=(activity?.application as MyApplication).appContainer
+        appContainer.userContainer= UserContainer(appContainer.registerUserUseCase,appContainer.checkValidUserUseCase,appContainer.getIdUsingRowId)
+        val userViewModel=appContainer.userContainer?.userViewModelFactory?.create()
 
         if(requireActivity() is MainActivity){
             requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view).visibility=View.GONE
@@ -93,17 +102,19 @@ class LoginFragment : Fragment() {
                 val password=passwordInputLayout.editText?.text.toString()
                 lifecycleScope.launch{
                     val job=launch(Dispatchers.IO) {
-                        val validUserId=userViewModel.isValidUser(email,password)
+                        val validUserId=userViewModel?.isValidUser(email,password)
                         withContext(Dispatchers.Main){
                             if(validUserId!=-1){
                                 val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
                                 with(sharePreferences?.edit()){
                                     this?.putBoolean("login_skipped",false)
                                     this?.putBoolean("login_status",true)
-                                    this?.putInt("userId",validUserId)
+                                    if (validUserId != null) {
+                                        this?.putInt("userId",validUserId)
+                                    }
                                     this?.apply()
                                 }
-                                val intent= Intent(requireContext(),MainActivity::class.java)
+                                val intent= Intent(requireContext(), MainActivity::class.java)
                                 println("got intent string as ${requireActivity().intent.getStringExtra("fragment")}")
                                 when(requireActivity().intent.getStringExtra("fragment_from")){
                                     "cart"->{intent.putExtra("fragment","cart")}

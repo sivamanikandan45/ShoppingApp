@@ -1,4 +1,4 @@
-package com.example.shopping
+package com.example.shopping.signinandsigupfeature.ui.fragment
 
 import android.content.Context
 import android.content.Intent
@@ -12,12 +12,15 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import com.example.shopping.model.Address
-import com.example.shopping.model.User
+import com.example.shopping.MainActivity
+import com.example.shopping.MyApplication
+import com.example.shopping.R
+import com.example.shopping.signinandsigupfeature.data.local.entity.User
+import com.example.shopping.signinandsigupfeature.ui.di.AppContainer
+import com.example.shopping.signinandsigupfeature.ui.di.UserContainer
 import com.example.shopping.viewmodel.OnBoardingFormViewModel
-import com.example.shopping.viewmodel.UserViewModel
+import com.example.shopping.signinandsigupfeature.ui.viewmodel.UserViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
@@ -29,11 +32,13 @@ import java.util.regex.Pattern
 
 
 class RegisterFragment : Fragment() {
-    private val userViewModel:UserViewModel by activityViewModels()
+    //private val userViewModel: UserViewModel by activityViewModels()
     private val onBoardingFormViewModel: OnBoardingFormViewModel by viewModels()
     private lateinit var emailInputLayout: TextInputLayout
     private lateinit var passwordInputLayout: TextInputLayout
     private lateinit var reEnteredPasswordInputLayout: TextInputLayout
+    lateinit var appContainer: AppContainer
+    lateinit var userViewModel:UserViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +50,9 @@ class RegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        appContainer=(activity?.application as MyApplication).appContainer
+        appContainer.userContainer= UserContainer(appContainer.registerUserUseCase,appContainer.checkValidUserUseCase,appContainer.getIdUsingRowId)
+        userViewModel= appContainer.userContainer?.userViewModelFactory?.create()!!
 
         if(requireActivity() is MainActivity){
             requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view).visibility=View.GONE

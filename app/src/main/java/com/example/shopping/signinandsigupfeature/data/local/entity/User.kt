@@ -1,4 +1,4 @@
-package com.example.shopping.model
+package com.example.shopping.signinandsigupfeature.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

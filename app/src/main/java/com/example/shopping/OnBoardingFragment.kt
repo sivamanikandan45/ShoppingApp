@@ -2,7 +2,6 @@ package com.example.shopping
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,7 +11,8 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
-import androidx.fragment.app.findFragment
+import com.example.shopping.signinandsigupfeature.ui.fragment.LoginFragment
+import com.example.shopping.signinandsigupfeature.ui.fragment.RegisterFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class OnBoardingFragment : Fragment() {
@@ -39,7 +39,7 @@ class OnBoardingFragment : Fragment() {
         loginButton.setOnClickListener {
             parentFragmentManager.commit {
                 addToBackStack(null)
-                replace(R.id.fragment_container,LoginFragment())
+                replace(R.id.fragment_container, LoginFragment())
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             }
         }
@@ -47,7 +47,7 @@ class OnBoardingFragment : Fragment() {
         registerButton.setOnClickListener {
             parentFragmentManager.commit {
                 addToBackStack(null)
-                replace(R.id.fragment_container,RegisterFragment())
+                replace(R.id.fragment_container, RegisterFragment())
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             }
         }

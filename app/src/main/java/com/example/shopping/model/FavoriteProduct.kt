@@ -3,6 +3,7 @@ package com.example.shopping.model
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.example.shopping.signinandsigupfeature.data.local.entity.User
 
 @Entity(foreignKeys = [ForeignKey(entity = User::class, parentColumns = ["userId"], childColumns = ["customerId"], onDelete = ForeignKey.CASCADE)])
 data class FavoriteProduct(@PrimaryKey(autoGenerate = true)
