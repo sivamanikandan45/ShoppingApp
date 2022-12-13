@@ -36,7 +36,7 @@ class RegisterFragment : Fragment() {
     private val onBoardingFormViewModel: OnBoardingFormViewModel by viewModels()
     private lateinit var emailInputLayout: TextInputLayout
     private lateinit var passwordInputLayout: TextInputLayout
-    private lateinit var reEnteredPasswordInputLayout: TextInputLayout
+    //private lateinit var reEnteredPasswordInputLayout: TextInputLayout
     lateinit var appContainer: AppContainer
     lateinit var userViewModel:UserViewModel
 
@@ -66,7 +66,7 @@ class RegisterFragment : Fragment() {
 
         emailInputLayout=view.findViewById<TextInputLayout>(R.id.emailInputLayout)
         passwordInputLayout=view.findViewById<TextInputLayout>(R.id.passwordInputLayout)
-        reEnteredPasswordInputLayout=view.findViewById<TextInputLayout>(R.id.reEnterPasswordLayout)
+        //reEnteredPasswordInputLayout=view.findViewById<TextInputLayout>(R.id.reEnterPasswordLayout)
 
         if(onBoardingFormViewModel.username!=""){
             emailInputLayout.editText?.setText(onBoardingFormViewModel.username)
@@ -74,9 +74,9 @@ class RegisterFragment : Fragment() {
         if(onBoardingFormViewModel.password!=""){
             passwordInputLayout.editText?.setText(onBoardingFormViewModel.password)
         }
-        if(onBoardingFormViewModel.reenteredPass!=""){
+        /*if(onBoardingFormViewModel.reenteredPass!=""){
             reEnteredPasswordInputLayout.editText?.setText(onBoardingFormViewModel.reenteredPass)
-        }
+        }*/
 
         if(onBoardingFormViewModel.isPasswordHidden){
             println("password is hidden by default")
@@ -88,10 +88,10 @@ class RegisterFragment : Fragment() {
 
         if(onBoardingFormViewModel.isRePassHidden){
             println("password is hidden by default")
-            reEnteredPasswordInputLayout.editText?.transformationMethod= PasswordTransformationMethod()
+            //reEnteredPasswordInputLayout.editText?.transformationMethod= PasswordTransformationMethod()
         }else{
             println("password is visible by default")
-            reEnteredPasswordInputLayout.editText?.transformationMethod=null
+            //reEnteredPasswordInputLayout.editText?.transformationMethod=null
         }
 
         val registerButton=view.findViewById<Button>(R.id.registerButton)
@@ -143,7 +143,7 @@ class RegisterFragment : Fragment() {
         var returnValue=true
         val mail=view?.findViewById<TextInputLayout>(R.id.emailInputLayout)
         val password=view?.findViewById<TextInputLayout>(R.id.passwordInputLayout)
-        val rePass=view?.findViewById<TextInputLayout>(R.id.reEnterPasswordLayout)
+        //val rePass=view?.findViewById<TextInputLayout>(R.id.reEnterPasswordLayout)
 
         if(mail!=null){
             if(mail.editText?.text.toString()==""){
@@ -177,7 +177,7 @@ class RegisterFragment : Fragment() {
             }
         }
 
-        if(rePass!=null){
+        /*if(rePass!=null){
             if(rePass.editText?.text.toString()==""){
                 rePass.isErrorEnabled =true
                 rePass.error ="Re enter the Password"
@@ -191,7 +191,7 @@ class RegisterFragment : Fragment() {
                 rePass.error =null
                 rePass.isErrorEnabled =false
             }
-        }
+        }*/
 
         return returnValue
     }
@@ -201,7 +201,7 @@ class RegisterFragment : Fragment() {
         onBoardingFormViewModel.apply {
             username=emailInputLayout.editText?.text.toString()
             password=passwordInputLayout.editText?.text.toString()
-            reenteredPass=reEnteredPasswordInputLayout.editText?.text.toString()
+            //reenteredPass=reEnteredPasswordInputLayout.editText?.text.toString()
         }
         super.onDestroy()
     }

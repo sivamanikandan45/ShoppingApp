@@ -409,7 +409,8 @@ class CartFragment : Fragment() {
                             addingJob.join()
                         }
                     }
-                }.show()
+                }.setAnchorView(requireActivity().findViewById(R.id.bottom_navigation_view))
+                .show()
         }
     }
 

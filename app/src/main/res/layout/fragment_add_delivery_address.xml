@@ -47,7 +47,7 @@
                     android:layout_height="wrap_content"
                     android:hint="Phone"
                     android:maxLength="10"
-                    android:inputType="number" />
+                    android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout

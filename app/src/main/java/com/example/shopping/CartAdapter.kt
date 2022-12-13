@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -185,6 +186,16 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
             } else if (quantity == 1) {
                 Toast.makeText(it.context, "Swipe Item to remove from the Cart", Toast.LENGTH_SHORT)
                     .show()
+                /*AlertDialog.Builder(requireActivity())
+                    .setTitle("Remove Item")
+                    .setMessage("Are you sure you want to remove this item?")
+                    .setPositiveButton("REMOVE") { _, _ ->
+                        removeItemFromCart(product)
+                    }
+                    .setNegativeButton("CANCEL") { _, _ ->
+                        //adapter.notifyItemChanged(position)
+                    }
+                    .show()*/
             }
         }
 

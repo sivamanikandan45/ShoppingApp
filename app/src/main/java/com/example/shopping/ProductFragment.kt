@@ -308,7 +308,7 @@ class ProductFragment : Fragment() {
                         setCurrentIndicator(position)
                     }
                 })
-                val timerTask: TimerTask = object : TimerTask() {
+                /*val timerTask: TimerTask = object : TimerTask() {
                     override fun run() {
                         autoScrollableCarousel.post {
                             autoScrollableCarousel.currentItem = (autoScrollableCarousel.currentItem + 1) % list.size
@@ -316,7 +316,7 @@ class ProductFragment : Fragment() {
                     }
                 }
                 val timer = Timer()
-                timer.schedule(timerTask, 3000, 3000)
+                timer.schedule(timerTask, 3000, 3000)*/
             }
         }
 
@@ -367,6 +367,7 @@ class ProductFragment : Fragment() {
                     addToFavorite(product)
                     println("!favorite product to favorite")
                     Snackbar.make(view,"Added to WishList",Snackbar.LENGTH_LONG)
+                        .setAnchorView(view.findViewById(R.id.button_layout))
                         .show()
 
                 }else{
@@ -374,6 +375,7 @@ class ProductFragment : Fragment() {
                     removeFromFavorite(product)
                     println("favorite product to !favorite")
                     Snackbar.make(view,"Removed from WishList",Snackbar.LENGTH_LONG)
+                        .setAnchorView(view.findViewById(R.id.button_layout))
                         .show()
                 }
             }
@@ -481,7 +483,8 @@ class ProductFragment : Fragment() {
                 Snackbar.make(it,"Added to the Cart",Snackbar.LENGTH_LONG)
                     .setAction("GO TO CART") {
                         gotoCart()
-                    }.show()
+                    }.setAnchorView(view.findViewById(R.id.button_layout))
+                    .show()
                 addToCartBtn.visibility=View.GONE
                 goToCartButton.visibility=View.VISIBLE
 
