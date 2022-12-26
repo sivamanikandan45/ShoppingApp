@@ -11,6 +11,8 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import com.example.shopping.R
 import com.example.shopping.viewmodel.FavoriteViewModel
+import com.example.shopping.viewmodel.OrderViewModel
+import com.example.shopping.viewmodel.ProductViewModel
 
 class AccountActivity : AppCompatActivity() {
 
@@ -23,6 +25,7 @@ class AccountActivity : AppCompatActivity() {
             favoriteViewModel.setUserId(currentUserId)
         }
         super.onCreate(savedInstanceState)
+        val productViewModel=ViewModelProvider(this)[ProductViewModel::class.java]
         setContentView(R.layout.activity_account)
         when(intent.getStringExtra("frag_name")){
             "wishlist"->{
@@ -38,6 +41,7 @@ class AccountActivity : AppCompatActivity() {
                 }
             "myOrders"->{
                 if(savedInstanceState==null){
+                    //orderViewModel.selectedId=intent?.getIntExtra("order_id",-1)!!
                     replaceFragment(MyOrdersFragment())
                 }
             }
@@ -58,7 +62,12 @@ class AccountActivity : AppCompatActivity() {
                 if(supportFragmentManager.backStackEntryCount>0){
                     /*val productViewModel= ViewModelProvider(this)[ProductViewModel::class.java]
                     productViewModel.pop()*/
-                    supportFragmentManager.popBackStack()
+                    val fragment=supportFragmentManager.findFragmentById(R.id.account_fragment_container)
+                    if(fragment is AddDeliveryAddressFragment){
+                        fragment.checkOnBackPressed()
+                    }else{
+                        supportFragmentManager.popBackStack()
+                    }
                 }else{
                     onBackPressed()
                 }

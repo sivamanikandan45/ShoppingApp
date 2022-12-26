@@ -165,7 +165,7 @@ class OrderAdapter:RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
 
 
 
-        private fun setImageForImageView(orderedProduct: OrderedProduct,imageView: ImageView) {
+        private fun setImageForImageView(orderedProduct: OrderedProduct, imageView: ImageView) {
             var bitmapValue:Bitmap?=null
             val bitmap: Bitmap? = ProductImageMemoryCache.getBitmapFromMemCache(orderedProduct.productId.toString())?.also {
                 println("Fetched from cache at $adapterPosition")

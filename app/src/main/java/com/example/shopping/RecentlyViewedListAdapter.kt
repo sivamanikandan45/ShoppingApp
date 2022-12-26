@@ -24,10 +24,10 @@ import java.net.ConnectException
 import java.net.URL
 
 class RecentlyViewedListAdapter():RecyclerView.Adapter<RecentlyViewedListAdapter.ViewHolder>(){
-    private lateinit var list: List<RecentlyViewed>
+    private lateinit var list: List<Product>
     private lateinit var listener: ItemClickListener
 
-    fun setData(list: List<RecentlyViewed>){
+    fun setData(list: List<Product>){
         this.list=list
     }
 
@@ -58,7 +58,7 @@ class RecentlyViewedListAdapter():RecyclerView.Adapter<RecentlyViewedListAdapter
 
 
 
-        fun bind(product: RecentlyViewed) {
+        fun bind(product: Product) {
             productName.text=product.title
             productPrice.text="₹"+product.priceAfterDiscount.toString()
             productRatingBar.rating=product.rating.toFloat()

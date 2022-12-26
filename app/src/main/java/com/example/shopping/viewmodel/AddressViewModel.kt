@@ -32,7 +32,8 @@ class AddressViewModel(application: Application): AndroidViewModel(application){
         currentUserId=userId
         viewModelScope.launch{
             val job=launch (Dispatchers.IO){
-                getAddress(currentUserId)
+                getAddressFromDB(userId)
+                //getAddress(currentUserId)
             }
             job.join()
         }
@@ -47,15 +48,19 @@ class AddressViewModel(application: Application): AndroidViewModel(application){
     }
 
     fun addAddress(address: Address){
-        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
-        dao.insertAddress(address)
-        getAddressFromDB(currentUserId)
+        viewModelScope.launch(Dispatchers.IO) {
+            val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
+            dao.insertAddress(address)
+            getAddressFromDB(currentUserId)
+        }
     }
 
     fun deleteAddress(addressId:Int){
-        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
-        dao.deleteAddress(addressId)
-        getAddressFromDB(currentUserId)
+        viewModelScope.launch(Dispatchers.IO) {
+            val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
+            dao.deleteAddress(addressId)
+            getAddressFromDB(currentUserId)
+        }
     }
 
     fun getAddressLists():List<Address>{
@@ -72,9 +77,11 @@ class AddressViewModel(application: Application): AndroidViewModel(application){
     }
 
     fun updateAddress(address: Address) {
-        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
-        dao.updateAddress(address)
-        getAddressFromDB(currentUserId)
+        viewModelScope.launch(Dispatchers.IO) {
+            val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getAddressDao()
+            dao.updateAddress(address)
+            getAddressFromDB(currentUserId)
+        }
     }
 
     fun getAddress(addressId: Int):Address {

@@ -1,5 +1,6 @@
 package com.example.shopping
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,15 +10,17 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.enums.CheckoutMode
 import com.example.shopping.model.SelectedProduct
+import com.example.shopping.model.SelectedProductEntity
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.CheckoutViewModel
 import com.example.shopping.viewmodel.ProductViewModel
+import com.google.android.material.transition.MaterialContainerTransform
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.RoundingMode
@@ -29,7 +32,7 @@ class OrderSummaryFragment : Fragment() {
     private lateinit var adapter: SelectedProductListAdapter
     private val cartViewModel: CartViewModel by activityViewModels()
     private val productViewModel: ProductViewModel by activityViewModels()
-    private lateinit var list:List<SelectedProduct>
+    private lateinit var list:List<SelectedProductEntity>
 
 private val checkoutViewModel:CheckoutViewModel by activityViewModels()
     override fun onCreateView(
@@ -39,6 +42,7 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_order_summary, container, false)
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -67,10 +71,42 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
 
         recyclerView=view.findViewById(R.id.selected_product_list)
         adapter= SelectedProductListAdapter()
+        adapter.setOnItemClickListener(object :ItemClickListener{
+            override fun onItemClick(position: Int) {
+                parentFragmentManager.commit {
+                    var product: SelectedProduct?=null
+                    product = when(checkoutViewModel.mode){
+                        CheckoutMode.BUY_NOW->{
+                            checkoutViewModel.buyNowProduct!!
+                        }
+                        CheckoutMode.OVERALL->{
+                            cartViewModel.cartItems.value?.get(position)!!
+                        }
+                    }
+                    if(product?.productId?.let { productViewModel.getProductFromID(it) }!=null){
+                        productViewModel.selectedProduct.value=productViewModel.getProductFromID(product.productId)
+                    }
+                    hide(this@OrderSummaryFragment)
+                    val fragment=ProductFragment()
+                    val item=recyclerView.findViewHolderForAdapterPosition(position)?.itemView
+                    if (product != null) {
+                        item?.transitionName="cart_item_transition_${product.productId}"
+                        addSharedElement(item!!,"cart_item_transition_${product.productId}")
+                    }
+                    fragment.sharedElementEnterTransition= MaterialContainerTransform().apply {
+                        duration=250L
+                        scrimColor= Color.TRANSPARENT
+                    }
+                    //add<ProductFragment>(R.id.fragment_container)
+                    add(R.id.checkout_fragment_container,fragment)
+                    addToBackStack(null)
+                }
+            }
+        })
         manager= LinearLayoutManager(context)
 
-        GlobalScope.launch {
-            val job=launch {
+        lifecycleScope.launch {
+            val job=launch(Dispatchers.IO) {
 
                 if(checkoutViewModel.mode==CheckoutMode.BUY_NOW){
                     withContext(Dispatchers.Main){
@@ -80,20 +116,20 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
                                     val count=checkoutViewModel.buyNowProductQuantity
                                     val oldPriceForSelectedQty=count*product.originalPrice
                                     val priceForSelectedQty=count*product.priceAfterDiscount
-                                    val selectedProduct=SelectedProduct(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,count,oldPriceForSelectedQty,priceForSelectedQty)
-                                    checkoutViewModel.buyNowProduct=selectedProduct
-                                    val list= listOf<SelectedProduct>(selectedProduct)
+                                    val selectedProductEntity=SelectedProduct(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,count,oldPriceForSelectedQty,priceForSelectedQty)
+                                    checkoutViewModel.buyNowProduct=selectedProductEntity
+                                    val list= mutableListOf(selectedProductEntity)
                                     adapter.setData(list)
 
 
                                     val decimalFormat = DecimalFormat("#.##")
                                     decimalFormat.roundingMode = RoundingMode.UP
-                                    val priceAfterDiscountRounded= decimalFormat.format(selectedProduct.priceForSelectedQuantity).toDouble()
+                                    val priceAfterDiscountRounded= decimalFormat.format(selectedProductEntity.priceForSelectedQuantity).toDouble()
                                     totalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
                                     finalTotalAmountTextView.text="₹"+priceAfterDiscountRounded.toString()
                                     checkoutViewModel.billAmount=priceAfterDiscountRounded
-                                    totalAmountBeforeDiscount.text=selectedProduct.oldPriceForSelectedQuantity.toString()
-                                    var discountAmount=selectedProduct.oldPriceForSelectedQuantity-selectedProduct.priceForSelectedQuantity
+                                    totalAmountBeforeDiscount.text=selectedProductEntity.oldPriceForSelectedQuantity.toString()
+                                    var discountAmount=selectedProductEntity.oldPriceForSelectedQuantity-selectedProductEntity.priceForSelectedQuantity
                                     val df = DecimalFormat("#.##")
                                     df.roundingMode = RoundingMode.UP
                                     discountAmount = decimalFormat.format(discountAmount).toDouble()
@@ -161,7 +197,12 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
 
         val changeAddressBtn=view.findViewById<Button>(R.id.change_address)
         changeAddressBtn.setOnClickListener {
-            activity?.onBackPressed()
+            //activity?.onBackPressed()
+            parentFragmentManager.commit {
+                addToBackStack(null)
+                replace(R.id.checkout_fragment_container,SelectAddressFragment())
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            }
         }
 
     }
@@ -169,9 +210,11 @@ private val checkoutViewModel:CheckoutViewModel by activityViewModels()
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if(!hidden){
+            println("Hidden changed claled")
             (activity as AppCompatActivity).supportActionBar?.apply {
                 title="Order Summary"
                 setDisplayHomeAsUpEnabled(true)
+                show()
             }
         }
     }

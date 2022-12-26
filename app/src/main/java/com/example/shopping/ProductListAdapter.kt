@@ -105,9 +105,9 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
                         val isLogined=favoriteButtonListener.handle(adapterPosition)
                         if(isLogined){
                             if(favoriteButtonListener.isFavorite(adapterPosition)){
-                                imageButton.setImageResource(R.drawable.border_heart)
-                            }else{
                                 imageButton.setImageResource(R.drawable.heart_red)
+                            }else{
+                                imageButton.setImageResource(R.drawable.border_heart)
                             }
                         }
                     }

@@ -19,7 +19,8 @@ data class Order(@PrimaryKey(autoGenerate = true)
                  val area:String,
                  val itemCount:Int,
                  val originalTotalPrice:Double,
-                 val discount:Double, val totalAfterDiscount:Double,
+                 val discount:Double,
+                 val totalAfterDiscount:Double,
                  val orderedDate:String,
                  val expectedDeliveryDate:String,
                  val paymentMode:String)

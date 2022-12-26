@@ -54,7 +54,7 @@ class CategoryActivity : AppCompatActivity() {
     }else if(fragName=="product"){
         //intent.putExtra("fragment_name","")
         val id=intent.getIntExtra("selected_product_id",0)
-        GlobalScope.launch {
+        lifecycleScope.launch {
             val job=launch (Dispatchers.IO){
                 productViewModel.getProductByID(id)
             }
@@ -73,7 +73,7 @@ class CategoryActivity : AppCompatActivity() {
     }
 
         /*if(intent!=null){
-            val position=intent.getIntExtra("SelectedProduct",-1)
+            val position=intent.getIntExtra("SelectedProductEntity",-1)
             if(position!=-1){
                 println("?Replaced Product Frgment")
                 productViewModel.selectedProduct.value=productViewModel.categoryList.value?.get(position)
@@ -133,13 +133,7 @@ class CategoryActivity : AppCompatActivity() {
         if (currentUserId != null) {
             favoriteViewModel.setUserId(currentUserId)
         }
-
-        lifecycleScope.launch {
-            val job=launch(Dispatchers.IO){
-                cartViewModel.getCartFromDB()
-            }
-            job.join()
-        }
+        cartViewModel.getCartFromDB()
         super.onStart()
     }
 

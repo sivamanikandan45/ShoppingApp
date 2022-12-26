@@ -1,11 +1,6 @@
 package com.example.shopping.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-@Entity
-data class OrderedProduct(@PrimaryKey(autoGenerate = true)
-                          val id:Int,
+data class OrderedProduct(val id:Int,
                           val orderId:Int,
                           val productId:Int,
                           val productName:String,

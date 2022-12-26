@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -22,10 +23,14 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.SelectedProduct
+import com.example.shopping.model.SelectedProductEntity
 import com.example.shopping.util.SwipeToDeleteCallback
 import com.example.shopping.viewmodel.CartViewModel
+import com.example.shopping.viewmodel.ProductViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialContainerTransform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -39,6 +44,7 @@ class CartFragment : Fragment() {
     private lateinit var adapter: CartAdapter
     private var itemTouch:ItemTouchHelper?=null
     private val cartViewModel:CartViewModel by activityViewModels()
+    private val productViewModel:ProductViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,6 +54,26 @@ class CartFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_cart, container, false)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        //exitTransition = MaterialElevationScale(/* growing= */ false)
+        /*reenterTransition = Hold().apply {
+            interpolator=AccelerateDecelerateInterpolator()
+        }*/
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        if(!hidden){
+            (activity as AppCompatActivity).supportActionBar?.apply {
+                show()
+                title="Cart"
+                setDisplayHomeAsUpEnabled(false)
+            }
+            val btm=requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
+            btm.visibility=View.VISIBLE
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.apply {
@@ -55,6 +81,11 @@ class CartFragment : Fragment() {
             title="Cart"
             setDisplayHomeAsUpEnabled(false)
         }
+        postponeEnterTransition()
+        view.doOnPreDraw {
+            startPostponedEnterTransition()
+        }
+        //view.findViewById<View>(androidx.appcompat.R.id.action_bar_container)
 
         /*val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true ) {
@@ -62,6 +93,7 @@ class CartFragment : Fragment() {
                     parentFragmentManager.popBackStack()
                 }
             }
+
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)*/
         /*val bottomSheet=view.findViewById<FrameLayout>(R.id.bottom_sheet)
@@ -153,28 +185,66 @@ class CartFragment : Fragment() {
 
         recyclerView=view.findViewById(R.id.cart_recycler_view)
         adapter= CartAdapter()
+        adapter.setOnItemClickListener(object :ItemClickListener{
+            override fun onItemClick(position: Int) {
+                println("Selected $position")
+                parentFragmentManager.commit {
+                    val product=cartViewModel.cartItems.value?.get(position)
+                    println("product id of the clciked itenm is ${product?.productId}")
+                    if(product?.productId?.let { productViewModel.getProductFromID(it) }!=null){
+                        productViewModel.selectedProduct.value=productViewModel.getProductFromID(product.productId)
+                    }
+                    hide(this@CartFragment)
+                    val fragment=ProductFragment()
+                    //val item=view.findViewById<View>(R.id.item_cart)
+                    val item=recyclerView.findViewHolderForAdapterPosition(position)?.itemView
+                    if (product != null) {
+                        item?.transitionName="cart_item_transition_${product.productId}"
+                        addSharedElement(item!!,"cart_item_transition_${product.productId}")
+                    }
+                    fragment.sharedElementEnterTransition=MaterialContainerTransform().apply {
+                        duration=250L
+//                        interpolator=AccelerateDecelerateInterpolator()
+                        scrimColor=Color.TRANSPARENT
+                    }
+                    //add<ProductFragment>(R.id.fragment_container)
+                    add(R.id.fragment_container,fragment)
+                    addToBackStack(null)
+                    val btm=requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
+                    btm.visibility=View.GONE
+
+
+                }
+            }
+        })
         adapter.setOnQuantityClickListener(object :QuantityButtonListener{
             override fun onIncreaseClicked(adapterPosition: Int) {
                 println("Increase clicked at $adapterPosition")
-                println("increased item is ${cartViewModel.cartItems.value?.get(adapterPosition)?.productName}")
+                //println("increased item is ${cartViewModel.cartItems.value?.get(adapterPosition)?.productName}")
                 val product=cartViewModel.cartItems.value?.get(adapterPosition)
-                GlobalScope.launch {
-                    val job=launch(Dispatchers.IO) {
-                        cartViewModel.updateQuantity(product!!,product.quantity)
-                    }
-                    job.join()
-                }
+                cartViewModel.updateQuantity(product!!,product.quantity)
             }
 
             override fun onDecreaseClicked(adapterPosition:Int) {
                 println("Decrease clicked")
                 val product=cartViewModel.cartItems.value?.get(adapterPosition)
-                GlobalScope.launch {
-                    val job=launch(Dispatchers.IO) {
-                        cartViewModel.updateQuantity(product!!,product.quantity)
-                    }
-                    job.join()
+                if(product?.quantity==1){
+                    AlertDialog.Builder(requireActivity())
+                        .setTitle("Remove Item")
+                        .setMessage("Are you sure you want to remove this item?")
+                        .setPositiveButton("REMOVE"){ _,_ ->
+                            removeItemFromCart(product)
+                        }
+                        .setNegativeButton("CANCEL"){_,_ ->
+                            //adapter.notifyItemChanged(position)
+                        }
+                        .show()
                 }
+            }
+
+            override fun updateQuantity(adapterPosition: Int) {
+                val product=cartViewModel.cartItems.value?.get(adapterPosition)
+                cartViewModel.updateQuantity(product!!,product.quantity)
             }
         })
         manager= LinearLayoutManager(context)
@@ -304,8 +374,8 @@ class CartFragment : Fragment() {
         //itemTouch.attachToRecyclerView(null)
         itemTouch?.attachToRecyclerView(recyclerView)
 
-        GlobalScope.launch {
-            val job=launch {
+        lifecycleScope.launch {
+            val job=launch(Dispatchers.IO) {
                 adapter.setData(cartViewModel.getCartItems())
                 val priceAfterDiscount=cartViewModel.getCartAmountAfterDiscount()
                 val priceBeforeDiscount=cartViewModel.getCartAmountBeforeDiscount()
@@ -361,7 +431,7 @@ class CartFragment : Fragment() {
             totalAmountTextView.text=withSymbol
             finalTotalAmountTextView.text=withSymbol
 
-            GlobalScope.launch{
+            lifecycleScope.launch{
                 val job=launch(Dispatchers.IO) {
                     val priceAfterDiscount=it
                     val priceBeforeDiscount=cartViewModel.getCartAmountBeforeDiscount()
@@ -393,25 +463,15 @@ class CartFragment : Fragment() {
     }
 
     private fun removeItemFromCart(product: SelectedProduct?) {
-        GlobalScope.launch {
-            val job = launch(Dispatchers.IO) {
-                cartViewModel.deleteProduct(product?.productId)
-                println("$product is deleted")
-            }
-            job.join()
-            Snackbar.make(recyclerView, "1 Item Removed", Snackbar.LENGTH_LONG)
+        cartViewModel.deleteProduct(product?.productId)
+        Snackbar.make(recyclerView, "1 Item Removed", Snackbar.LENGTH_LONG)
                 .setAction("UNDO") {
                     if (product != null) {
-                        GlobalScope.launch {
-                            val addingJob = launch(Dispatchers.IO) {
-                                cartViewModel.addToCart(product)
-                            }
-                            addingJob.join()
-                        }
+                        val selectedProduct=SelectedProductEntity(product.productId,product.oldPricePerProduct,product.discount,product.pricePerProduct,product.quantity,product.oldPriceForSelectedQuantity,product.priceForSelectedQuantity)
+                        cartViewModel.addToCart(selectedProduct)
                     }
                 }.setAnchorView(requireActivity().findViewById(R.id.bottom_navigation_view))
                 .show()
-        }
     }
 
 }

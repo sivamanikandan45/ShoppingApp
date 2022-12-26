@@ -55,17 +55,21 @@ class SelectAddressFragment : Fragment() {
             }
         })
 
-        selectAddressListAdapter.setData(addressViewModel.getAddressLists())
-        println(addressViewModel.getAddressLists())
+        //selectAddressListAdapter.setData(addressViewModel.getAddressLists())
+        addressViewModel.getAddressLists()
+        //println)
         addressListManager= LinearLayoutManager(requireContext())
         addressListRecyclerView.adapter=selectAddressListAdapter
         addressListRecyclerView.layoutManager=addressListManager
 
         addressViewModel.addressList.observe(viewLifecycleOwner, Observer {
-            println("observed $it")
+            println("observed ${it.size }")
             selectAddressListAdapter.setData(it)
             if(it.isEmpty()){
+                println("address list is empty")
                 deliverHereBtn.isEnabled=false
+            }else{
+                deliverHereBtn.isEnabled=true
             }
             selectAddressListAdapter.updateSelectedPosition(checkoutViewModel.selectedAddressPosition)
             //selectAddressListAdapter.notifyDataSetChanged()
@@ -77,7 +81,7 @@ class SelectAddressFragment : Fragment() {
             println("Selected address is ${checkoutViewModel.selectedAddress.value}")
             checkoutViewModel.selectedAddressPosition=selectAddressListAdapter.selectedPosition
             parentFragmentManager.commit{
-                addToBackStack(null)
+                //addToBackStack(null)
                 replace(R.id.checkout_fragment_container,OrderSummaryFragment())
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             }

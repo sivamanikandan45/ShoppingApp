@@ -1,7 +1,6 @@
 package com.example.shopping
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,10 +10,13 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import com.example.shopping.enums.CheckoutMode
 import com.example.shopping.model.Order
-import com.example.shopping.model.OrderedProduct
+import com.example.shopping.model.OrderedProductEntity
 import com.example.shopping.viewmodel.AddressViewModel
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.CheckoutViewModel
@@ -31,6 +33,8 @@ class OrderPlacedFragment : Fragment() {
     private val cartViewModel:CartViewModel by activityViewModels()
     private val orderViewModel:OrderViewModel by activityViewModels()
     private val addressViewModel:AddressViewModel by activityViewModels()
+    var order: Order? =null
+    var orderId=0
 
 
     override fun onCreateView(
@@ -54,16 +58,18 @@ class OrderPlacedFragment : Fragment() {
         val currentUserId=sharePreferences?.getInt("userId",-1)
         if (currentUserId != null) {
             addressViewModel.setUserId(currentUserId)
+            orderViewModel.setUserId(currentUserId)
         }
         val redirect=view.findViewById<TextView>(R.id.redirect)
-        when(checkoutViewModel.mode){
+        redirect.text="Redirecting to Order Details...."
+        /*when(checkoutViewModel.mode){
             CheckoutMode.BUY_NOW->{
-                redirect.text="Redirecting to Orders...."
+
             }
             else->{
                 redirect.text="Redirecting to Cart...."
             }
-        }
+        }*/
         placeOrder()
 
         val callback: OnBackPressedCallback =
@@ -86,7 +92,7 @@ class OrderPlacedFragment : Fragment() {
     }
 
     private fun placeOrder() {
-        GlobalScope.launch {
+        lifecycleScope.launch {
             val job=launch(Dispatchers.IO) {
                 val decimalFormat = DecimalFormat("#.##")
                 decimalFormat.roundingMode = RoundingMode.UP
@@ -116,7 +122,6 @@ class OrderPlacedFragment : Fragment() {
                 discountAmount = decimalFormat.format(discountAmount).toDouble()
 
                 val address= selectedAddressId?.let { addressViewModel.getAddress(it) }
-                var order: Order? =null
                 val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
                 val currentUserId=sharePreferences?.getInt("userId",-1)
                 if(address!=null&&currentUserId!=-1) {
@@ -143,22 +148,22 @@ class OrderPlacedFragment : Fragment() {
                 }
                 println("Hello world")
                 if(order!=null){
-                    val rowId=orderViewModel.placeOrder(order)
+                    val rowId=orderViewModel.placeOrder(order!!)
                     println("Row iD is $rowId")
-                    val id=orderViewModel.getIdUsingRowId(rowId)
-                    println("Id of the $id")
+                    orderId=orderViewModel.getIdUsingRowId(rowId)
+                    println("Id of the $orderId")
                     if(checkoutViewModel.mode==CheckoutMode.OVERALL){
                         for(i in 0 until cartViewModel.cartItems.value?.size!!){
                             val prod= cartViewModel.cartItems.value!![i]
-                            val orderedProduct=OrderedProduct(0,id,prod.productId,prod.productName,prod.productBrand,prod.oldPriceForSelectedQuantity,prod.priceForSelectedQuantity,prod.discount,prod.quantity,prod.imageUrl)
-                            orderViewModel.addOrderedProduct(orderedProduct)
+                            val orderedProductEntity=OrderedProductEntity(0,orderId,prod.productId,prod.oldPriceForSelectedQuantity,prod.priceForSelectedQuantity,prod.discount,prod.quantity)
+                            orderViewModel.addOrderedProduct(orderedProductEntity)
                         }
                         cartViewModel.clearCartItems()
                     }else if(checkoutViewModel.mode==CheckoutMode.BUY_NOW){
                         val prod=checkoutViewModel.buyNowProduct
                         if(prod!=null){
-                            val orderedProduct=OrderedProduct(0,id,prod.productId,prod.productName,prod.productBrand,prod.oldPriceForSelectedQuantity,prod.priceForSelectedQuantity,prod.discount,prod.quantity,prod.imageUrl)
-                            orderViewModel.addOrderedProduct(orderedProduct)
+                            val orderedProductEntity=OrderedProductEntity(0,orderId,prod.productId,prod.oldPriceForSelectedQuantity,prod.priceForSelectedQuantity,prod.discount,prod.quantity)
+                            orderViewModel.addOrderedProduct(orderedProductEntity)
                         }
                         checkoutViewModel.buyNowProductId=0
                         checkoutViewModel.buyNowProductQuantity=0
@@ -170,7 +175,17 @@ class OrderPlacedFragment : Fragment() {
             }
             job.join()
             withContext(Dispatchers.Main){
-                val intent=Intent(requireContext(),MainActivity::class.java)
+                if(orderId!=0){
+                    println(orderViewModel.orderList.value)
+                    orderViewModel.selectedOrder.value=orderViewModel.getOrder(orderId)
+                    orderViewModel.fromCheckOutPage=true
+                    parentFragmentManager.commit {
+                        addToBackStack(null)
+                        replace(R.id.checkout_fragment_container,OrderDetailFragment())
+                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    }
+                }
+                /*val intent=Intent(requireContext(),MainActivity::class.java)
                 if(checkoutViewModel.mode==CheckoutMode.BUY_NOW){
                     intent.putExtra("fragment","account")
                 }
@@ -178,7 +193,7 @@ class OrderPlacedFragment : Fragment() {
                     intent.putExtra("fragment","cart")
                 }
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
+                startActivity(intent)*/
             }
         }
             //job.join()

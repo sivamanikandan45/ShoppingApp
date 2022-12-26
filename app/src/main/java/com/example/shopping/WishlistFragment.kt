@@ -12,21 +12,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.FavoriteProduct
-import com.example.shopping.model.Product
-import com.example.shopping.model.SelectedProduct
+import com.example.shopping.model.SelectedProductEntity
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.FavoriteViewModel
 import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.RecentlyViewedViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class WishlistFragment : Fragment() {
@@ -49,7 +46,7 @@ class WishlistFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        GlobalScope.launch {
+        lifecycleScope.launch {
             val job=launch (Dispatchers.IO){
                 val amount=cartViewModel.getCartItemCount()
                 favoriteViewModel.getWishlistItems()
@@ -61,18 +58,17 @@ class WishlistFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.show()
-        (activity as AppCompatActivity).supportActionBar?.title="Wishlist"
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            show()
+            title="Wishlist"
+        }
         val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
         val currentUserId=sharePreferences?.getInt("userId",-1)
         if (currentUserId != null) {
             favoriteViewModel.setUserId(currentUserId)
         }
-        //(activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
         if(favoriteViewModel.calledFrom=="Main"){
-            /*(activity as AppCompatActivity).supportActionBar?.setHomeButtonEnabled(false); // disable the button
-            (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false); // remove the left caret
-            (activity as AppCompatActivity).supportActionBar?.setDisplayShowHomeEnabled(false);*/
             (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         }else if(favoriteViewModel.calledFrom=="Account"){
             println("called from acc")
@@ -116,53 +112,63 @@ class WishlistFragment : Fragment() {
         })
 
         adapter.setWishListListener(object :WishlistListener{
-            override fun addToCart(position: Int) {
+            override fun moveToCart(position: Int) {
                 val product=favoriteViewModel.favoriteItems.value?.get(position)
-                if(product?.let { cartViewModel.isProductInCart(it?.productId) } == true){
-                    println("Already in the Cart")
-                    Snackbar.make(recyclerView,"Already present in the Cart",Snackbar.LENGTH_LONG)
-                        .show()
-                }else{
-                    println("Not present in the Cart")
-                    lifecycleScope.launch {
-                        val job=launch (Dispatchers.IO){
-                            //val product=favoriteViewModel.favoriteItems.value?.get(position)
-                            if(product!=null){
-                                val selectedProduct= SelectedProduct(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,1,product.originalPrice,product.priceAfterDiscount)
-                                cartViewModel.addToCart(selectedProduct)
-                            }
+                /*val dialogFragment=QuantityDialogFragment(this@WishlistFragment)
+                dialogFragment.show(parentFragmentManager,"")*/
+                if(product?.let { cartViewModel.isProductInCart(it.productId) } == true){
+                    val count=cartViewModel.getProductCount(product.productId)
+                    val selectedProduct=cartViewModel.selectedProduct(product.productId)
+                    if (selectedProduct != null) {
+                        if(count!=10){
+                            cartViewModel.updateQuantity(selectedProduct,selectedProduct.quantity+1)
+                            favoriteViewModel.deleteFromFavorites(selectedProduct.productId)
+                            Snackbar.make(recyclerView,"Moved to the Cart",Snackbar.LENGTH_LONG)
+                                .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation_view))
+                                .show()
+                        }else{
+                            Snackbar.make(recyclerView,"Already 10 items of this product exists in the Cart",Snackbar.LENGTH_LONG)
+                                .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation_view))
+                                .show()
                         }
-                        job.join()
                     }
-                    Snackbar.make(recyclerView,"Added to the Cart",Snackbar.LENGTH_LONG)
+                }else{
+                    if(product!=null){
+                        val selectedProductEntity = SelectedProductEntity(product.productId,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,1,product.originalPrice,product.priceAfterDiscount)
+                        cartViewModel.addToCart(selectedProductEntity)
+                        favoriteViewModel.deleteFromFavorites(selectedProductEntity.productId)
+                    }
+                    Snackbar.make(recyclerView,"Moved to the Cart",Snackbar.LENGTH_LONG)
+                        .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation_view))
                         .show()
                 }
             }
 
             override fun removeItem(position: Int) {
                 val product=favoriteViewModel.favoriteItems.value?.get(position)
-                println("The clicked product is $product")
-                GlobalScope.launch {
-                    val job=launch(Dispatchers.IO) {
-                        if(product!=null){
-                            favoriteViewModel.deleteFromFavorites(product.productId)
-                            /*productViewModel.removeFavorite(product.productId)*/
-                            println("Removing recently viewed item")
-                            recentlyViewedViewModel.updateFavoriteStatus(false,product.productId)
+                var id=0
+                if(product!=null){
+                    favoriteViewModel.deleteFromFavorites(product.productId)
+                    if (currentUserId != null) {
+                        lifecycleScope.launch(Dispatchers.IO){
+                            id=favoriteViewModel.getIdOfFavorite(product.productId,currentUserId)
                         }
                     }
-                    job.join()
-                    Snackbar.make(recyclerView,"Removed from WishList", Snackbar.LENGTH_LONG)
-                        .setAction("UNDO"){
-                            undoDelete(product)
-                        }
-                        .show()
+                    //recentlyViewedViewModel.updateFavoriteStatus(false,product.productId)
                 }
+                Snackbar.make(recyclerView,"Removed from WishList", Snackbar.LENGTH_LONG)
+                        .setAction("UNDO"){
+                            val favoriteProduct=
+                                currentUserId?.let { it1 -> product?.productId?.let { it2 -> FavoriteProduct(id, it2, it1) } }
+                            undoDelete(favoriteProduct)
+                        }
+                        .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation_view))
+                        .show()
             }
 
         })
 
-        GlobalScope.launch {
+        lifecycleScope.launch {
             val job=launch (Dispatchers.IO){
                 favoriteViewModel.getWishlistItems()
                 //adapter.setData(favoriteViewModel.getWishlistItems())
@@ -173,7 +179,6 @@ class WishlistFragment : Fragment() {
         manager = if (activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_PORTRAIT) {
             GridLayoutManager(context,2)
         } else {
-            //mRecycler.setLayoutManager(GridLayoutManager(mContext, 4))
             GridLayoutManager(context,4)
         }
 
@@ -185,13 +190,11 @@ class WishlistFragment : Fragment() {
         //val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
         val loginSkipped=sharePreferences?.getBoolean("login_skipped",false)
         val loginStatus=sharePreferences?.getBoolean("login_status",false)
-        println("login status is $loginStatus")
-        println("login  skipped status is $loginSkipped")
+
         val loginButton=view.findViewById<Button>(R.id.login)
         loginButton.setOnClickListener {
-            println("login button clicked")
             if(loginSkipped!! || !loginStatus!!){
-                with(sharePreferences?.edit()){
+                with(sharePreferences.edit()){
                     this?.putBoolean("login_skipped",false)
                     this?.apply()
                 }
@@ -216,7 +219,6 @@ class WishlistFragment : Fragment() {
                     scroll.visibility=View.VISIBLE
                     empty.visibility=View.GONE
                     favoriteViewModel.favoriteItems.value?.let { it1 -> adapter.setData(it1) }
-                    //adapter.notifyDataSetChanged()
                 }
             })
         }
@@ -238,15 +240,9 @@ class WishlistFragment : Fragment() {
     }
 
     private fun undoDelete(product: FavoriteProduct?) {
-        GlobalScope.launch {
-            val job=launch(Dispatchers.IO) {
-                if(product!=null){
-                    favoriteViewModel.addToFavorites(product)
-                    //productViewModel.markAsFavorite(product.productId)
-                    recentlyViewedViewModel.updateFavoriteStatus(true,product.productId)
-                }
-            }
-            job.join()
+        if(product!=null){
+            favoriteViewModel.addToFavorites(product)
+            //recentlyViewedViewModel.updateFavoriteStatus(true,product.productId)
         }
     }
 

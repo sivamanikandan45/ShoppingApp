@@ -10,11 +10,11 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.example.shopping.model.CarouselImage
 import com.example.shopping.viewmodel.ProductViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -39,7 +39,7 @@ class ProductImageActivity : AppCompatActivity() {
         }
 
         var list: MutableList<CarouselImage> = mutableListOf<CarouselImage>()
-        GlobalScope.launch {
+        lifecycleScope.launch {
             val job=launch (Dispatchers.IO){
                 println("Got the following values from intent")
                 val productId=intent.getIntExtra("productId",0)

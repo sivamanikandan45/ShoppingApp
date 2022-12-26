@@ -39,7 +39,7 @@ class AccountFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        GlobalScope.launch {
+        lifecycleScope.launch {
             val job=launch (Dispatchers.IO){
                 val amount=cartViewModel.getCartItemCount()
                 //adapter.setData(favoriteViewModel.getWishlistItems())
@@ -102,24 +102,17 @@ class AccountFragment : Fragment() {
             AlertDialog.Builder(requireActivity())
                 .setMessage("You will lose the current cart items by this action!!")
                 .setPositiveButton("Logout"){_,_ ->
-                    lifecycleScope.launch(Dispatchers.IO){
-                        val job=launch {
                             cartViewModel.clearCartItems()
-                            withContext(Dispatchers.Main){
-                                val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
-                                with(sharePreferences?.edit()){
-                                    this?.putBoolean("login_skipped",false)
-                                    this?.putBoolean("login_status",false)
-                                    this?.putInt("userId",-1)
-                                    this?.apply()
+                            //val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                            with(sharePreferences.edit()){
+                                this?.putBoolean("login_skipped",false)
+                                this?.putBoolean("login_status",false)
+                                this?.putInt("userId",-1)
+                                this?.apply()
                                 }
-                                val intent= Intent(requireContext(),MainActivity::class.java)
-                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                startActivity(intent)
-                            }
-                        }
-                        job.join()
-                    }
+                            val intent= Intent(requireContext(),MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
                 }
                 .setNegativeButton("CANCEL"){_,_ ->
 

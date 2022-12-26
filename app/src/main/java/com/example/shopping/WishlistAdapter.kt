@@ -11,6 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.FavoriteProduct
+import com.example.shopping.model.Product
 import com.example.shopping.util.ProductImageMemoryCache
 import com.example.shopping.util.WishlistDiffUtil
 import com.google.android.material.imageview.ShapeableImageView
@@ -23,11 +24,11 @@ import java.net.URL
 
 class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
     //private lateinit var list: List<FavoriteProduct>
-    private var list= listOf<FavoriteProduct>()
+    private var list= listOf<Product>()
     private lateinit var wishListListener: WishlistListener
     private lateinit var listener:ItemClickListener
 
-    fun setData(list: List<FavoriteProduct>){
+    fun setData(list: List<Product>){
         println("set Data is called")
         val oldList=this.list
         println("old list is $oldList")
@@ -62,7 +63,7 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
         val discount: TextView
         val menu:ImageButton
         val menuParent:ConstraintLayout
-        val addToCartBtn:Button
+        val moveToCartBtn:Button
         var loadingPosition=-1
         //val progressBar:ProgressBar
 
@@ -74,15 +75,15 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
             discount=view.findViewById<TextView>(R.id.favorite_product_discount)
             menu=view.findViewById(R.id.wishlist_item_menu)
             menuParent=view.findViewById(R.id.wishlist_item_parent)
-            addToCartBtn=view.findViewById(R.id.favorite_add_to_cart_btn)
+            moveToCartBtn=view.findViewById(R.id.favorite_move_to_cart_btn)
             //progressBar=view.findViewById(R.id.progress)
 
             view.setOnClickListener {
                 listener.onItemClick(adapterPosition)
             }
 
-            addToCartBtn.setOnClickListener {
-                wishListListener.addToCart(adapterPosition)
+            moveToCartBtn.setOnClickListener {
+                wishListListener.moveToCart(adapterPosition)
             }
 
             menu.setOnClickListener {
@@ -102,7 +103,7 @@ class WishlistAdapter:RecyclerView.Adapter<WishlistAdapter.ViewHolder>() {
 
 
 
-        fun bind(product: FavoriteProduct) {
+        fun bind(product: Product) {
             productName.text=product.title
             productPrice.text="₹"+product.priceAfterDiscount.toString()
             //productRatingBar.rating=product.rating.toFloat()

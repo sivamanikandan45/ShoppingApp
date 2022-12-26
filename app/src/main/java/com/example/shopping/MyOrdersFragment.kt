@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.OrderedProduct
+import com.example.shopping.model.OrderedProductEntity
 import com.example.shopping.viewmodel.OrderViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -30,8 +31,8 @@ class MyOrdersFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        GlobalScope.launch {
-            val job=launch(Dispatchers.IO) {
+        /*GlobalScope.launch {
+            val job=launch(Dispatchers.IO) {*/
                 val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
                 val currentUserId=sharePreferences?.getInt("userId",-1)
                 if(currentUserId!=-1){
@@ -40,9 +41,9 @@ class MyOrdersFragment : Fragment() {
                         orderViewModel.getOrdersFromDB(currentUserId)
                     }
                 }
-            }
+            /*}
             job.join()
-        }
+        }*/
     }
 
     override fun onCreateView(
@@ -104,6 +105,11 @@ class MyOrdersFragment : Fragment() {
             orderAdapter.setData(it)
             orderAdapter.notifyDataSetChanged()*/
         })
+    }
+
+    override fun onResume() {
+        (activity as AppCompatActivity).supportActionBar?.show()
+        super.onResume()
     }
 
     private fun replaceFragment(fragment: Fragment) {

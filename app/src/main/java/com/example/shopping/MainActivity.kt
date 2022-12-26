@@ -10,12 +10,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.shopping.util.CheckInternet
 import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.CustomViewModel
 import com.example.shopping.viewmodel.FavoriteViewModel
+import com.example.shopping.viewmodel.ProductViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -28,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         val viewModel= ViewModelProvider(this)[CustomViewModel::class.java]
         val cartViewModel= ViewModelProvider(this)[CartViewModel::class.java]
+        val productViewModel= ViewModelProvider(this)[ProductViewModel::class.java]
         val favViewModel= ViewModelProvider(this)[FavoriteViewModel::class.java]
         val sharePreferences=getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
         val currentUserId=sharePreferences?.getInt("userId",-1)
@@ -36,8 +39,8 @@ class MainActivity : AppCompatActivity() {
         }
         var amount=0
 
-        GlobalScope.launch {
-            val job=launch{
+        lifecycleScope.launch {
+            val job=launch(Dispatchers.IO){
                amount=cartViewModel.getCartItemCount()
             }
             job.join()

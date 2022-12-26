@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.example.shopping.model.FavoriteProduct
 import com.example.shopping.model.Product
 
-class WishlistDiffUtil(private val oldList:List<FavoriteProduct>, private val newList: List<FavoriteProduct>):DiffUtil.Callback(){
+class WishlistDiffUtil(private val oldList:List<Product>, private val newList: List<Product>):DiffUtil.Callback(){
     override fun getOldListSize(): Int {
         return oldList.size
     }

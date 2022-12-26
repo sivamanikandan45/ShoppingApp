@@ -5,11 +5,13 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.example.shopping.signinandsigupfeature.data.local.entity.User
 
-@Entity(foreignKeys = [ForeignKey(entity = User::class, parentColumns = ["userId"], childColumns = ["customerId"], onDelete = ForeignKey.CASCADE)])
-data class FavoriteProduct(@PrimaryKey(autoGenerate = true)
-val id:Int,
-val productId:Int,
-                           val customerId:Int,
+@Entity(foreignKeys = [ForeignKey(entity = User::class, parentColumns = ["userId"], childColumns = ["customerId"], onDelete = ForeignKey.CASCADE),
+                        ForeignKey(entity = Product::class, parentColumns = ["productId"], childColumns = ["productId"], onDelete = ForeignKey.CASCADE)])
+data class FavoriteProduct(@PrimaryKey(autoGenerate = true) val id:Int,
+                           val productId:Int,
+                           val customerId:Int)
+
+/*
 val title:String,
 val description:String,
 val originalPrice:Double,
@@ -19,5 +21,4 @@ val rating:String,
 val stock:Int,
 val brand:String,
 val category:String,
-val thumbnail:String,
-)
+val thumbnail:String*/

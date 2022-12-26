@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.OrderedProduct
+import com.example.shopping.model.OrderedProductEntity
 import com.example.shopping.util.ProductImageMemoryCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -22,8 +23,15 @@ import java.text.DecimalFormat
 
 class OrderedProductListAdapter :RecyclerView.Adapter<OrderedProductListAdapter.ViewHolder>(){
     private var list= listOf<OrderedProduct>()
+    private lateinit var listener:ItemClickListener
+
     fun setData(list: List<OrderedProduct>){
         this.list=list
+    }
+
+    fun setOnItemClickListener(listener: ItemClickListener){
+        println("Called and set")
+        this.listener=listener
     }
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view){
@@ -33,28 +41,28 @@ class OrderedProductListAdapter :RecyclerView.Adapter<OrderedProductListAdapter.
                 else paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
         }
 
-        fun bind(orderedProduct: OrderedProduct) {
-            productNameTextView.text=orderedProduct.productName
+        fun bind(orderedProductEntity: OrderedProduct) {
+            productNameTextView.text=orderedProductEntity.productName
             val df = DecimalFormat("#.##")
             df.roundingMode = RoundingMode.UP
-            val caad= df.format(orderedProduct.priceForSelectedQuantity).toDouble()
+            val caad= df.format(orderedProductEntity.priceForSelectedQuantity).toDouble()
             productPriceTextView.text="₹"+caad.toString()
-            productBrandTextView.text=orderedProduct.brand
-            productOldPriceTextView.text="₹"+orderedProduct.oldPriceForSelectedQuantity.toString()
+            productBrandTextView.text=orderedProductEntity.brand
+            productOldPriceTextView.text="₹"+orderedProductEntity.oldPriceForSelectedQuantity.toString()
             productOldPriceTextView.showStrikeThrough(true)
-            discountTextView.text=orderedProduct.discount.toString()+"% OFF"
-            quantityTextView.text=orderedProduct.quantity.toString()
+            discountTextView.text=orderedProductEntity.discount.toString()+"% OFF"
+            quantityTextView.text=orderedProductEntity.quantity.toString()
 
             var bitmapValue: Bitmap?=null
 
-            val bitmap: Bitmap? = ProductImageMemoryCache.getBitmapFromMemCache(orderedProduct.productId.toString())?.also {
+            val bitmap: Bitmap? = ProductImageMemoryCache.getBitmapFromMemCache(orderedProductEntity.productId.toString())?.also {
                 println("Fetched from cache at $adapterPosition")
                 productImageView.setImageBitmap(it)
                 //progressBar.visibility=View.GONE
             } ?:run{
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
-                        val imageUrl = URL(orderedProduct.thumbnail)
+                        val imageUrl = URL(orderedProductEntity.thumbnail)
                         withContext(Dispatchers.Main) {
                             productImageView.setImageResource(R.drawable.placeholder)
                         }
@@ -70,7 +78,7 @@ class OrderedProductListAdapter :RecyclerView.Adapter<OrderedProductListAdapter.
                     val imageSettingCoroutine=launch(Dispatchers.Main){
                         if(bitmapValue!=null){
                             productImageView.setImageBitmap(bitmapValue)
-                            ProductImageMemoryCache.addBitmapToCache(orderedProduct.productId.toString(),bitmapValue!!)
+                            ProductImageMemoryCache.addBitmapToCache(orderedProductEntity.productId.toString(),bitmapValue!!)
                         }
                     }
                     imageSettingCoroutine.join()
@@ -97,6 +105,10 @@ class OrderedProductListAdapter :RecyclerView.Adapter<OrderedProductListAdapter.
             productOldPriceTextView=view.findViewById(R.id.cart_item_product_old_price)
             discountTextView=view.findViewById(R.id.cart_item_offer)
             quantityTextView=view.findViewById(R.id.cart_qty)
+
+            view.setOnClickListener{
+                listener.onItemClick(adapterPosition)
+            }
 
         }
     }

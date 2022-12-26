@@ -1,10 +1,8 @@
 package com.example.shopping.model
 
-import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
-data class SelectedProduct (@PrimaryKey val productId:Int,
+data class SelectedProduct (val productId:Int,
                             val productName:String,
                             val productBrand:String,
                             val imageUrl:String,

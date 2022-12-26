@@ -10,6 +10,7 @@ import com.example.shopping.enums.Sort
 import com.example.shopping.model.CarouselImage
 import com.example.shopping.model.FavoriteProduct
 import com.example.shopping.model.Product
+import com.example.shopping.model.RecentlyViewed
 import kotlinx.coroutines.*
 import org.json.JSONObject
 import org.json.JSONTokener
@@ -31,6 +32,8 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
     var searchedQuery:String=""
     var categorySearchIsExpanded:Boolean=false
     var selectedSort: Sort = Sort.NONE
+
+    var categoryRecyclerViewPosition=-1
 
     //var productStack=Stack<Product>()
     /*fun push(product:Product){
@@ -361,7 +364,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
 
     fun getTopOfferFromDB():List<Product>{
         var list= listOf<Product>()
-        GlobalScope.launch{
+        viewModelScope.launch{
             val job=launch(Dispatchers.IO) {
                 val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
                 list=dao.getTopOffers()
@@ -373,7 +376,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
 
     fun getAllProducts():List<Product>{
         var list= listOf<Product>()
-        GlobalScope.launch{
+        viewModelScope.launch{
             val job=launch(Dispatchers.IO) {
                 val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
                 list=dao.getProductList()
@@ -384,14 +387,23 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
     }
 
     fun getProductByID(id: Int){
-        GlobalScope.launch{
-            val job=launch(Dispatchers.IO) {
-                val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
-                val product=dao.getProduct(id)
-                selectedProduct.postValue(product)
+        viewModelScope.launch(Dispatchers.IO){
+            val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
+            val product=dao.getProduct(id)
+            //selectedProduct.postValue(product)
+            withContext(Dispatchers.Main){
+                selectedProduct.value=product
             }
-            job.join()
         }
+    }
+
+    fun getProductFromID(id:Int):Product?{
+        for(product in productList.value!!){
+            if(product.productId==id){
+                return product
+            }
+        }
+        return null
     }
 
     fun sortList(){

@@ -1,18 +1,11 @@
 package com.example.shopping.model
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.example.shopping.signinandsigupfeature.data.local.entity.User
 
-@Entity
-data class RecentlyViewed(@PrimaryKey val productId:Int,
-                          val title:String,
-                          val description:String,
-                          val originalPrice:Double,
-                          val discountPercentage:Double,
-                          val priceAfterDiscount:Double,
-                          val rating:String,
-                          val stock:Int,
-                          val brand:String,
-                          val category:String,
-                          val thumbnail:String,
-                          val isFavorite:Boolean)
+@Entity(foreignKeys = [ForeignKey(entity = Product::class, parentColumns = ["productId"], childColumns = ["productId"], onDelete = ForeignKey.CASCADE)], indices = [Index(value=["productId"], unique = true)])
+data class RecentlyViewed(@PrimaryKey(autoGenerate = true) val recentlyViewedId:Int,
+                          val productId:Int)

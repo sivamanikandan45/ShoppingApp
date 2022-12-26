@@ -1,14 +1,13 @@
 package com.example.shopping.viewmodel
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.shopping.database.AppDB
-import com.example.shopping.model.Address
 import com.example.shopping.model.Order
 import com.example.shopping.model.OrderedProduct
+import com.example.shopping.model.OrderedProductEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -17,6 +16,8 @@ class OrderViewModel(application: Application): AndroidViewModel(application){
     var orderList= MutableLiveData<List<Order>>()
     val selectedOrder=MutableLiveData<Order>()
     private var currentUserId=-1
+    var selectedId=-1
+    var fromCheckOutPage=false
 
     init{
         viewModelScope.launch{
@@ -29,8 +30,8 @@ class OrderViewModel(application: Application): AndroidViewModel(application){
 
     fun setUserId(userId:Int) {
         this.currentUserId=userId
-        viewModelScope.launch{
-            val job=launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO){
+            val job=launch{
                 getOrdersFromDB(currentUserId)
             }
             job.join()
@@ -38,9 +39,11 @@ class OrderViewModel(application: Application): AndroidViewModel(application){
     }
 
     fun getOrdersFromDB(userId:Int) {
-        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getOrderDao()
-        val list=dao.getOrderList(userId)
-        orderList.postValue(list)
+        viewModelScope.launch(Dispatchers.IO) {
+            val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getOrderDao()
+            val list=dao.getOrderList(userId)
+            orderList.postValue(list)
+        }
     }
 
     fun placeOrder(order: Order):Long{
@@ -58,7 +61,7 @@ class OrderViewModel(application: Application): AndroidViewModel(application){
 
     fun getOrderList():List<Order>{
         var list= listOf<Order>()
-        GlobalScope.launch{
+        viewModelScope.launch{
             val job=launch(Dispatchers.IO) {
                 val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getOrderDao()
                 list=dao.getOrderList(currentUserId)
@@ -76,21 +79,45 @@ class OrderViewModel(application: Application): AndroidViewModel(application){
 
 
 
-    fun addOrderedProduct(product: OrderedProduct){
-        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getOrderedProductDao()
-        dao.addOrderedProduct(product)
+    fun addOrderedProduct(product: OrderedProductEntity){
+        viewModelScope.launch (Dispatchers.IO){
+            val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getOrderedProductDao()
+            dao.addOrderedProduct(product)
+        }
     }
 
     fun getOrderedProduct(orderId:Int):List<OrderedProduct>{
         val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getOrderedProductDao()
+        val productDao= AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
         val list=dao.getOrderedProduct(orderId)
-        return list
+        val orderedProductList= mutableListOf<OrderedProduct>()
+       for(product in list){
+           val productFromDB=productDao.getProduct(product.productId)
+           val orderedProduct=OrderedProduct(product.id,product.orderId,product.productId,productFromDB.title,productFromDB.brand,product.oldPriceForSelectedQuantity,product.priceForSelectedQuantity,product.discount,product.quantity,productFromDB.thumbnail)
+           orderedProductList.add(orderedProduct)
+       }
+        return orderedProductList
     }
 
-    fun getOrderedProductImages(orderId:Int):List<String>{
+    /*fun getOrderedProductImages(orderId:Int):List<String>{
         val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getOrderedProductDao()
         val list=dao.getOrderedProductImages(orderId)
         return list
+    }*/
+
+    fun getOrder(orderId: Int): Order? {
+        println("Searching for $orderId")
+        println("The current order list is")
+        println(orderList.value)
+        for(order in orderList.value!!){
+            println(order)
+            if(orderId==order.orderId){
+                println("The placed order is $order")
+                return order
+            }
+        }
+        println("nothing found")
+        return null
     }
 
 

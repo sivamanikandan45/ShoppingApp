@@ -21,6 +21,7 @@
         <entry key="app/src/main/res/drawable/ic_baseline_favorite_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_favorite_border_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_baseline_location_on_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_shopping_cart_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_sort_24.xml" value="0.1" />
@@ -45,6 +46,7 @@
         <entry key="app/src/main/res/layout/activity_search_result.xml" value="0.16210739614994935" />
         <entry key="app/src/main/res/layout/activity_searchable.xml" value="0.25815217391304346" />
         <entry key="app/src/main/res/layout/auto_scrollable_carousel_item.xml" value="0.15476190476190477" />
+        <entry key="app/src/main/res/layout/dialog_quantity.xml" value="0.4416058394160584" />
         <entry key="app/src/main/res/layout/fragment_account.xml" value="0.3292888823009673" />
         <entry key="app/src/main/res/layout/fragment_add_delivery_address.xml" value="0.24295774647887325" />
         <entry key="app/src/main/res/layout/fragment_address.xml" value="0.20380434782608695" />
@@ -54,12 +56,13 @@
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.28670403812093975" />
         <entry key="app/src/main/res/layout/fragment_my_orders.xml" value="0.3581649780273438" />
         <entry key="app/src/main/res/layout/fragment_on_boarding.xml" value="0.24014336917562723" />
-        <entry key="app/src/main/res/layout/fragment_order_detail.xml" value="0.32779176131538723" />
+        <entry key="app/src/main/res/layout/fragment_order_detail.xml" value="0.3838951310861423" />
         <entry key="app/src/main/res/layout/fragment_order_placed.xml" value="0.20380434782608695" />
         <entry key="app/src/main/res/layout/fragment_order_summary.xml" value="0.3333333333333333" />
         <entry key="app/src/main/res/layout/fragment_payment.xml" value="0.215625" />
-        <entry key="app/src/main/res/layout/fragment_product.xml" value="0.5148833467417538" />
+        <entry key="app/src/main/res/layout/fragment_product.xml" value="0.34532374100719426" />
         <entry key="app/src/main/res/layout/fragment_product_list.xml" value="0.33833612443949074" />
+        <entry key="app/src/main/res/layout/fragment_quantity.xml" value="0.25815217391304346" />
         <entry key="app/src/main/res/layout/fragment_register.xml" value="0.22483221476510068" />
         <entry key="app/src/main/res/layout/fragment_saved_address.xml" value="0.25815217391304346" />
         <entry key="app/src/main/res/layout/fragment_select_address.xml" value="0.3833301597917584" />
@@ -88,6 +91,7 @@
         <entry key="app/src/main/res/menu/category_activity_menu.xml" value="0.1" />
         <entry key="app/src/main/res/menu/home_menu.xml" value="0.17777777777777778" />
         <entry key="app/src/main/res/menu/product_fragment_menu.xml" value="0.20833333333333334" />
+        <entry key="app/src/main/res/menu/searchable_activity_menu.xml" value="0.17777777777777778" />
         <entry key="app/src/main/res/menu/wishlist_menu.xml" value="0.33229166666666665" />
       </map>
     </option>

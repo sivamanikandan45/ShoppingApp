@@ -9,7 +9,7 @@ import com.example.shopping.signinandsigupfeature.data.local.dao.UserDao
 import com.example.shopping.signinandsigupfeature.data.local.entity.User
 import com.example.shopping.model.*
 
-@Database(entities = [User::class,Product::class,CarouselImage::class,SelectedProduct::class,FavoriteProduct::class,RecentlyViewed::class,Address::class,Order::class,OrderedProduct::class], version = 1)
+@Database(entities = [User::class,Product::class,CarouselImage::class,SelectedProductEntity::class,FavoriteProduct::class,RecentlyViewed::class,Address::class,Order::class,OrderedProductEntity::class], version = 1)
 abstract class AppDB :RoomDatabase(){
     abstract fun getUserDao(): UserDao
     abstract fun getProductDao():ProductDao

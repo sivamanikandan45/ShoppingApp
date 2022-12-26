@@ -1,14 +1,16 @@
 package com.example.shopping
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Configuration
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.shopping.enums.FormMode
@@ -16,10 +18,8 @@ import com.example.shopping.model.Address
 import com.example.shopping.viewmodel.AddressViewModel
 import com.example.shopping.viewmodel.DeliveryAddressViewModel
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.google.android.material.transition.MaterialContainerTransform
+import java.util.regex.Pattern
 
 class AddDeliveryAddressFragment : Fragment() {
     private val addressViewModel:AddressViewModel by activityViewModels()
@@ -43,35 +43,98 @@ class AddDeliveryAddressFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_add_delivery_address, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        println("View created again")
-        println("Fetched ${deliveryAddressViewModel.city} ${deliveryAddressViewModel.pinCode}")
+    @SuppressLint("RestrictedApi")
+    override fun onResume() {
+        super.onResume()
         (activity as AppCompatActivity).supportActionBar?.title="Add Delivery Address"
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        /*(activity as AppCompatActivity).supportActionBar?.setShowHideAnimationEnabled(false)
+        (activity as AppCompatActivity).supportActionBar?.hide()*/
+    }
+
+    override fun onStop() {
+        super.onStop()
+        //(activity as AppCompatActivity).supportActionBar?.hide()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val addressForm=view.findViewById<ConstraintLayout>(R.id.address_form)
+        when(addressViewModel.formMode){
+            FormMode.CREATE->{
+                addressForm.transitionName="fab_transition"
+            }
+            FormMode.EDIT->{
+                addressForm.transitionName="address_transition_${addressViewModel.selectedAddress.value?.addressId}"
+            }
+        }
+        /*val menuHost:MenuHost=requireActivity()
+        menuHost.addMenuProvider(object :MenuProvider{
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when(menuItem.itemId){
+                    android.R.id.home->{
+                        Toast.makeText(context,"Backpressesd",Toast.LENGTH_SHORT).show()
+                        println("Back preseed")
+                        return true
+                    }
+                }
+                return false
+            }
+
+        })*/
+        println("Fetched ${deliveryAddressViewModel.city} ${deliveryAddressViewModel.pinCode}")
+        /*val toolbar=view.findViewById<Toolbar>(R.id.toolbar)
+        //toolbar.inflateMenu(R.menu.product_fragment_menu)
+        toolbar.title="Add Delivery Address"
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+        toolbar.setNavigationOnClickListener { view ->
+            activity?.onBackPressed()
+        }*/
         val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
         val currentUserId=sharePreferences?.getInt("userId",-1)
         if (currentUserId != null) {
             addressViewModel.setUserId(currentUserId)
         }
-        nameInputLayout=view.findViewById<TextInputLayout>(R.id.fullname)
-        phoneInputLayout=view.findViewById<TextInputLayout>(R.id.phn)
-        pinCodeInputLayout=view.findViewById<TextInputLayout>(R.id.pincode)
-        stateInputLayout=view.findViewById<TextInputLayout>(R.id.state)
-        cityInputLayout=view.findViewById<TextInputLayout>(R.id.city)
-        addressStreetInputLayout=view.findViewById<TextInputLayout>(R.id.addressline1)
-        areaInputLayout=view.findViewById<TextInputLayout>(R.id.addressline2)
+        nameInputLayout=view.findViewById(R.id.fullname)
+        phoneInputLayout=view.findViewById(R.id.phn)
+        pinCodeInputLayout=view.findViewById(R.id.pincode)
+        stateInputLayout=view.findViewById(R.id.state)
+        cityInputLayout=view.findViewById(R.id.city)
+        addressStreetInputLayout=view.findViewById(R.id.addressline1)
+        areaInputLayout=view.findViewById(R.id.addressline2)
 
         if(addressViewModel.formMode==FormMode.EDIT){
-            (activity as AppCompatActivity).supportActionBar?.title="Edit Delivery Address"
+            (activity as AppCompatActivity).supportActionBar?.apply {
+                title="Edit Delivery Address"
+                setDisplayHomeAsUpEnabled(true)
+            }
             val selectedAddress=addressViewModel.selectedAddress.value
-            nameInputLayout.editText?.setText(selectedAddress?.name!!)
-            phoneInputLayout.editText?.setText(selectedAddress?.phone)
-            selectedAddress?.pinCode?.let { pinCodeInputLayout.editText?.setText(it.toString()) }
-            stateInputLayout.editText?.setText(selectedAddress?.state)
-            cityInputLayout.editText?.setText(selectedAddress?.city)
-            addressStreetInputLayout.editText?.setText(selectedAddress?.street)
-            areaInputLayout.editText?.setText(selectedAddress?.area)
+            if(selectedAddress!=null){
+                nameInputLayout.editText?.setText(selectedAddress?.name!!)
+                phoneInputLayout.editText?.setText(selectedAddress?.phone)
+                selectedAddress?.pinCode?.let { pinCodeInputLayout.editText?.setText(it.toString()) }
+                stateInputLayout.editText?.setText(selectedAddress?.state)
+                cityInputLayout.editText?.setText(selectedAddress?.city)
+                addressStreetInputLayout.editText?.setText(selectedAddress?.street)
+                areaInputLayout.editText?.setText(selectedAddress?.area)
+
+                if(!deliveryAddressViewModel.isModified){
+                    deliveryAddressViewModel.apply {
+                        name= selectedAddress.name
+                        phone=selectedAddress.phone
+                        pinCode=selectedAddress.pinCode
+                        state=selectedAddress.state
+                        city=selectedAddress.city
+                        street=selectedAddress.street
+                        area=selectedAddress.area
+                    }
+                }
+            }
+
 
             if(deliveryAddressViewModel.isModified){
                 nameInputLayout.editText?.setText(deliveryAddressViewModel.name)
@@ -86,7 +149,6 @@ class AddDeliveryAddressFragment : Fragment() {
         }
 
         if(deliveryAddressViewModel.name!=""){
-            println("Activated")
             nameInputLayout.editText?.setText(deliveryAddressViewModel.name)
         }
         if(deliveryAddressViewModel.phone!=""){
@@ -118,8 +180,8 @@ class AddDeliveryAddressFragment : Fragment() {
                 val city=cityInputLayout.editText?.text.toString()
                 val street=addressStreetInputLayout.editText?.text.toString()
                 val area=areaInputLayout.editText?.text.toString()
-                val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
-                val currentUserId=sharePreferences?.getInt("userId",-1)
+                //val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+                //val currentUserId=sharePreferences?.getInt("userId",-1)
                 if(currentUserId!=null&&currentUserId!=-1){
                     if(addressViewModel.formMode==FormMode.CREATE){
                         val address=Address(0,currentUserId,name,phone,pinCode,state,city,street, area)
@@ -135,30 +197,77 @@ class AddDeliveryAddressFragment : Fragment() {
                 println("Some input error")
             }
         }
+
+        val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
+            init {
+                println("back press is initialised")
+            }
+                override fun handleOnBackPressed() {
+                    checkOnBackPressed()
+                }
+            }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
+    }
+
+    fun checkOnBackPressed() {
+        if (addressViewModel.formMode == FormMode.CREATE) {
+            if (hasContentInFields()) {
+                AlertDialog.Builder(requireActivity())
+                    .setTitle("Address will not be saved")
+                    .setMessage("Are you sure you want to continue without saving?")
+                    .setPositiveButton("CONTINUE") { _, _ ->
+                        //requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,normalCallback )
+                        parentFragmentManager.popBackStack()
+                        //activity?.onBackPressed()
+                    }
+                    .setNegativeButton("CANCEL") { _, _ ->
+                    }
+                    .show()
+            } else {
+                parentFragmentManager.popBackStack()
+            }
+        } else {
+            isFormModified()
+            if (deliveryAddressViewModel.isModified) {
+                AlertDialog.Builder(requireActivity())
+                    .setTitle("Changes will not be saved")
+                    .setMessage("Are you sure you want to continue without saving?")
+                    .setPositiveButton("CONTINUE") { _, _ ->
+                        //requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,normalCallback )
+                        parentFragmentManager.popBackStack()
+                        //activity?.onBackPressed()
+                    }
+                    .setNegativeButton("CANCEL") { _, _ ->
+                    }
+                    .show()
+            } else {
+                parentFragmentManager.popBackStack()
+            }
+        }
+    }
+
+    private fun hasContentInFields(): Boolean {
+        val name=nameInputLayout.editText?.text.toString()
+        val phone=phoneInputLayout.editText?.text.toString()
+        val pinCode=pinCodeInputLayout.editText?.text.toString()
+        val state=stateInputLayout.editText?.text.toString()
+        val city=cityInputLayout.editText?.text.toString()
+        val street=addressStreetInputLayout.editText?.text.toString()
+        val area=areaInputLayout.editText?.text.toString()
+        println("name is $name")
+        return  name!=""||phone!=""||pinCode!=""||state!=""||city!=""||street!=""||area!=""
     }
 
     private fun saveAddress(address: Address) {
-        GlobalScope.launch {
-            val job=launch (Dispatchers.IO){
-                addressViewModel.addAddress(address)
-            }
-            job.join()
-            withContext(Dispatchers.Main){
-                activity?.onBackPressed()
-            }
-        }
+        addressViewModel.addAddress(address)
+        parentFragmentManager.popBackStack()
     }
 
     private fun updateAddress(address: Address) {
-        GlobalScope.launch {
-            val job=launch (Dispatchers.IO){
-                addressViewModel.updateAddress(address)
-            }
-            job.join()
-            withContext(Dispatchers.Main){
-                activity?.onBackPressed()
-            }
-        }
+        addressViewModel.updateAddress(address)
+        parentFragmentManager.popBackStack()
     }
 
     private fun validateInputs():Boolean {
@@ -239,13 +348,19 @@ class AddDeliveryAddressFragment : Fragment() {
                 city.isErrorEnabled =false
             }
         }
-
+        val houseNoPattern=Pattern.compile("^[1-9]\\d*(\\s*[-/]\\s*[1-9]\\d*)?(\\s?[a-zA-Z])?")
+        val matcher=houseNoPattern.matcher(addressStreet?.editText?.text.toString())
         if(addressStreet!=null){
             if(addressStreet.editText?.text.toString()==""){
                 addressStreet.isErrorEnabled =true
                 addressStreet.error ="Please Enter your Address"
                 returnValue=returnValue and false
-            }else if(!addressStreet.editText?.text.toString().contains(",")){
+            }else if(!matcher.find()){
+                addressStreet.isErrorEnabled =true
+                addressStreet.error ="Please Provide House number"
+                returnValue=returnValue and false
+            }
+            else if(!addressStreet.editText?.text.toString().contains(",")){
                 addressStreet.isErrorEnabled =true
                 addressStreet.error ="Please Provide more details"
                 returnValue=returnValue and false
@@ -273,13 +388,7 @@ class AddDeliveryAddressFragment : Fragment() {
     override fun onDestroy() {
         println("Destroy called")
         if(addressViewModel.formMode==FormMode.EDIT){
-            checkIsModified(nameInputLayout.editText?.text.toString(),deliveryAddressViewModel.name)
-            checkIsModified(phoneInputLayout.editText?.text.toString(),deliveryAddressViewModel.phone)
-            checkIsModified(pinCodeInputLayout.editText?.text.toString(),deliveryAddressViewModel.pinCode.toString())
-            checkIsModified(stateInputLayout.editText?.text.toString(),deliveryAddressViewModel.state)
-            checkIsModified(cityInputLayout.editText?.text.toString(),deliveryAddressViewModel.city)
-            checkIsModified(addressStreetInputLayout.editText?.text.toString(),deliveryAddressViewModel.street)
-            checkIsModified(areaInputLayout.editText?.text.toString(),deliveryAddressViewModel.area)
+            isFormModified()
         }
 
         deliveryAddressViewModel.apply {
@@ -299,10 +408,48 @@ class AddDeliveryAddressFragment : Fragment() {
         super.onDestroy()
     }
 
+    private fun isFormModified() {
+        checkIsModified(nameInputLayout.editText?.text.toString(), deliveryAddressViewModel.name)
+        checkIsModified(phoneInputLayout.editText?.text.toString(), deliveryAddressViewModel.phone)
+        checkIsModified(
+            pinCodeInputLayout.editText?.text.toString(),
+            deliveryAddressViewModel.pinCode.toString()
+        )
+        checkIsModified(stateInputLayout.editText?.text.toString(), deliveryAddressViewModel.state)
+        checkIsModified(cityInputLayout.editText?.text.toString(), deliveryAddressViewModel.city)
+        checkIsModified(
+            addressStreetInputLayout.editText?.text.toString(),
+            deliveryAddressViewModel.street
+        )
+        checkIsModified(areaInputLayout.editText?.text.toString(), deliveryAddressViewModel.area)
+    }
+
     private fun checkIsModified(editTextData:String,storedString: String) {
         if (editTextData != storedString) {
+            println("$editTextData != $storedString")
             deliveryAddressViewModel.isModified = true
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setHasOptionsMenu(true)
+        sharedElementEnterTransition=MaterialContainerTransform()
+//        exitTransition = MaterialElevationScale(false)
+        /*sharedElementEnterTransition=MaterialContainerTransform()
+        exitTransition = MaterialElevationScale(false)
+        reenterTransition = MaterialElevationScale( true)*/
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home->{
+                Toast.makeText(context,"Back pressed",Toast.LENGTH_SHORT).show()
+                println("Back pressed")
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }

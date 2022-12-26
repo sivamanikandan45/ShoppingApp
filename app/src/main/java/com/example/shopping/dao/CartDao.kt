@@ -1,41 +1,41 @@
 package com.example.shopping.dao
 
 import androidx.room.*
-import com.example.shopping.model.SelectedProduct
+import com.example.shopping.model.SelectedProductEntity
 
 @Dao
 interface CartDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addItemToCart(item:SelectedProduct)
+    fun addItemToCart(item:SelectedProductEntity)
 
-    @Query("SELECT * FROM SelectedProduct")
-    fun getCartItems():MutableList<SelectedProduct>
+    @Query("SELECT * FROM SelectedProductEntity")
+    fun getCartItems():MutableList<SelectedProductEntity>
 
-    @Query("SELECT SUM(priceForSelectedQuantity) FROM SelectedProduct")
+    @Query("SELECT SUM(priceForSelectedQuantity) FROM SelectedProductEntity")
     fun getCartAmountAfterDiscount():Double
 
-    @Query("DELETE FROM SelectedProduct where productId=:productId")
+    @Query("DELETE FROM SelectedProductEntity where productId=:productId")
     fun removeItemFromCart(productId:Int)
 
-    @Query("SELECT COUNT(*) FROM SelectedProduct")
+    @Query("SELECT COUNT(*) FROM SelectedProductEntity")
     fun getCartItemCount():Int
 
-    @Query("SELECT SUM(oldPriceForSelectedQuantity) FROM SelectedProduct")
+    @Query("SELECT SUM(oldPriceForSelectedQuantity) FROM SelectedProductEntity")
     fun getCartAmountBeforeDiscount():Double
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun updateCartItem(item:SelectedProduct)
+    fun updateCartItem(item:SelectedProductEntity)
 
-    @Query("UPDATE SelectedProduct SET quantity=:quantity where productId=:id")
+    @Query("UPDATE SelectedProductEntity SET quantity=:quantity where productId=:id")
     fun updateProductQuantity(id:Int,quantity:Int)
 
-    @Query("UPDATE SelectedProduct SET priceForSelectedQuantity=:priceForSelectedQuantity where productId=:id")
+    @Query("UPDATE SelectedProductEntity SET priceForSelectedQuantity=:priceForSelectedQuantity where productId=:id")
     fun updatePriceForSelectedQuantity(id:Int,priceForSelectedQuantity:Double)
 
-    @Query("UPDATE SelectedProduct SET oldPriceForSelectedQuantity=:oldPriceForSelectedQuantity where productId=:id")
+    @Query("UPDATE SelectedProductEntity SET oldPriceForSelectedQuantity=:oldPriceForSelectedQuantity where productId=:id")
     fun updateOldPriceForSelectedQuantity(id:Int, oldPriceForSelectedQuantity:Double)
 
-    @Query("Delete FROM SelectedProduct where 1=1")
+    @Query("Delete FROM SelectedProductEntity where 1=1")
     fun clearAll()
 }

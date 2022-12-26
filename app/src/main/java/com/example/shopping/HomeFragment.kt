@@ -21,6 +21,7 @@ import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,11 +35,13 @@ import com.example.shopping.viewmodel.SearchStateViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 
 class HomeFragment : Fragment() {
     private val cartViewModel:CartViewModel by activityViewModels()
+    val productViewModel:ProductViewModel by activityViewModels()
     private val searchStateViewModel:SearchStateViewModel by viewModels()
     private lateinit var container:LinearLayout
     private lateinit var topOfferListAdapter:TopOfferListAdapter
@@ -67,10 +70,21 @@ class HomeFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.product_search->{
+                val intent=Intent(requireContext(),SearchableActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         //super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.home_menu,menu)
-        val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        /*val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val searchView=menu.findItem(R.id.product_search)?.actionView as SearchView
         val searchItem=menu.findItem(R.id.product_search)
         searchItem.setOnActionExpandListener(object :MenuItem.OnActionExpandListener{
@@ -127,15 +141,15 @@ class HomeFragment : Fragment() {
             searchView.isFocusable=true
         }
 
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))*/
     }
 
     override fun onStart() {
         //(activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         super.onStart()
         var amount=0
-        GlobalScope.launch {
-            val job=launch{
+        lifecycleScope.launch {
+            val job=launch(Dispatchers.IO){
                 amount=cartViewModel.getCartItemCount()
                 recentlyViewedViewModel.getRecentlyViewedFromDB()
             }
@@ -188,11 +202,10 @@ class HomeFragment : Fragment() {
             layout.visibility=View.VISIBLE
             check.visibility=View.GONE
         }*/
-        (activity as AppCompatActivity)?.supportActionBar?.show()
+        (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         (activity as AppCompatActivity).supportActionBar?.title="Shopping"
 
-        val productViewModel:ProductViewModel by activityViewModels()
 
         val autoScrollableCarousel=view.findViewById<ViewPager2>(R.id.autoScrollingViewPager)
         container=view.findViewById(R.id.dots_container)
@@ -331,25 +344,14 @@ class HomeFragment : Fragment() {
             }
         })
 
-        GlobalScope.launch {
+        lifecycleScope.launch {
             val job=launch(Dispatchers.IO) {
                 recentlyViewedAdapter.setData(recentlyViewedViewModel.recentlyViewedItems())
             }
             job.join()
         }
 
-        recentlyViewedViewModel.recentlyViewedProductList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            val group=view.findViewById<Group>(R.id.recently_viewed_group)
-            if(it.isEmpty()){
-//                val group=view.findViewById<Group>(R.id.recently_viewed_group)
-                group.visibility=View.GONE
-            }else{
-                group.visibility=View.VISIBLE
-                recentlyViewedAdapter.setData(it)
-                println("recebt list updated")
-                recentlyViewedAdapter.notifyDataSetChanged()
-            }
-        })
+        recentlyViewedViewModel.getRecentlyViewedFromDB()
 
         recentlyViewedLayoutManager= LinearLayoutManager(requireContext())
         recentlyViewedLayoutManager.orientation=LinearLayoutManager.HORIZONTAL
@@ -357,13 +359,30 @@ class HomeFragment : Fragment() {
         recentlyViewedRecyclerView.setHasFixedSize(true)
         recentlyViewedRecyclerView.layoutManager=recentlyViewedLayoutManager
 
+
+        recentlyViewedViewModel.recentlyViewedProductList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            val group=view.findViewById<Group>(R.id.recently_viewed_group)
+            if(it.isEmpty()){
+                println("EMpty recentlyviwed")
+//                val group=view.findViewById<Group>(R.id.recently_viewed_group)
+                group.visibility=View.GONE
+            }else{
+                group.visibility=View.VISIBLE
+                println("recently viewed")
+                recentlyViewedAdapter.setData(it)
+                println("recebt list updated")
+                recentlyViewedAdapter.notifyDataSetChanged()
+            }
+        })
+
         val clearRecentlyViewedBtn=view.findViewById<Button>(R.id.clear_all)
         clearRecentlyViewedBtn.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle("Clear History")
                 .setMessage("Are you sure you want to remove all?")
                 .setPositiveButton("CLear"){_,_->
-                    deleteAllRecentlyViewed()
+                    recentlyViewedViewModel.clearAllRecentlyViewed()
+//                    deleteAllRecentlyViewed()
                 }.setNegativeButton("CANCEL"){_,_->
 
                 }
@@ -371,8 +390,8 @@ class HomeFragment : Fragment() {
         }
 
         var amount=0
-        GlobalScope.launch {
-            val job=launch{
+        lifecycleScope.launch {
+            val job=launch(Dispatchers.IO){
                 amount=cartViewModel.getCartItemCount()
             }
             job.join()
@@ -397,10 +416,5 @@ class HomeFragment : Fragment() {
         startActivity(intent)
     }
 
-    private fun deleteAllRecentlyViewed() {
-        GlobalScope.launch {
-            recentlyViewedViewModel.clearAllRecentlyViewed()
-        }
-    }
 
 }

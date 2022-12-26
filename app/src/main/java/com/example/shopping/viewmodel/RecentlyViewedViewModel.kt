@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.shopping.database.AppDB
+import com.example.shopping.model.Product
 import com.example.shopping.model.RecentlyViewed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -12,28 +13,31 @@ import kotlinx.coroutines.launch
 
 class RecentlyViewedViewModel(application: Application):AndroidViewModel(application) {
 
-    var recentlyViewedProductList= MutableLiveData<List<RecentlyViewed>>()
+    var recentlyViewedProductList= MutableLiveData<List<Product>>()
+    //var recentlyViewedProducts=MutableLiveData<List<Product>>()
 
     init{
-        viewModelScope.launch{
-            val job=launch (Dispatchers.IO){
-                getRecentlyViewedFromDB()
-            }
-            job.join()
+        viewModelScope.launch(Dispatchers.IO){
+            getRecentlyViewedFromDB()
         }
     }
 
 
     fun getRecentlyViewedFromDB(){
-        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getRecentlyViewedDao()
-        val list=dao.getRecentlyViewedProducts()
-        recentlyViewedProductList.postValue(list)
+        viewModelScope.launch(Dispatchers.IO) {
+            val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getRecentlyViewedDao()
+            val list=dao.getRecentlyViewedProducts()
+            getProductListUsingRecentlyUsedProductIds(list)
+        }
+        //recentlyViewedProductList.postValue(list)
     }
 
     fun addToRecentlyViewed(product:RecentlyViewed){
-        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getRecentlyViewedDao()
-        dao.addToRecentlyViewed(product)
-        getRecentlyViewedFromDB()
+        viewModelScope.launch (Dispatchers.IO){
+            val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getRecentlyViewedDao()
+            dao.addToRecentlyViewed(product)
+            getRecentlyViewedFromDB()
+        }
     }
 
     fun deleteFromRecentlyViewed(productID: Int){
@@ -43,27 +47,46 @@ class RecentlyViewedViewModel(application: Application):AndroidViewModel(applica
     }
 
     fun clearAllRecentlyViewed(){
-        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getRecentlyViewedDao()
-        dao.clearAll()
-        getRecentlyViewedFromDB()
+        viewModelScope.launch(Dispatchers.IO) {
+            val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getRecentlyViewedDao()
+            dao.clearAll()
+            getRecentlyViewedFromDB()
+            println("changed recentlyviewed items")
+        }
     }
 
-    fun recentlyViewedItems():List<RecentlyViewed>{
-        var list= listOf<RecentlyViewed>()
-        GlobalScope.launch{
+    fun recentlyViewedItems():List<Product>{
+        var list= listOf<Product>()
+        viewModelScope.launch{
             val job=launch(Dispatchers.IO) {
                 val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getRecentlyViewedDao()
-                list=dao.getRecentlyViewedProducts()
+                val recentlist=dao.getRecentlyViewedProducts()
+                getProductListUsingRecentlyUsedProductIds(recentlist)
             }
             job.join()
         }
        return list
     }
 
-    fun updateFavoriteStatus(status:Boolean,productID: Int){
-        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getRecentlyViewedDao()
-        dao.updateFavoriteStatusOfRecentlyViewed(status,productID)
-        getRecentlyViewedFromDB()
+
+    fun getProductListUsingRecentlyUsedProductIds(recentlyViewedProductIds: List<RecentlyViewed>){
+        val productList= mutableListOf<Product>()
+        val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getProductDao()
+        for(recent in recentlyViewedProductIds){
+            val product=dao.getProduct(recent.productId)
+            productList.add(product)
+        }
+        recentlyViewedProductList.postValue(productList)
+        println("recentlyviwed list is set to $productList}")
+        println("saved recentlyviwed list  ${recentlyViewedProductList.value}")
     }
+
+    /*fun updateFavoriteStatus(status:Boolean,productID: Int){
+        viewModelScope.launch(Dispatchers.IO){
+            val dao= AppDB.getDB(getApplication<Application?>().applicationContext).getRecentlyViewedDao()
+            dao.updateFavoriteStatusOfRecentlyViewed(status,productID)
+            getRecentlyViewedFromDB()
+        }
+    }*/
 
 }

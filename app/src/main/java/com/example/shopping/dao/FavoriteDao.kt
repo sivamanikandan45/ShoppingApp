@@ -15,4 +15,7 @@ interface FavoriteDao {
 
     @Query("SELECT * FROM FavoriteProduct where customerId=:userId")
     fun getFavoriteProductList(userId:Int):List<FavoriteProduct>
+
+    @Query("SELECT id FROM FavoriteProduct where customerId=:userId and productId=:productId")
+    fun getIdOfFavorite(productId: Int,userId: Int):Int
 }

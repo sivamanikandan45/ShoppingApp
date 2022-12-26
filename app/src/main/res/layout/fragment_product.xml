@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/root_product"
     android:background="@color/white"
+    android:transitionName="cart_item_transition"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -375,7 +377,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>-->
 
 
-            <ImageButton
+            <!--<ImageButton
                 android:id="@+id/increase_qty_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -446,7 +448,7 @@
                 app:layout_constraintStart_toEndOf="@+id/product_discount"
                 app:layout_constraintTop_toTopOf="@+id/increaseButtonLayout"
                 app:layout_constraintVertical_bias="0.441">
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

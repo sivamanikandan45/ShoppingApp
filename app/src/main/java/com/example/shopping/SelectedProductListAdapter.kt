@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.SelectedProduct
+import com.example.shopping.model.SelectedProductEntity
 import com.example.shopping.util.ProductImageMemoryCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -22,6 +23,7 @@ import java.text.DecimalFormat
 
 class SelectedProductListAdapter : RecyclerView.Adapter<SelectedProductListAdapter.ViewHolder>() {
     private var list= listOf<SelectedProduct>()
+    private lateinit var listener: ItemClickListener
 
     fun setData(list: List<SelectedProduct>){
         /*val oldlist=this.list
@@ -29,6 +31,10 @@ class SelectedProductListAdapter : RecyclerView.Adapter<SelectedProductListAdapt
         val diffResult= DiffUtil.calculateDiff(diffUtil)*/
         this.list=list
         //diffResult.dispatchUpdatesTo(this)
+    }
+
+    fun setOnItemClickListener(listener: ItemClickListener){
+        this.listener=listener
     }
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view){
@@ -40,28 +46,28 @@ class SelectedProductListAdapter : RecyclerView.Adapter<SelectedProductListAdapt
                 else paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
         }
 
-        fun bind(selectedProduct: SelectedProduct) {
-            productNameTextView.text=selectedProduct.productName
+        fun bind(selectedProductEntity: SelectedProduct) {
+            productNameTextView.text=selectedProductEntity.productName
 
             val df = DecimalFormat("#.##")
             df.roundingMode = RoundingMode.UP
-            val caad= df.format(selectedProduct.priceForSelectedQuantity).toDouble()
+            val caad= df.format(selectedProductEntity.priceForSelectedQuantity).toDouble()
 
             productPriceTextView.text="₹"+caad.toString()
-            productBrandTextView.text=selectedProduct.productBrand
-            productOldPriceTextView.text="₹"+selectedProduct.oldPriceForSelectedQuantity.toString()
+            productBrandTextView.text=selectedProductEntity.productBrand
+            productOldPriceTextView.text="₹"+selectedProductEntity.oldPriceForSelectedQuantity.toString()
             productOldPriceTextView.showStrikeThrough(true)
-            discountTextView.text=selectedProduct.discount.toString()+"% OFF"
-            quantityTextView.text=selectedProduct.quantity.toString()
+            discountTextView.text=selectedProductEntity.discount.toString()+"% OFF"
+            quantityTextView.text=selectedProductEntity.quantity.toString()
 
             var bitmapValue: Bitmap?=null
-            val bitmap: Bitmap? = ProductImageMemoryCache.getBitmapFromMemCache(selectedProduct.productId.toString())?.also {
+            val bitmap: Bitmap? = ProductImageMemoryCache.getBitmapFromMemCache(selectedProductEntity.productId.toString())?.also {
                 println("Fetched from cache at $adapterPosition")
                 productImageView.setImageBitmap(it)
             } ?:run{
                 GlobalScope.launch {
                     val job=launch(Dispatchers.IO) {
-                        val imageUrl = URL(selectedProduct.imageUrl)
+                        val imageUrl = URL(selectedProductEntity.imageUrl)
                         withContext(Dispatchers.Main) {
                             productImageView.setImageResource(R.drawable.placeholder)
                         }
@@ -77,7 +83,7 @@ class SelectedProductListAdapter : RecyclerView.Adapter<SelectedProductListAdapt
                     val imageSettingCoroutine=launch(Dispatchers.Main){
                         if(bitmapValue!=null){
                             productImageView.setImageBitmap(bitmapValue)
-                            ProductImageMemoryCache.addBitmapToCache(selectedProduct.productId.toString(),bitmapValue!!)
+                            ProductImageMemoryCache.addBitmapToCache(selectedProductEntity.productId.toString(),bitmapValue!!)
                         }
                     }
                     imageSettingCoroutine.join()
@@ -102,6 +108,10 @@ class SelectedProductListAdapter : RecyclerView.Adapter<SelectedProductListAdapt
             productOldPriceTextView=view.findViewById(R.id.cart_item_product_old_price)
             discountTextView=view.findViewById(R.id.cart_item_offer)
             quantityTextView=view.findViewById(R.id.cart_qty)
+
+            view.setOnClickListener {
+                listener.onItemClick(adapterPosition)
+            }
 
         }
     }

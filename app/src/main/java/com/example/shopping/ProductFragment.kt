@@ -3,6 +3,7 @@ package com.example.shopping
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.*
@@ -19,20 +20,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.example.shopping.enums.CheckoutMode
 import com.example.shopping.model.*
-import com.example.shopping.viewmodel.CartViewModel
-import com.example.shopping.viewmodel.FavoriteViewModel
-import com.example.shopping.viewmodel.ProductViewModel
-import com.example.shopping.viewmodel.RecentlyViewedViewModel
+import com.example.shopping.viewmodel.*
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialContainerTransform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
 
 
 class ProductFragment : Fragment() {
@@ -41,6 +40,7 @@ class ProductFragment : Fragment() {
     private val productViewModel:ProductViewModel by activityViewModels()
     private val favoriteViewModel:FavoriteViewModel by activityViewModels()
     private val cartViewModel:CartViewModel by activityViewModels()
+    private val selectQuantityViewModel:SelectQuantityViewModel by activityViewModels()
     private lateinit var container:LinearLayout
     private lateinit var cartItem: MenuItem
     //private lateinit var toolbar: Toolbar
@@ -81,6 +81,10 @@ class ProductFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        sharedElementEnterTransition=MaterialContainerTransform().apply {
+            //drawingViewId=R.id.item_cart
+            scrimColor=Color.TRANSPARENT
+        }
         //toolbar=activity.findViewById(R.id.toolbar)
         //setHasOptionsMenu(true) --->Edited
     }
@@ -124,8 +128,8 @@ class ProductFragment : Fragment() {
             }
         })
         */
-        GlobalScope.launch {
-            val job=launch{
+        lifecycleScope.launch {
+            val job=launch(Dispatchers.IO){
                 amount=cartViewModel.getCartItemCount()
             }
             job.join()
@@ -144,6 +148,7 @@ class ProductFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val productViewModel:ProductViewModel by activityViewModels()
+        val item=view.findViewById<View>(R.id.root_product)
         val sharedPreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
         val currentUserId=sharedPreferences?.getInt("userId",-1)
         /*try {
@@ -159,14 +164,9 @@ class ProductFragment : Fragment() {
 
 
         if (currentUserId != null) {
-            GlobalScope.launch {
-                val job=launch {
-                    favoriteViewModel.setUserId(currentUserId)
-                }
-                job.join()
-            }
+            favoriteViewModel.setUserId(currentUserId)
         }
-        val goToCartButton=view.findViewById<Button>(R.id.go_to_cart_button)
+        //val goToCartButton=view.findViewById<Button>(R.id.go_to_cart_button)
         val addToCartBtn=view.findViewById<Button>(R.id.add_to_cart_button)
 
         val toolbar_layout=view.findViewById<AppBarLayout>(R.id.toolbar_layout)
@@ -195,7 +195,7 @@ class ProductFragment : Fragment() {
         }
 
         val buyNowButton=view.findViewById<Button>(R.id.buy_now_button)
-        val quantityTextView:TextView=view.findViewById(R.id.cart_qty)
+//        val quantityTextView:TextView=view.findViewById(R.id.cart_qty)
 
 
 
@@ -218,7 +218,7 @@ class ProductFragment : Fragment() {
         val product=productViewModel.selectedProduct.value
         println("Selected Product is $product")
 
-        cartViewModel.cartItems.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        /*cartViewModel.cartItems.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             if(product?.let { cartViewModel.isProductInCart(it.productId) } == true){
                 addToCartBtn.visibility=View.GONE
                 goToCartButton.visibility=View.VISIBLE
@@ -228,7 +228,7 @@ class ProductFragment : Fragment() {
                 addToCartBtn.visibility=View.VISIBLE
                 goToCartButton.visibility=View.GONE
             }
-        })
+        })*/
 
 
         buyNowButton.setOnClickListener {
@@ -255,28 +255,28 @@ class ProductFragment : Fragment() {
                         .show()
                 }
             }else{
-                val intent=Intent(requireContext(),CheckoutActivity::class.java)
+                /*val intent=Intent(requireContext(),CheckoutActivity::class.java)
                 intent.putExtra("checkoutMode","buy_now")
                 intent.putExtra("productId",product?.productId)
-                intent.putExtra("quantity",quantityTextView.text.toString().toInt())
-                startActivity(intent)
+                intent.putExtra("quantity",1)
+                startActivity(intent)*/
+                selectQuantityViewModel.checkoutMode=CheckoutMode.BUY_NOW
+                val quantitySelectorDialog=QuantityDialogFragment(this)
+                quantitySelectorDialog.show(parentFragmentManager,"")
             }
         }
 
         if(product!=null){
             println("added to Recently viewed")
             val productId=product?.productId
-            val recentlyViewed=RecentlyViewed(product.productId,product.title,product.description,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,product.rating,product.stock,product.brand,product.category,product.thumbnail,true)
-            GlobalScope.launch {
-                val job = launch(Dispatchers.IO) { recentlyViewedViewModel.addToRecentlyViewed(recentlyViewed) }
-                job.join()
-            }
-
+            item.transitionName="cart_item_transition_${product.productId}"
+            val recentlyViewed=RecentlyViewed(0,product.productId)
+            recentlyViewedViewModel.addToRecentlyViewed(recentlyViewed)
         }
         println("Selected product is $product")
 
         var list: MutableList<CarouselImage> = mutableListOf<CarouselImage>()
-        GlobalScope.launch {
+        lifecycleScope.launch {
             val job=launch (Dispatchers.IO){
                 list= product?.productId?.let { productViewModel.getImageUrlList(it) }!!
                 println("got imaglist $list")
@@ -296,6 +296,9 @@ class ProductFragment : Fragment() {
                         val intent=Intent(requireContext(),ProductImageActivity::class.java)
                         intent.putExtra("productId",product?.productId)
                         intent.putExtra("currentPosition",position)
+                        //val options = ActivityOptions.makeSceneTransitionAnimation(activity,autoScrollableCarousel ,"example_transition")
+                        // Start the new activity
+                        //startActivity(intent, options.toBundle())
                         startActivity(intent)
                     }
 
@@ -392,7 +395,7 @@ class ProductFragment : Fragment() {
         val discount:TextView=view.findViewById(R.id.product_discount)
         val similarProductRecyclerView=view.findViewById<RecyclerView>(R.id.similar_product_recyler)
 
-        val increaseButton: ImageButton=view.findViewById(R.id.increase_qty_btn)
+        /*val increaseButton: ImageButton=view.findViewById(R.id.increase_qty_btn)
         val increaseTouchRegion:ConstraintLayout=view.findViewById(R.id.increaseButtonLayout)
         val decreaseButton: ImageButton=view.findViewById(R.id.decrease_qty_btn)
         val decreaseTouchRegion:ConstraintLayout=view.findViewById(R.id.decreaseButtonLayout)
@@ -412,7 +415,7 @@ class ProductFragment : Fragment() {
 
         decreaseTouchRegion.setOnClickListener {
             decreaseCount(quantityTextView, it)
-        }
+        }*/
 
         lifecycleScope.launch {
             val job=launch(Dispatchers.IO){
@@ -436,7 +439,7 @@ class ProductFragment : Fragment() {
 
                                 replace(R.id.category_fragment_container,ProductFragment() )
                                 *//*val intent=Intent(requireContext(),CategoryActivity::class.java)
-                                intent.putExtra("SelectedProduct",position)
+                                intent.putExtra("SelectedProductEntity",position)
                                 intent.putExtra("category",list[position].category)
                                 startActivity(intent)*//*
                             }*/
@@ -464,17 +467,21 @@ class ProductFragment : Fragment() {
             discount.text=product.discountPercentage.toString()+"% Off"
 
 
-            goToCartButton.setOnClickListener {
+            /*goToCartButton.setOnClickListener {
                 gotoCart()
-            }
+            }*/
 
-            addToCartBtn.setOnClickListener { it ->
-                GlobalScope.launch {
+            addToCartBtn.setOnClickListener {
+                    val quantitySelectorDialog=QuantityDialogFragment(this)
+                    selectQuantityViewModel.checkoutMode=CheckoutMode.OVERALL
+                    quantitySelectorDialog.show(parentFragmentManager,"")
+//                    it ->
+                /*GlobalScope.launch {
                     val job=launch (Dispatchers.IO){
                         val count=quantityTextView.text.toString().toInt()
                         val oldPriceForSelectedQty=count*product.originalPrice
                         val priceForSelectedQty=count*product.priceAfterDiscount
-                        val selectedProduct=SelectedProduct(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,count,oldPriceForSelectedQty,priceForSelectedQty)
+                        val selectedProduct=SelectedProductEntity(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,count,oldPriceForSelectedQty,priceForSelectedQty)
                         cartViewModel.addToCart(selectedProduct)
                     }
                     job.join()
@@ -486,7 +493,7 @@ class ProductFragment : Fragment() {
                     }.setAnchorView(view.findViewById(R.id.button_layout))
                     .show()
                 addToCartBtn.visibility=View.GONE
-                goToCartButton.visibility=View.VISIBLE
+                goToCartButton.visibility=View.VISIBLE*/
 
             }
         }
@@ -525,40 +532,16 @@ class ProductFragment : Fragment() {
     }
 
     private fun removeFromFavorite(product: Product?) {
-        GlobalScope.launch {
-            val job=launch(Dispatchers.IO) {
-                favoriteViewModel.deleteFromFavorites(product?.productId)
-                product?.productId?.let { recentlyViewedViewModel.updateFavoriteStatus(false, it) }
-            }
-            job.join()
-        }
+        favoriteViewModel.deleteFromFavorites(product?.productId)
     }
 
     private fun addToFavorite(product: Product?) {
-        GlobalScope.launch {
-            val job = launch(Dispatchers.IO) {
-                if (product != null) {
-                    val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
-                    val currentUserId=sharePreferences?.getInt("userId",-1)
-                    val favoriteProduct = FavoriteProduct(0,
-                        product.productId,
-                        currentUserId!!,
-                        product.title,
-                        product.description,
-                        product.originalPrice,
-                        product.discountPercentage,
-                        product.priceAfterDiscount,
-                        product.rating,
-                        product.stock,
-                        product.brand,
-                        product.category,
-                        product.thumbnail
-                    )
-                    favoriteViewModel.addToFavorites(favoriteProduct)
-                    recentlyViewedViewModel.updateFavoriteStatus(true,product.productId)
-                }
-            }
-            job.join()
+        if (product != null) {
+            val sharePreferences=activity?.getSharedPreferences("shared_preferences", Context.MODE_PRIVATE)
+            val currentUserId=sharePreferences?.getInt("userId",-1)
+            val favoriteProduct = FavoriteProduct(0, product.productId, currentUserId!!)
+            favoriteViewModel.addToFavorites(favoriteProduct)
+                    //recentlyViewedViewModel.updateFavoriteStatus(true,product.productId)
         }
     }
 

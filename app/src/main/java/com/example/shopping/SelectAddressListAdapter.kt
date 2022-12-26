@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.Address
 
 class SelectAddressListAdapter:RecyclerView.Adapter<SelectAddressListAdapter.ViewHolder>(){
-    private lateinit var list:List<Address>
+    //private lateinit var list:List<Address>
+    private var list= listOf<Address>()
    private lateinit var listener: ItemClickListener
     var selectedPosition=0
 
