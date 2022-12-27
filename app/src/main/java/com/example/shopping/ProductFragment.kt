@@ -43,6 +43,7 @@ class ProductFragment : Fragment() {
     private val selectQuantityViewModel:SelectQuantityViewModel by activityViewModels()
     private lateinit var container:LinearLayout
     private lateinit var cartItem: MenuItem
+    private lateinit var quantityDropDown:AutoCompleteTextView
     //private lateinit var toolbar: Toolbar
 
     private fun setCurrentIndicator(position: Int) {
@@ -100,6 +101,17 @@ class ProductFragment : Fragment() {
         badgeDrawable.badgeTextColor=Color.WHITE*/
 
         super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        quantityDropDown=view?.findViewById<AutoCompleteTextView>(R.id.movie_dropdown)!!
+        val list= mutableListOf<String>()
+        for(i in 1 until 11){
+            list.add(i.toString())
+        }
+        val adapter = ArrayAdapter(requireContext(), R.layout.list_item, list)
+        quantityDropDown?.setAdapter(adapter)
     }
 
     override fun onCreateView(
@@ -168,6 +180,8 @@ class ProductFragment : Fragment() {
         }
         //val goToCartButton=view.findViewById<Button>(R.id.go_to_cart_button)
         val addToCartBtn=view.findViewById<Button>(R.id.add_to_cart_button)
+        /*quantityDropDown=view?.findViewById<AutoCompleteTextView>(R.id.movie_dropdown)
+        quantityDropDown.setText("1")*/
 
         val toolbar_layout=view.findViewById<AppBarLayout>(R.id.toolbar_layout)
         toolbar_layout.visibility=View.VISIBLE
@@ -255,14 +269,14 @@ class ProductFragment : Fragment() {
                         .show()
                 }
             }else{
-                /*val intent=Intent(requireContext(),CheckoutActivity::class.java)
+                val intent=Intent(requireContext(),CheckoutActivity::class.java)
                 intent.putExtra("checkoutMode","buy_now")
                 intent.putExtra("productId",product?.productId)
-                intent.putExtra("quantity",1)
-                startActivity(intent)*/
-                selectQuantityViewModel.checkoutMode=CheckoutMode.BUY_NOW
+                intent.putExtra("quantity",quantityDropDown.text.toString().toInt())
+                startActivity(intent)
+                /*selectQuantityViewModel.checkoutMode=CheckoutMode.BUY_NOW
                 val quantitySelectorDialog=QuantityDialogFragment(this)
-                quantitySelectorDialog.show(parentFragmentManager,"")
+                quantitySelectorDialog.show(parentFragmentManager,"")*/
             }
         }
 
@@ -272,6 +286,18 @@ class ProductFragment : Fragment() {
             item.transitionName="cart_item_transition_${product.productId}"
             val recentlyViewed=RecentlyViewed(0,product.productId)
             recentlyViewedViewModel.addToRecentlyViewed(recentlyViewed)
+
+            if(product?.let { cartViewModel.isProductInCart(it.productId) }){
+                val previousCount=cartViewModel.getProductCount(product.productId)
+                quantityDropDown=view?.findViewById<AutoCompleteTextView>(R.id.movie_dropdown)
+                quantityDropDown.setText(previousCount.toString(),false)
+                //quantityLayout.helperText="Already $previousCount available in the cart"
+            }
+            else{
+                println("Product is not available")
+                quantityDropDown=view?.findViewById<AutoCompleteTextView>(R.id.movie_dropdown)
+                quantityDropDown.setText("1",false)
+            }
         }
         println("Selected product is $product")
 
@@ -471,29 +497,24 @@ class ProductFragment : Fragment() {
                 gotoCart()
             }*/
 
-            addToCartBtn.setOnClickListener {
-                    val quantitySelectorDialog=QuantityDialogFragment(this)
+            addToCartBtn.setOnClickListener {it->
+                    /*val quantitySelectorDialog=QuantityDialogFragment(this)
                     selectQuantityViewModel.checkoutMode=CheckoutMode.OVERALL
-                    quantitySelectorDialog.show(parentFragmentManager,"")
+                    quantitySelectorDialog.show(parentFragmentManager,"")*/
 //                    it ->
-                /*GlobalScope.launch {
-                    val job=launch (Dispatchers.IO){
-                        val count=quantityTextView.text.toString().toInt()
+                        val count=quantityDropDown.text.toString().toInt()
                         val oldPriceForSelectedQty=count*product.originalPrice
                         val priceForSelectedQty=count*product.priceAfterDiscount
-                        val selectedProduct=SelectedProductEntity(product.productId,product.title,product.brand,product.thumbnail,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,count,oldPriceForSelectedQty,priceForSelectedQty)
-                        cartViewModel.addToCart(selectedProduct)
-                    }
-                    job.join()
-                }
+                        val selectedProductEntity= SelectedProductEntity(product.productId,product.originalPrice,product.discountPercentage,product.priceAfterDiscount,count,oldPriceForSelectedQty,priceForSelectedQty)
+                        cartViewModel.addToCart(selectedProductEntity)
                 //val coord=view.findViewById<CoordinatorLayout>(R.id.button_layout)
                 Snackbar.make(it,"Added to the Cart",Snackbar.LENGTH_LONG)
                     .setAction("GO TO CART") {
                         gotoCart()
                     }.setAnchorView(view.findViewById(R.id.button_layout))
                     .show()
-                addToCartBtn.visibility=View.GONE
-                goToCartButton.visibility=View.VISIBLE*/
+                //addToCartBtn.visibility=View.GONE
+                //goToCartButton.visibility=View.VISIBLE
 
             }
         }

@@ -127,7 +127,7 @@ class WishlistFragment : Fragment() {
                                 .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation_view))
                                 .show()
                         }else{
-                            Snackbar.make(recyclerView,"Already 10 items of this product exists in the Cart",Snackbar.LENGTH_LONG)
+                            Snackbar.make(recyclerView,"Maximum limit reached for the particular product",Snackbar.LENGTH_LONG)
                                 .setAnchorView(requireActivity().findViewById(R.id.bottom_navigation_view))
                                 .show()
                         }
