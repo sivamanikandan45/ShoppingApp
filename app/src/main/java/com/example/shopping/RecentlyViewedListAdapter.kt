@@ -15,10 +15,7 @@ import com.example.shopping.model.RecentlyViewed
 import com.example.shopping.util.CheckInternet
 import com.example.shopping.util.ProductImageMemoryCache
 import com.google.android.material.imageview.ShapeableImageView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.IOException
 import java.net.ConnectException
 import java.net.URL
@@ -70,7 +67,7 @@ class RecentlyViewedListAdapter():RecyclerView.Adapter<RecentlyViewedListAdapter
                 imageView.setImageBitmap(it)
                 //progressBar.visibility=View.GONE
             }?:run{
-                GlobalScope.launch {
+                CoroutineScope(Dispatchers.IO).launch {
                     val job=launch(Dispatchers.IO) {
                         //if(CheckInternet.isNetwork(context)&&CheckInternet.isConnectedNetwork(context)){
                             val imageUrl = URL(product.thumbnail)

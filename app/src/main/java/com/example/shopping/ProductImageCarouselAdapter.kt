@@ -10,10 +10,7 @@ import com.example.shopping.model.CarouselImage
 import com.example.shopping.util.CarouselImageMemoryCache
 import com.example.shopping.util.ProductImageMemoryCache
 import com.google.android.material.imageview.ShapeableImageView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.IOException
 import java.net.URL
 
@@ -28,7 +25,7 @@ class ProductImageCarouselAdapter(private val list:List<CarouselImage>) : Recycl
                 println("Fetched from cache at  carousel cache$adapterPosition")
                 imageView.setImageBitmap(it)
             } ?:run{
-                GlobalScope.launch {
+                CoroutineScope(Dispatchers.IO).launch {
                     val job=launch(Dispatchers.IO) {
                         val imageUrl = URL(image.imageUrl)
                         withContext(Dispatchers.Main){

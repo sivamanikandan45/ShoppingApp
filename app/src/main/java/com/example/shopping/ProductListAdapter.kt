@@ -12,10 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.Product
 import com.example.shopping.util.ProductDiffUtil
 import com.example.shopping.util.ProductImageMemoryCache
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.IOException
 import java.net.URL
 
@@ -140,7 +137,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
                 imageView.setImageBitmap(it)
                 //progressBar.visibility=View.GONE
             } ?:run{
-                GlobalScope.launch {
+                CoroutineScope(Dispatchers.IO).launch {
                     val job=launch(Dispatchers.IO) {
                         val imageUrl = URL(product.thumbnail)
                         withContext(Dispatchers.Main) {
@@ -206,6 +203,7 @@ class ProductListAdapter:RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
     override fun onViewRecycled(holder: ViewHolder) {
         super.onViewRecycled(holder)
         holder.imageView.setImageBitmap(null)
+        holder.itemView.transitionName="cart_item_transition"
         holder.imageButton.setImageResource(R.drawable.border_heart)
     }
 

@@ -3,13 +3,16 @@ package com.example.shopping
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.*
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,8 +20,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.shopping.model.OrderedProduct
 import com.example.shopping.model.OrderedProductEntity
 import com.example.shopping.viewmodel.AddressViewModel
+import com.example.shopping.viewmodel.CartViewModel
 import com.example.shopping.viewmodel.OrderViewModel
 import com.example.shopping.viewmodel.ProductViewModel
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.transition.MaterialContainerTransform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -91,6 +96,16 @@ class OrderDetailFragment : Fragment() {
                     reOrderFab.extend()
                 }
             }
+        }
+
+        reOrderFab.setOnClickListener{
+            AlertDialog.Builder(requireContext())
+                .setMessage("Would you like to Repeat the Order?")
+                .setPositiveButton("Yes"){_,_ ->
+
+                }
+                .setNegativeButton("No"){ _,_ ->
+                }
         }*/
 
         val orderId=view.findViewById<TextView>(R.id.order_id_label)

@@ -291,12 +291,15 @@ class AddDeliveryAddressFragment : Fragment() {
             }
         }
 
+        val indianPhoneNumberPattern=Pattern.compile("^[6-9][0-9]{9}$")
+        val phnNumberMatcher=indianPhoneNumberPattern.matcher(phone?.editText?.text.toString())
+
         if(phone!=null){
             if(phone.editText?.text.toString()==""){
                 phone.isErrorEnabled =true
                 phone.error ="Please Enter your Phone Number"
                 returnValue=returnValue and false
-            }else if(phone.editText?.text.toString().length!=10){
+            }else if(!phnNumberMatcher.matches()){
                 phone.isErrorEnabled =true
                 phone.error ="Please Enter Valid Phone Number"
                 returnValue=returnValue and false

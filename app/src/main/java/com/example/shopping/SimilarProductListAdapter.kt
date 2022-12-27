@@ -15,10 +15,7 @@ import com.example.shopping.model.RecentlyViewed
 import com.example.shopping.util.CheckInternet
 import com.example.shopping.util.ProductImageMemoryCache
 import com.google.android.material.imageview.ShapeableImageView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.IOException
 import java.net.URL
 
@@ -68,7 +65,7 @@ class SimilarProductListAdapter(val context: Context):RecyclerView.Adapter<Simil
                 println("Fetched from cache at $adapterPosition")
                 imageView.setImageBitmap(it)
             }?:run{
-                GlobalScope.launch {
+                CoroutineScope(Dispatchers.IO).launch {
                     val job=launch(Dispatchers.IO) {
                         println(Thread.currentThread().name)
                         //if(CheckInternet.isNetwork(context)||CheckInternet.isConnectedNetwork(context)){

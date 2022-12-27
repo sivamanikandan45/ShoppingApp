@@ -22,6 +22,7 @@ import com.example.shopping.viewmodel.ProductViewModel
 import com.example.shopping.viewmodel.SearchStateViewModel
 import com.example.shopping.viewmodel.SortViewModel
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.Hold
 import com.google.android.material.transition.MaterialContainerTransform
 import kotlinx.coroutines.*
 import java.util.Collections.addAll
@@ -62,6 +63,7 @@ class ProductListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        exitTransition=Hold()
         setHasOptionsMenu(true)
     }
 
@@ -205,6 +207,7 @@ class ProductListFragment : Fragment() {
                     addToBackStack(null)
                     val product=productViewModel.categoryList.value?.get(position)
                     productViewModel.categoryRecyclerViewPosition=position
+                    productViewModel.currentFavStatus=favoriteViewModel.isFavorite(product?.productId)
                     val item=productRecyclerView.findViewHolderForAdapterPosition(position)?.itemView
                     if (product!= null) {
                         item?.transitionName="cart_item_transition_${product.productId}"
@@ -461,7 +464,26 @@ class ProductListFragment : Fragment() {
                         println("Clicked click listener's item click method")
                         hide(this@ProductListFragment)
                         productViewModel.selectedProduct.value= list[position]
-                        add<ProductFragment>(R.id.category_fragment_container)
+                        val fragment=ProductFragment()
+                        //add<ProductFragment>(R.id.category_fragment_container)
+                        //addToBackStack(null)
+                        val product=list[position]
+                        productViewModel.categoryRecyclerViewPosition=position
+                        productViewModel.currentFavStatus=favoriteViewModel.isFavorite(product?.productId)
+                        val item=productRecyclerView.findViewHolderForAdapterPosition(position)?.itemView
+                        if (product!= null) {
+                            item?.transitionName="cart_item_transition_${product.productId}"
+                            addSharedElement(item!!,"cart_item_transition_${product.productId}")
+                            println("transition name of item at $position is cart_item_transition_${product.productId}")
+                        }
+                        fragment.sharedElementEnterTransition= MaterialContainerTransform().apply {
+                            duration=250L
+//                        interpolator=AccelerateDecelerateInterpolator()
+                            scrimColor= Color.TRANSPARENT
+                        }
+                        add(R.id.category_fragment_container,fragment)
+
+                        //add<ProductFragment>(R.id.category_fragment_container)
                         addToBackStack(null)
                     }
                 }
@@ -482,7 +504,12 @@ class ProductListFragment : Fragment() {
                 println("Setting value got $searchedQuery")
             }else{
                 try{
-                    adapter.notifyDataSetChanged()
+                    val product=productViewModel.categoryList.value?.get(productViewModel.categoryRecyclerViewPosition)
+                    if(favoriteViewModel.isFavorite(product?.productId)!=productViewModel.currentFavStatus){
+                        adapter.notifyItemChanged(productViewModel.categoryRecyclerViewPosition)
+                    }
+                    //adapter.notifyDataSetChanged()
+                    //adapter.notifyItemChanged(productViewModel.categoryRecyclerViewPosition)
                     /*adapter.notifyDataSetChanged()
                     val product=productViewModel.categoryList.value?.get(productViewModel.categoryRecyclerViewPosition)
                     val item=productRecyclerView.findViewHolderForAdapterPosition(productViewModel.categoryRecyclerViewPosition)?.itemView
@@ -490,8 +517,8 @@ class ProductListFragment : Fragment() {
                         item?.transitionName="cart_item_transition_${product.productId}"
                         //println("transition name of item at $position is cart_item_transition_${product.productId}")
                     }*/
-                    println("Current data is $currentProductList")
-                    /*GlobalScope.launch {
+                    /*println("Current data is $currentProductList")
+                    lifecycleScope.launch {
                         val job=launch(Dispatchers.IO) {
                             productViewModel.getCategoryWiseProductList()
                         }

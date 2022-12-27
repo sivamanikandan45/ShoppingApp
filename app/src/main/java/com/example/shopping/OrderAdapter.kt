@@ -13,10 +13,7 @@ import com.example.shopping.model.Order
 import com.example.shopping.model.OrderedProduct
 import com.example.shopping.util.ProductImageMemoryCache
 import com.google.android.material.imageview.ShapeableImageView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.IOException
 import java.math.RoundingMode
 import java.net.URL
@@ -102,7 +99,7 @@ class OrderAdapter:RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
             itemCountTextView.text="${order.itemCount} Item"
             orderDateTextView.text="Ordered on ${order.orderedDate}"
             billAmountTextView.text="₹$caad"
-            GlobalScope.launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 val job=launch (Dispatchers.IO){
                     val orderedList=loader.loadData(list[adapterPosition].orderId)
                     println("Got $orderedList")

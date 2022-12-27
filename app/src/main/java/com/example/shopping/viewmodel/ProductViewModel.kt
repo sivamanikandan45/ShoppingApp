@@ -34,6 +34,7 @@ class ProductViewModel(application: Application):AndroidViewModel(application) {
     var selectedSort: Sort = Sort.NONE
 
     var categoryRecyclerViewPosition=-1
+    var currentFavStatus=false
 
     //var productStack=Stack<Product>()
     /*fun push(product:Product){

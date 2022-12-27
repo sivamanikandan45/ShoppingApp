@@ -13,10 +13,7 @@ import com.example.shopping.model.SelectedProduct
 import com.example.shopping.model.SelectedProductEntity
 import com.example.shopping.util.CartDiffUtil
 import com.example.shopping.util.ProductImageMemoryCache
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.IOException
 import java.math.RoundingMode
 import java.net.URL
@@ -138,7 +135,7 @@ class CartAdapter:RecyclerView.Adapter<CartAdapter.ViewHolder>() {
                 println("Fetched from cache at $adapterPosition")
                 productImageView.setImageBitmap(it)
             } ?:run{
-                GlobalScope.launch {
+                CoroutineScope(Dispatchers.IO).launch {
                     val job=launch(Dispatchers.IO) {
                         val imageUrl = URL(selectedProductEntity.imageUrl)
                         withContext(Dispatchers.Main) {

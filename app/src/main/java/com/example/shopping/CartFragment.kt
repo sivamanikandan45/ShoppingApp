@@ -30,6 +30,7 @@ import com.example.shopping.viewmodel.ProductViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.Hold
 import com.google.android.material.transition.MaterialContainerTransform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -55,6 +56,7 @@ class CartFragment : Fragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+//        exitTransition=Hold()
         super.onCreate(savedInstanceState)
         //exitTransition = MaterialElevationScale(/* growing= */ false)
         /*reenterTransition = Hold().apply {
@@ -211,6 +213,7 @@ class CartFragment : Fragment() {
                     add(R.id.fragment_container,fragment)
                     addToBackStack(null)
                     val btm=requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
+//                    btm.animate().translationY(200F).duration=200
                     btm.visibility=View.GONE
 
 
