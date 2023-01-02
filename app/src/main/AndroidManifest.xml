@@ -18,14 +18,14 @@
         android:theme="@style/Theme.Shopping"
         tools:targetApi="31">
         <activity
-            android:name=".ProductImageActivity"
+            android:name=".product.ui.ProductImageActivity"
             android:exported="false" />
         <activity
-            android:name=".AccountActivity"
+            android:name=".account.ui.AccountActivity"
             android:exported="false" />
         <activity
             android:launchMode="singleTop"
-            android:name=".SearchableActivity"
+            android:name=".product.ui.SearchableActivity"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -36,10 +36,10 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".CheckoutActivity"
+            android:name=".checkout.ui.CheckoutActivity"
             android:exported="false" />
         <activity
-            android:name=".CategoryActivity"
+            android:name=".product.ui.CategoryActivity"
             android:exported="false" />
         <!--android:configChanges="orientation"-->
         <activity

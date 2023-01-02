@@ -2,7 +2,6 @@ package com.example.shopping
 
 import android.content.Context
 import android.graphics.Color
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -11,11 +10,15 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.example.shopping.util.CheckInternet
-import com.example.shopping.viewmodel.CartViewModel
-import com.example.shopping.viewmodel.CustomViewModel
-import com.example.shopping.viewmodel.FavoriteViewModel
-import com.example.shopping.viewmodel.ProductViewModel
+import com.example.shopping.account.ui.AccountFragment
+import com.example.shopping.cart.ui.CartFragment
+import com.example.shopping.cart.ui.viewmodel.CartViewModel
+import com.example.shopping.home.ui.HomeFragment
+import com.example.shopping.home.ui.viewmodel.CustomViewModel
+import com.example.shopping.wishlist.ui.viewmodel.FavoriteViewModel
+import com.example.shopping.product.ui.viewmodel.ProductViewModel
+import com.example.shopping.signinandsigupfeature.ui.fragment.OnBoardingFragment
+import com.example.shopping.wishlist.ui.WishlistFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

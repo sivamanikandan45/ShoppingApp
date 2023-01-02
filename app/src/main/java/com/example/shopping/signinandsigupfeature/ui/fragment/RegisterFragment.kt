@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.shopping.MainActivity
 import com.example.shopping.MyApplication
@@ -19,7 +20,7 @@ import com.example.shopping.R
 import com.example.shopping.signinandsigupfeature.data.local.entity.User
 import com.example.shopping.signinandsigupfeature.ui.di.AppContainer
 import com.example.shopping.signinandsigupfeature.ui.di.UserContainer
-import com.example.shopping.viewmodel.OnBoardingFormViewModel
+import com.example.shopping.signinandsigupfeature.ui.viewmodel.OnBoardingFormViewModel
 import com.example.shopping.signinandsigupfeature.ui.viewmodel.UserViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputLayout
@@ -52,7 +53,13 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         appContainer=(activity?.application as MyApplication).appContainer
         appContainer.userContainer= UserContainer(appContainer.registerUserUseCase,appContainer.checkValidUserUseCase,appContainer.getIdUsingRowId)
-        userViewModel= appContainer.userContainer?.userViewModelFactory?.create()!!
+        //userViewModel= appContainer.userContainer?.userViewModelFactory?.create()!!
+        val viewModel:UserViewModel by activityViewModels{ UserViewModel.Factory }
+        userViewModel=viewModel
+
+        println("The stored variable is ${userViewModel.state}")
+        userViewModel.state=!userViewModel.state
+        println("The changes variable is ${userViewModel.state}")
 
         if(requireActivity() is MainActivity){
             requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view).visibility=View.GONE

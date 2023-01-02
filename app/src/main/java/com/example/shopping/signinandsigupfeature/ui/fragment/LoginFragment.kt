@@ -18,7 +18,8 @@ import com.example.shopping.MyApplication
 import com.example.shopping.R
 import com.example.shopping.signinandsigupfeature.ui.di.AppContainer
 import com.example.shopping.signinandsigupfeature.ui.di.UserContainer
-import com.example.shopping.viewmodel.OnBoardingFormViewModel
+import com.example.shopping.signinandsigupfeature.ui.viewmodel.OnBoardingFormViewModel
+import com.example.shopping.signinandsigupfeature.ui.viewmodel.UserViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +30,7 @@ import java.util.regex.Pattern
 
 class LoginFragment : Fragment() {
     //private val userViewModel: UserViewModel by activityViewModels()
-    private val onBoardingFormViewModel:OnBoardingFormViewModel by viewModels()
+    private val onBoardingFormViewModel: OnBoardingFormViewModel by viewModels()
     private lateinit var emailInputLayout: TextInputLayout
     private lateinit var passwordInputLayout: TextInputLayout
     lateinit var appContainer: AppContainer
@@ -48,7 +49,14 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         appContainer=(activity?.application as MyApplication).appContainer
         appContainer.userContainer= UserContainer(appContainer.registerUserUseCase,appContainer.checkValidUserUseCase,appContainer.getIdUsingRowId)
-        val userViewModel=appContainer.userContainer?.userViewModelFactory?.create()
+
+        val userViewModel:UserViewModel by activityViewModels{UserViewModel.Factory}
+
+        println("The stored variable is in login fragment${userViewModel.state}")
+        userViewModel.state=!userViewModel.state
+        println("The changes variable is in login${userViewModel.state}")
+
+        //val userViewModel=appContainer.userContainer?.userViewModelFactory?.create()
 
         if(requireActivity() is MainActivity){
             requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view).visibility=View.GONE

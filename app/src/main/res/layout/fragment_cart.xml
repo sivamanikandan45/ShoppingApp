@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CartFragment">
+    tools:context=".cart.ui.CartFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/empty_page"
@@ -45,12 +45,12 @@
         android:layout_height="match_parent"
         android:scrollbars="none"
         android:overScrollMode="never"
-        tools:context=".CartFragment">
+        tools:context=".cart.ui.CartFragment">
     <androidx.constraintlayout.widget.ConstraintLayout
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".CartFragment">
+        tools:context=".cart.ui.CartFragment">
         <!-- TODO: Update blank fragment layout -->
         <TextView
             android:id="@+id/empty_label"

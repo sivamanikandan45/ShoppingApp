@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    tools:context=".ProductImageActivity">
+    tools:context=".product.ui.ProductImageActivity">
 
 
     <androidx.viewpager2.widget.ViewPager2

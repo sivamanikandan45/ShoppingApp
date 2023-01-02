@@ -6,7 +6,7 @@
     android:transitionGroup="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
-    tools:context=".SavedAddressFragment">
+    tools:context=".address.ui.SavedAddressFragment">
 
     <!--<androidx.cardview.widget.CardView
         android:id="@+id/add_new_address"

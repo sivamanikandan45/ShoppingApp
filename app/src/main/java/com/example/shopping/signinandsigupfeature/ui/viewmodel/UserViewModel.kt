@@ -1,6 +1,14 @@
 package com.example.shopping.signinandsigupfeature.ui.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.shopping.MyApplication
 import com.example.shopping.signinandsigupfeature.data.local.entity.User
 import com.example.shopping.signinandsigupfeature.domain.usecase.CheckValidUserUseCase
 import com.example.shopping.signinandsigupfeature.domain.usecase.GetIdUsingRowId
@@ -8,7 +16,10 @@ import com.example.shopping.signinandsigupfeature.domain.usecase.RegisterUserUse
 
 class UserViewModel(private val registerUserUseCase: RegisterUserUseCase,
                     private val checkValidUserUseCase: CheckValidUserUseCase,
-                    private val getIdUsingRowId: GetIdUsingRowId): ViewModel() {
+                    private val getIdUsingRowId: GetIdUsingRowId,
+                    ): ViewModel() {
+
+    var state=false
 
 
     suspend fun registerUser(user: User):Long {
@@ -30,6 +41,38 @@ class UserViewModel(private val registerUserUseCase: RegisterUserUseCase,
         val id=dao.getIdUsingRowId(rowId)
         return id*/
         return  getIdUsingRowId.invoke(rowId)
+    }
+
+    companion object{
+        /*val Factory:ViewModelProvider.Factory = object:ViewModelProvider.Factory{
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+                val application = checkNotNull(extras[APPLICATION_KEY])
+                // Create a SavedStateHandle for this ViewModel from extras
+                val savedStateHandle = extras.createSavedStateHandle()
+
+                return UserViewModel(
+                    (application as MyApplication).appContainer.registerUserUseCase,
+                    (application as MyApplication).appContainer.checkValidUserUseCase,
+                    (application as MyApplication).appContainer.getIdUsingRowId,
+                    savedStateHandle
+                ) as T
+               // return super.create(modelClass, extras)
+            }
+        }*/
+
+        val Factory:ViewModelProvider.Factory= viewModelFactory {
+            initializer {
+                val savedStateHandle = createSavedStateHandle()
+                val myApplication=(this[APPLICATION_KEY] as MyApplication).appContainer
+                val registerUserUseCase=myApplication.registerUserUseCase
+                val checkValidUserUseCase=myApplication.checkValidUserUseCase
+                val getIdUsingRowId=myApplication.getIdUsingRowId
+                UserViewModel(registerUserUseCase = registerUserUseCase,
+                    checkValidUserUseCase = checkValidUserUseCase,
+                    getIdUsingRowId = getIdUsingRowId)
+            }
+        }
     }
 
 

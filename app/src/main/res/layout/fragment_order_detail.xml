@@ -7,12 +7,12 @@
     android:layout_height="match_parent"
     android:scrollbars="none"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".OrderDetailFragment">
+    tools:context=".order.ui.OrderDetailFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".OrderDetailFragment">
+        tools:context=".order.ui.OrderDetailFragment">
 
         <TextView
             android:id="@+id/order_id_label"
@@ -426,6 +426,11 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/total_amount" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toBottomOf="@+id/order_total_amount_value" />
 
         <!--<View
             app:layout_constraintTop_toBottomOf="@id/order_total_amount_value"

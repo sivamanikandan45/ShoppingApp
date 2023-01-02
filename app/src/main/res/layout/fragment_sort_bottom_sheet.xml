@@ -5,7 +5,7 @@
     android:layout_width="360dp"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".SortBottomSheetFragment">
+    tools:context=".product.ui.SortBottomSheetFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

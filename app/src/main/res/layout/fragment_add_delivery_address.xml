@@ -6,7 +6,7 @@
     android:background="@color/white"
     android:id="@+id/address_form"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".AddDeliveryAddressFragment"
+    tools:context=".address.ui.AddDeliveryAddressFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <!--<com.google.android.material.appbar.AppBarLayout
@@ -28,7 +28,7 @@
         android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:context=".AddDeliveryAddressFragment"
+        tools:context=".address.ui.AddDeliveryAddressFragment"
         tools:layout_editor_absoluteX="0dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
